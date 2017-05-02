@@ -8,7 +8,7 @@
  */
 
 /**
- * @ingroup     boards_arduino-zero
+ * @ingroup     boards_arduino-mkr1000
  * @{
  *
  * @file

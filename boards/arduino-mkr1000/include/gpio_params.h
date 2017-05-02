@@ -16,7 +16,6 @@
  *
  * @author    Hauke Petersen <hauke.petersen@fu-berlin.de>
  * @author    Alexandre Abadie <alexandre.abadie@inria.fr>
- * @author    Bumsik kim <kbumsik@gmail.com>
  */
 
 #ifndef GPIO_PARAMS_H

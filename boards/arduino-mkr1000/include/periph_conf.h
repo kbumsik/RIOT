@@ -114,12 +114,11 @@ static const uart_conf_t uart_config[] = {
         .mux    = GPIO_MUX_D,
         .rx_pad = UART_PAD_RX_3,
         .tx_pad = UART_PAD_TX_2
-    }   // TODO: Add more UART device (PA11, PA10)
+    }
 };
 
 /* interrupt function name mapping */
 #define UART_0_ISR          isr_sercom5
-// #define UART_1_ISR          isr_sercom0
 
 #define UART_NUMOF          (sizeof(uart_config) / sizeof(uart_config[0]))
 /** @} */
@@ -161,7 +160,39 @@ static const pwm_conf_t pwm_config[] = {
  * @name ADC configuration
  * @{
  */
-#define ADC_NUMOF           (0)
+#define ADC_NUMOF                          (1U)
+#define ADC_0_EN                           1
+#define ADC_MAX_CHANNELS                   14
+/* ADC 0 device configuration */
+#define ADC_0_DEV                          ADC
+#define ADC_0_IRQ                          ADC_IRQn
+#define ADC_0_CHANNELS                     (3U)
+
+/**
+ * @brief ADC Channel Configuration
+ */
+typedef struct {
+    gpio_t pin;            /**< ADC channel pin */
+    uint32_t muxpos;       /**< ADC channel pin multiplexer value */
+} adc_channel_t;
+
+/* ADC 0 Default values */
+#define ADC_0_CLK_SOURCE                   0 /* GCLK_GENERATOR_0 */
+#define ADC_0_PRESCALER                    ADC_CTRLB_PRESCALER_DIV512
+static const adc_channel_t adc_channels[] = {
+    /* port, pin, muxpos */
+    {GPIO_PIN(PA, 2), ADC_INPUTCTRL_MUXPOS_PIN0},     /* A0 */
+    {GPIO_PIN(PB, 2), ADC_INPUTCTRL_MUXPOS_PIN10},    /* A1 */
+    {GPIO_PIN(PB, 3), ADC_INPUTCTRL_MUXPOS_PIN11},    /* A2 */
+    {GPIO_PIN(PA, 4), ADC_INPUTCTRL_MUXPOS_PIN4},     /* A3 */
+    {GPIO_PIN(PA, 5), ADC_INPUTCTRL_MUXPOS_PIN5},     /* A4 */
+    {GPIO_PIN(PA, 6), ADC_INPUTCTRL_MUXPOS_PIN6},     /* A5 */
+    {GPIO_PIN(PA, 7), ADC_INPUTCTRL_MUXPOS_PIN7},     /* A6 */
+};
+
+#define ADC_0_NEG_INPUT                    ADC_INPUTCTRL_MUXNEG_GND
+#define ADC_0_GAIN_FACTOR_DEFAULT          ADC_INPUTCTRL_GAIN_1X
+#define ADC_0_REF_DEFAULT                  ADC_REFCTRL_REFSEL_INT1V
 /** @} */
 
 /**
@@ -177,6 +208,17 @@ static const spi_conf_t spi_config[] = {
         .miso_mux = GPIO_MUX_C,
         .mosi_mux = GPIO_MUX_C,
         .clk_mux  = GPIO_MUX_C,
+        .miso_pad = SPI_PAD_MISO_3,
+        .mosi_pad = SPI_PAD_MOSI_0_SCK_1
+    },
+    {   // SPI Pins connected to WINC1500 wifi module
+        .dev      = &SERCOM2->SPI,
+        .miso_pin = GPIO_PIN(PA, 15),
+        .mosi_pin = GPIO_PIN(PA, 12),
+        .clk_pin  = GPIO_PIN(PA, 13),
+        .miso_mux = GPIO_MUX_D,
+        .mosi_mux = GPIO_MUX_D,
+        .clk_mux  = GPIO_MUX_D,
         .miso_pad = SPI_PAD_MISO_3,
         .mosi_pad = SPI_PAD_MOSI_0_SCK_1
     }

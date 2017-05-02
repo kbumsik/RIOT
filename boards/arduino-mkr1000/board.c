@@ -16,7 +16,6 @@
  *
  * @author      Hauke Pertersen  <hauke.pertersen@fu-berlin.de>
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
- * @author      Bumsik kim <kbumsik@gmail.com>
  *
  * @}
  */

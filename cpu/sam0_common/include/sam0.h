@@ -82,7 +82,7 @@ extern "C" {
   #include "vendor/samd21/include/samd21g17a.h"
 #elif defined(CPU_MODEL_SAMD21G17AU)
   #include "vendor/samd21/include/samd21g17au.h"
-#elif defined(CPU_MODEL_SAMD21G18A)
+#elif defined(CPU_MODEL_SAMD21G18A) || defined(CPU_MODEL_SAMD21G18A_MKR1000)
   #include "vendor/samd21/include/samd21g18a.h"
 #elif defined(CPU_MODEL_SAMD21G18AU)
   #include "vendor/samd21/include/samd21g18au.h"

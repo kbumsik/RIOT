@@ -17,7 +17,6 @@
  *              board
  *
  * @author      Alexandre Abadie <alexandre.abadie@inria.fr>
- * @author      Bumsik kim <kbumsik@gmail.com>
  */
 
 #ifndef BOARD_H
@@ -33,7 +32,7 @@ extern "C" {
 #endif
 
 /**
- * @name    xtimer configuration
+ * @brief   xtimer configuration
  * @{
  */
 #define XTIMER              TIMER_0
@@ -41,7 +40,7 @@ extern "C" {
 /** @} */
 
 /**
- * @name    LED pin definitions and handlers
+ * @brief   LED pin definitions and handlers
  * @{
  */
 #define LED0_PIN            GPIO_PIN(PA, 20)
@@ -55,7 +54,7 @@ extern "C" {
 /** @} */
 
 /**
- * @brief   Initialize board specific hardware, including clock, LEDs and std-IO
+ * @brief Initialize board specific hardware, including clock, LEDs and std-IO
  */
 void board_init(void);
 
