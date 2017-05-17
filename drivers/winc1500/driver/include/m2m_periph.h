@@ -134,9 +134,9 @@ typedef enum {
 	tenuI2cMasterSdaMuxOpt
 */
 typedef struct {
-	uint8 enuSclMuxOpt; /*!< SCL multiplexing option. Allowed value are defined in tenuI2cMasterSclMuxOpt  */
-	uint8 enuSdaMuxOpt; /*!< SDA multiplexing option. Allowed value are defined in tenuI2cMasterSdaMuxOpt  */
-	uint8 u8ClkSpeedKHz; /*!< I2C master clock speed in KHz. */
+	uint8_t enuSclMuxOpt; /*!< SCL multiplexing option. Allowed value are defined in tenuI2cMasterSclMuxOpt  */
+	uint8_t enuSdaMuxOpt; /*!< SDA multiplexing option. Allowed value are defined in tenuI2cMasterSdaMuxOpt  */
+	uint8_t u8ClkSpeedKHz; /*!< I2C master clock speed in KHz. */
 } tstrI2cMasterInitParam;
 
 /*!
@@ -211,7 +211,7 @@ FUNCTION PROTOTYPES
 
 /*!
 @fn	\
-	NMI_API sint8 m2m_periph_init(tstrPerphInitParam * param);
+	NMI_API int8_t m2m_periph_init(tstrPerphInitParam * param);
 
 @brief
 	Initialize the NMC1500 peripheral driver module.
@@ -225,11 +225,11 @@ FUNCTION PROTOTYPES
 @sa
 	tstrPerphInitParam
 */
-NMI_API sint8 m2m_periph_init(tstrPerphInitParam * param);
+NMI_API int8_t m2m_periph_init(tstrPerphInitParam * param);
 
 /*!
 @fn	\
-	NMI_API sint8 m2m_periph_gpio_set_dir(uint8 u8GpioNum, uint8 u8GpioDir);
+	NMI_API int8_t m2m_periph_gpio_set_dir(uint8_t u8GpioNum, uint8_t u8GpioDir);
 
 @brief
 	Configure a specific NMC1500 pad as a GPIO and sets its direction (input or output).
@@ -246,11 +246,11 @@ NMI_API sint8 m2m_periph_init(tstrPerphInitParam * param);
 @sa
 	tenuGpioNum
 */
-NMI_API sint8 m2m_periph_gpio_set_dir(uint8 u8GpioNum, uint8 u8GpioDir);
+NMI_API int8_t m2m_periph_gpio_set_dir(uint8_t u8GpioNum, uint8_t u8GpioDir);
 
 /*!
 @fn	\
-	NMI_API sint8 m2m_periph_gpio_set_val(uint8 u8GpioNum, uint8 u8GpioVal);
+	NMI_API int8_t m2m_periph_gpio_set_val(uint8_t u8GpioNum, uint8_t u8GpioVal);
 
 @brief
 	Set an NMC1500 GPIO output level high or low.
@@ -267,11 +267,11 @@ NMI_API sint8 m2m_periph_gpio_set_dir(uint8 u8GpioNum, uint8 u8GpioDir);
 @sa
 	tenuGpioNum
 */
-NMI_API sint8 m2m_periph_gpio_set_val(uint8 u8GpioNum, uint8 u8GpioVal);
+NMI_API int8_t m2m_periph_gpio_set_val(uint8_t u8GpioNum, uint8_t u8GpioVal);
 
 /*!
 @fn	\
-	NMI_API sint8 m2m_periph_gpio_get_val(uint8 u8GpioNum, uint8 * pu8GpioVal);
+	NMI_API int8_t m2m_periph_gpio_get_val(uint8_t u8GpioNum, uint8_t * pu8GpioVal);
 
 @brief
 	Read an NMC1500 GPIO input level.
@@ -288,11 +288,11 @@ NMI_API sint8 m2m_periph_gpio_set_val(uint8 u8GpioNum, uint8 u8GpioVal);
 @sa
 	tenuGpioNum
 */
-NMI_API sint8 m2m_periph_gpio_get_val(uint8 u8GpioNum, uint8 * pu8GpioVal);
+NMI_API int8_t m2m_periph_gpio_get_val(uint8_t u8GpioNum, uint8_t * pu8GpioVal);
 
 /*!
 @fn	\
-	NMI_API sint8 m2m_periph_gpio_pullup_ctrl(uint8 u8GpioNum, uint8 u8PullupEn);
+	NMI_API int8_t m2m_periph_gpio_pullup_ctrl(uint8_t u8GpioNum, uint8_t u8PullupEn);
 
 @brief
 	Set an NMC1500 GPIO pullup resisitor enable or disable.
@@ -309,11 +309,11 @@ NMI_API sint8 m2m_periph_gpio_get_val(uint8 u8GpioNum, uint8 * pu8GpioVal);
 @sa
 	tenuGpioNum
 */
-NMI_API sint8 m2m_periph_gpio_pullup_ctrl(uint8 u8GpioNum, uint8 u8PullupEn);
+NMI_API int8_t m2m_periph_gpio_pullup_ctrl(uint8_t u8GpioNum, uint8_t u8PullupEn);
 
 /*!
 @fn	\
-	NMI_API sint8 m2m_periph_i2c_master_init(tstrI2cMasterInitParam * param);
+	NMI_API int8_t m2m_periph_i2c_master_init(tstrI2cMasterInitParam * param);
 
 @brief
 	Initialize and configure the NMC1500 I2C master peripheral.
@@ -327,11 +327,11 @@ NMI_API sint8 m2m_periph_gpio_pullup_ctrl(uint8 u8GpioNum, uint8 u8PullupEn);
 @sa
 	tstrI2cMasterInitParam
 */
-NMI_API sint8 m2m_periph_i2c_master_init(tstrI2cMasterInitParam * param);
+NMI_API int8_t m2m_periph_i2c_master_init(tstrI2cMasterInitParam * param);
 
 /*!
 @fn	\
-	NMI_API sint8 m2m_periph_i2c_master_write(uint8 u8SlaveAddr, uint8 * pu8Buf, uint16 u16BufLen, uint8 flags);
+	NMI_API int8_t m2m_periph_i2c_master_write(uint8_t u8SlaveAddr, uint8_t * pu8Buf, uint16_t u16BufLen, uint8_t flags);
 
 @brief
 	Write a stream of bytes to the I2C slave device.
@@ -351,12 +351,12 @@ NMI_API sint8 m2m_periph_i2c_master_init(tstrI2cMasterInitParam * param);
 @sa
 	tenuI2cMasterFlags
 */
-NMI_API sint8 m2m_periph_i2c_master_write(uint8 u8SlaveAddr, uint8 * pu8Buf, uint16 u16BufLen, uint8 flags);
+NMI_API int8_t m2m_periph_i2c_master_write(uint8_t u8SlaveAddr, uint8_t * pu8Buf, uint16_t u16BufLen, uint8_t flags);
 
 
 /*!
 @fn	\
-	NMI_API sint8 m2m_periph_i2c_master_read(uint8 u8SlaveAddr, uint8 * pu8Buf, uint16 u16BufLen, uint16 * pu16ReadLen, uint8 flags);
+	NMI_API int8_t m2m_periph_i2c_master_read(uint8_t u8SlaveAddr, uint8_t * pu8Buf, uint16_t u16BufLen, uint16_t * pu16ReadLen, uint8_t flags);
 
 @brief
 	Write a stream of bytes to the I2C slave device.
@@ -378,12 +378,12 @@ NMI_API sint8 m2m_periph_i2c_master_write(uint8 u8SlaveAddr, uint8 * pu8Buf, uin
 @sa
 	tenuI2cMasterFlags
 */
-NMI_API sint8 m2m_periph_i2c_master_read(uint8 u8SlaveAddr, uint8 * pu8Buf, uint16 u16BufLen, uint16 * pu16ReadLen, uint8 flags);
+NMI_API int8_t m2m_periph_i2c_master_read(uint8_t u8SlaveAddr, uint8_t * pu8Buf, uint16_t u16BufLen, uint16_t * pu16ReadLen, uint8_t flags);
 
 
 /*!
 @fn	\
-	NMI_API sint8 m2m_periph_pullup_ctrl(uint32 pinmask, uint8 enable);
+	NMI_API int8_t m2m_periph_pullup_ctrl(uint32_t pinmask, uint8_t enable);
 
 @brief
 	Control the programmable pull-up resistor on the chip pads .
@@ -401,7 +401,7 @@ NMI_API sint8 m2m_periph_i2c_master_read(uint8 u8SlaveAddr, uint8 * pu8Buf, uint
 @sa
 	tenuPullupMask
 */
-NMI_API sint8 m2m_periph_pullup_ctrl(uint32 pinmask, uint8 enable);
+NMI_API int8_t m2m_periph_pullup_ctrl(uint32_t pinmask, uint8_t enable);
 
 #ifdef __cplusplus
 }

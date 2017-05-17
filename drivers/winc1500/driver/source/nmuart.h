@@ -49,7 +49,7 @@
 *	@brief		Check COM Port
 *	@return		ZERO in case of success and M2M_ERR_BUS_FAIL in case of failure
 */
-sint8 nm_uart_sync_cmd(void);
+int8_t nm_uart_sync_cmd(void);
 /**
 *	@fn			nm_uart_read_reg
 *	@brief		Read register
@@ -57,7 +57,7 @@ sint8 nm_uart_sync_cmd(void);
 *				Register address
 *	@return		Register value
 */
-uint32 nm_uart_read_reg(uint32 u32Addr);
+uint32_t nm_uart_read_reg(uint32_t u32Addr);
 
 /**
 *	@fn			nm_uart_read_reg_with_ret
@@ -68,7 +68,7 @@ uint32 nm_uart_read_reg(uint32 u32Addr);
 *				Pointer to u32 variable used to return the read value
 *	@return		ZERO in case of success and M2M_ERR_BUS_FAIL in case of failure
 */
-sint8 nm_uart_read_reg_with_ret(uint32 u32Addr, uint32* pu32RetVal);
+int8_t nm_uart_read_reg_with_ret(uint32_t u32Addr, uint32_t* pu32RetVal);
 
 /**
 *	@fn			nm_uart_write_reg
@@ -79,7 +79,7 @@ sint8 nm_uart_read_reg_with_ret(uint32 u32Addr, uint32* pu32RetVal);
 *				Value to be written to the register
 *	@return		ZERO in case of success and M2M_ERR_BUS_FAIL in case of failure
 */
-sint8 nm_uart_write_reg(uint32 u32Addr, uint32 u32Val);
+int8_t nm_uart_write_reg(uint32_t u32Addr, uint32_t u32Val);
 
 /**
 *	@fn			nm_uart_read_block
@@ -92,7 +92,7 @@ sint8 nm_uart_write_reg(uint32 u32Addr, uint32 u32Val);
 *				Number of bytes to read. The buffer size must be >= u16Sz
 *	@return		ZERO in case of success and M2M_ERR_BUS_FAIL in case of failure
 */
-sint8 nm_uart_read_block(uint32 u32Addr, uint8 *puBuf, uint16 u16Sz);
+int8_t nm_uart_read_block(uint32_t u32Addr, uint8_t *puBuf, uint16_t u16Sz);
 
 /**
 *	@fn			nm_uart_write_block
@@ -105,7 +105,7 @@ sint8 nm_uart_read_block(uint32 u32Addr, uint8 *puBuf, uint16 u16Sz);
 *				Number of bytes to write. The buffer size must be >= u16Sz
 *	@return		ZERO in case of success and M2M_ERR_BUS_FAIL in case of failure
 */
-sint8 nm_uart_write_block(uint32 u32Addr, uint8 *puBuf, uint16 u16Sz);
+int8_t nm_uart_write_block(uint32_t u32Addr, uint8_t *puBuf, uint16_t u16Sz);
 
 /**
 *	@fn			nm_uart_reconfigure
@@ -114,5 +114,5 @@ sint8 nm_uart_write_block(uint32 u32Addr, uint8 *puBuf, uint16 u16Sz);
 *				Pointer to a DWORD containing baudrate at this moment.
 *	@return		ZERO in case of success and M2M_ERR_BUS_FAIL in case of failure
 */
-sint8 nm_uart_reconfigure(void *ptr);
+int8_t nm_uart_reconfigure(void *ptr);
 #endif /* _NMI2C_H_ */

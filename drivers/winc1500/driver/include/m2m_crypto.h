@@ -70,7 +70,7 @@ DATA TYPES
 	SHA256 context data
 */
 typedef struct sha256ctxt{
-	uint32	au32Sha256CtxtBuff[M2M_SHA256_CONTEXT_BUFF_LEN/sizeof(uint32)];
+	uint32_t	au32Sha256CtxtBuff[M2M_SHA256_CONTEXT_BUFF_LEN/sizeof(uint32_t)];
 } tstrM2mSha256Ctxt;
 
 
@@ -106,7 +106,7 @@ typedef enum{
 	m2m_crypto_init
 	tenuM2mCryptoCmd
 */
-typedef void (*tpfAppCryproCb) (uint8 u8MsgType,void * pvResp, void * pvMsg);
+typedef void (*tpfAppCryproCb) (uint8_t u8MsgType,void * pvResp, void * pvMsg);
 
 /*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 FUNCTION PROTOTYPES
@@ -118,7 +118,7 @@ FUNCTION PROTOTYPES
 #endif
 /*!
 @fn	\
-	sint8 m2m_crypto_init();
+	int8_t m2m_crypto_init();
 	
 @brief	crypto initialization.
 
@@ -130,10 +130,10 @@ FUNCTION PROTOTYPES
 @return		
 	The function returns @ref M2M_SUCCESS for successful operation and a negative value otherwise.
 */
-sint8 m2m_crypto_init(tpfAppCryproCb pfAppCryproCb);
+int8_t m2m_crypto_init(tpfAppCryproCb pfAppCryproCb);
 /*!
 @fn	\
-	sint8 m2m_sha256_hash_init(tstrM2mSha256Ctxt *psha256Ctxt);
+	int8_t m2m_sha256_hash_init(tstrM2mSha256Ctxt *psha256Ctxt);
 	
 @brief	SHA256 hash initialization
 
@@ -142,12 +142,12 @@ sint8 m2m_crypto_init(tpfAppCryproCb pfAppCryproCb);
 @return		
 	The function returns @ref M2M_SUCCESS for successful operation and a negative value otherwise.
 */
-sint8 m2m_crypto_sha256_hash_init(tstrM2mSha256Ctxt *psha256Ctxt);
+int8_t m2m_crypto_sha256_hash_init(tstrM2mSha256Ctxt *psha256Ctxt);
 
 
 /*!
 @fn	\
-	sint8 m2m_sha256_hash_update(tstrM2mSha256Ctxt *psha256Ctxt, uint8 *pu8Data, uint16 u16DataLength);
+	int8_t m2m_sha256_hash_update(tstrM2mSha256Ctxt *psha256Ctxt, uint8_t *pu8Data, uint16_t u16DataLength);
 	
 @brief	SHA256 hash update
 
@@ -167,12 +167,12 @@ sint8 m2m_crypto_sha256_hash_init(tstrM2mSha256Ctxt *psha256Ctxt);
 	The function returns @ref M2M_SUCCESS for successful operation and a negative value otherwise.
 
 */
-sint8 m2m_crypto_sha256_hash_update(tstrM2mSha256Ctxt *psha256Ctxt, uint8 *pu8Data, uint16 u16DataLength);
+int8_t m2m_crypto_sha256_hash_update(tstrM2mSha256Ctxt *psha256Ctxt, uint8_t *pu8Data, uint16_t u16DataLength);
 
 
 /*!
 @fn	\
-	sint8 m2m_sha256_hash_finish(tstrM2mSha256Ctxt *psha256Ctxt, uint8 *pu8Sha256Digest);
+	int8_t m2m_sha256_hash_finish(tstrM2mSha256Ctxt *psha256Ctxt, uint8_t *pu8Sha256Digest);
 	
 @brief	SHA256 hash finalization
 
@@ -185,13 +185,13 @@ sint8 m2m_crypto_sha256_hash_update(tstrM2mSha256Ctxt *psha256Ctxt, uint8 *pu8Da
 @return		
 	The function returns @ref M2M_SUCCESS for successful operation and a negative value otherwise.
 */
-sint8 m2m_crypto_sha256_hash_finish(tstrM2mSha256Ctxt *psha256Ctxt, uint8 *pu8Sha256Digest);
+int8_t m2m_crypto_sha256_hash_finish(tstrM2mSha256Ctxt *psha256Ctxt, uint8_t *pu8Sha256Digest);
 
 
 /*!
 @fn	\
-	sint8 m2m_rsa_sign_verify(uint8 *pu8N, uint16 u16NSize, uint8 *pu8E, uint16 u16ESize, uint8 *pu8SignedMsgHash, \
-		uint16 u16HashLength, uint8 *pu8RsaSignature);
+	int8_t m2m_rsa_sign_verify(uint8_t *pu8N, uint16_t u16NSize, uint8_t *pu8E, uint16_t u16ESize, uint8_t *pu8SignedMsgHash, \
+		uint16_t u16HashLength, uint8_t *pu8RsaSignature);
 	
 @brief	RSA Signature Verification
 
@@ -223,14 +223,14 @@ sint8 m2m_crypto_sha256_hash_finish(tstrM2mSha256Ctxt *psha256Ctxt, uint8 *pu8Sh
 @return		
 	The function returns @ref M2M_SUCCESS for successful operation and a negative value otherwise.
 */
-sint8 m2m_crypto_rsa_sign_verify(uint8 *pu8N, uint16 u16NSize, uint8 *pu8E, uint16 u16ESize, uint8 *pu8SignedMsgHash, 
-						  uint16 u16HashLength, uint8 *pu8RsaSignature);
+int8_t m2m_crypto_rsa_sign_verify(uint8_t *pu8N, uint16_t u16NSize, uint8_t *pu8E, uint16_t u16ESize, uint8_t *pu8SignedMsgHash, 
+						  uint16_t u16HashLength, uint8_t *pu8RsaSignature);
 
 
 /*!
 @fn	\
-	sint8 m2m_rsa_sign_gen(uint8 *pu8N, uint16 u16NSize, uint8 *pu8d, uint16 u16dSize, uint8 *pu8SignedMsgHash, \
-		uint16 u16HashLength, uint8 *pu8RsaSignature);
+	int8_t m2m_rsa_sign_gen(uint8_t *pu8N, uint16_t u16NSize, uint8_t *pu8d, uint16_t u16dSize, uint8_t *pu8SignedMsgHash, \
+		uint16_t u16HashLength, uint8_t *pu8RsaSignature);
 	
 @brief	RSA Signature Generation
 
@@ -262,8 +262,8 @@ sint8 m2m_crypto_rsa_sign_verify(uint8 *pu8N, uint16 u16NSize, uint8 *pu8E, uint
 @return		
 	The function returns @ref M2M_SUCCESS for successful operation and a negative value otherwise.
 */
-sint8 m2m_crypto_rsa_sign_gen(uint8 *pu8N, uint16 u16NSize, uint8 *pu8d, uint16 u16dSize, uint8 *pu8SignedMsgHash, 
-					   uint16 u16HashLength, uint8 *pu8RsaSignature);
+int8_t m2m_crypto_rsa_sign_gen(uint8_t *pu8N, uint16_t u16NSize, uint8_t *pu8d, uint16_t u16dSize, uint8_t *pu8SignedMsgHash, 
+					   uint16_t u16HashLength, uint8_t *pu8RsaSignature);
 #ifdef __cplusplus
 }
 #endif

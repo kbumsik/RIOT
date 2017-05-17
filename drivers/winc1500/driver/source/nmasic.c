@@ -49,7 +49,7 @@
 #define NMI_INTR_REG_BASE			(NMI_PERIPH_REG_BASE + 0xa00)
 #define NMI_PIN_MUX_0				(NMI_PERIPH_REG_BASE + 0x408)
 #define NMI_INTR_ENABLE				(NMI_INTR_REG_BASE)
-#define GET_UINT32(X,Y)				(X[0+Y] + ((uint32)X[1+Y]<<8) + ((uint32)X[2+Y]<<16) +((uint32)X[3+Y]<<24))
+#define GET_UINT32_t(X,Y)				(X[0+Y] + ((uint32_t)X[1+Y]<<8) + ((uint32_t)X[2+Y]<<16) +((uint32_t)X[3+Y]<<24))
 
 /*SPI and I2C only*/
 #define CORT_HOST_COMM				(0x10)
@@ -62,10 +62,10 @@
 #define TIMEOUT						(0xfffffffful)
 #define WAKUP_TRAILS_TIMEOUT		(4)
 
-sint8 chip_apply_conf(uint32 u32Conf)
+int8_t chip_apply_conf(uint32_t u32Conf)
 {
-	sint8 ret = M2M_SUCCESS;
-	uint32 val32 = u32Conf;
+	int8_t ret = M2M_SUCCESS;
+	uint32_t val32 = u32Conf;
 	
 #if (defined __ENABLE_PMU__) || (defined CONF_WINC_INT_PMU)
 	val32 |= rHAVE_USE_PMU_BIT;
@@ -89,7 +89,7 @@ sint8 chip_apply_conf(uint32 u32Conf)
 	do  {
 		nm_write_reg(rNMI_GP_REG_1, val32);
 		if(val32 != 0) {		
-			uint32 reg = 0;
+			uint32_t reg = 0;
 			ret = nm_read_reg_with_ret(rNMI_GP_REG_1, &reg);
 			if(ret == M2M_SUCCESS) {
 				if(reg == val32)
@@ -104,7 +104,7 @@ sint8 chip_apply_conf(uint32 u32Conf)
 }
 void chip_idle(void)
 {
-	uint32 reg = 0;
+	uint32_t reg = 0;
 	nm_read_reg_with_ret(WAKE_CLK_REG, &reg);
 	if(reg & NBIT1)
 	{
@@ -113,17 +113,17 @@ void chip_idle(void)
 	}
 }
 
-sint8 enable_interrupts(void)
+int8_t enable_interrupts(void)
 {
-	uint32 reg = 0;
-	sint8 ret = M2M_SUCCESS;
+	uint32_t reg = 0;
+	int8_t ret = M2M_SUCCESS;
 	/**
 	interrupt pin mux select
 	**/
 	ret = nm_read_reg_with_ret(NMI_PIN_MUX_0, &reg);
 	if (M2M_SUCCESS != ret) goto ERR1;
 	
-	reg |= ((uint32) 1 << 8);
+	reg |= ((uint32_t) 1 << 8);
 	ret = nm_write_reg(NMI_PIN_MUX_0, reg);
 	if (M2M_SUCCESS != ret) goto ERR1;
 	
@@ -133,16 +133,16 @@ sint8 enable_interrupts(void)
 	ret = nm_read_reg_with_ret(NMI_INTR_ENABLE, &reg);
 	if (M2M_SUCCESS != ret) goto ERR1;
 	
-	reg |= ((uint32) 1 << 16);
+	reg |= ((uint32_t) 1 << 16);
 	ret = nm_write_reg(NMI_INTR_ENABLE, reg);
 	if (M2M_SUCCESS != ret) goto ERR1;
 ERR1:	
 	return ret;
 }
 
-sint8 cpu_start(void) {
-	uint32 reg = 0;
-	sint8 ret;
+int8_t cpu_start(void) {
+	uint32_t reg = 0;
+	int8_t ret;
 
 	/**
 	reset regs
@@ -167,12 +167,12 @@ sint8 cpu_start(void) {
 	return ret;
 }
 
-uint32 nmi_get_chipid(void)
+uint32_t nmi_get_chipid(void)
 {
-	static uint32 chipid = 0;
+	static uint32_t chipid = 0;
 
 	if (chipid == 0) {
-		uint32 rfrevid;
+		uint32_t rfrevid;
 		
 		if((nm_read_reg_with_ret(0x1000, &chipid)) != M2M_SUCCESS) {
 			chipid = 0;
@@ -230,9 +230,9 @@ uint32 nmi_get_chipid(void)
 	return chipid;
 }
 
-uint32 nmi_get_rfrevid(void)
+uint32_t nmi_get_rfrevid(void)
 {
-    uint32 rfrevid;
+    uint32_t rfrevid;
     if((nm_read_reg_with_ret(0x13f4, &rfrevid)) != M2M_SUCCESS) {
         rfrevid = 0;
         return 0;
@@ -254,7 +254,7 @@ void restore_pmu_settings_after_global_reset(void)
 
 void nmi_update_pll(void)
 {
-	uint32 pll;
+	uint32_t pll;
 
 	pll = nm_read_reg(0x1428);
 	pll &= ~0x1ul;
@@ -265,7 +265,7 @@ void nmi_update_pll(void)
 }
 void nmi_set_sys_clk_src_to_xo(void)
 {
-	uint32 val32;
+	uint32_t val32;
 
 	/* Switch system clock source to XO. This will take effect after nmi_update_pll(). */
 	val32 = nm_read_reg(0x141c);
@@ -275,10 +275,10 @@ void nmi_set_sys_clk_src_to_xo(void)
 	/* Do PLL update */
 	nmi_update_pll();
 }
-sint8 chip_sleep(void)
+int8_t chip_sleep(void)
 {
-	uint32 reg;
-	sint8 ret = M2M_SUCCESS;
+	uint32_t reg;
+	int8_t ret = M2M_SUCCESS;
 	
 	while(1)
 	{
@@ -309,10 +309,10 @@ sint8 chip_sleep(void)
 ERR1:
 	return ret;
 }
-sint8 chip_wake(void)
+int8_t chip_wake(void)
 {
-	sint8 ret = M2M_SUCCESS;
-	uint32 reg = 0, clk_status_reg = 0,trials = 0;
+	int8_t ret = M2M_SUCCESS;
+	uint32_t reg = 0, clk_status_reg = 0,trials = 0;
 
 	ret = nm_read_reg_with_ret(HOST_CORT_COMM, &reg);
 	if(ret != M2M_SUCCESS)goto _WAKE_EXIT;
@@ -359,10 +359,10 @@ sint8 chip_wake(void)
 _WAKE_EXIT:
 	return ret;
 }
-sint8 cpu_halt(void)
+int8_t cpu_halt(void)
 {
-	sint8 ret;
-	uint32 reg = 0;
+	int8_t ret;
+	uint32_t reg = 0;
 	ret = nm_read_reg_with_ret(0x1118, &reg);
 	reg |= (1 << 0);
 	ret += nm_write_reg(0x1118, reg);
@@ -374,9 +374,9 @@ sint8 cpu_halt(void)
 	}
 	return ret;
 }
-sint8 chip_reset_and_cpu_halt(void)
+int8_t chip_reset_and_cpu_halt(void)
 {
-	sint8 ret = M2M_SUCCESS;
+	int8_t ret = M2M_SUCCESS;
 
 	/*Wakeup needed only for I2C interface*/
 	ret = chip_wake();
@@ -389,20 +389,20 @@ sint8 chip_reset_and_cpu_halt(void)
 ERR1:
 	return ret;
 }
-sint8 chip_reset(void)
+int8_t chip_reset(void)
 {
-	sint8 ret = M2M_SUCCESS;
+	int8_t ret = M2M_SUCCESS;
 	ret = nm_write_reg(NMI_GLB_RESET_0, 0);
 	nm_bsp_sleep(50);
 	return ret;
 }
 
-sint8 wait_for_bootrom(uint8 arg)
+int8_t wait_for_bootrom(uint8_t arg)
 {
-	sint8 ret = M2M_SUCCESS;
-	uint32 reg = 0, cnt = 0;
-	uint32 u32GpReg1 = 0;
-	uint32 u32DriverVerInfo = M2M_MAKE_VERSION_INFO(M2M_RELEASE_VERSION_MAJOR_NO,\
+	int8_t ret = M2M_SUCCESS;
+	uint32_t reg = 0, cnt = 0;
+	uint32_t u32GpReg1 = 0;
+	uint32_t u32DriverVerInfo = M2M_MAKE_VERSION_INFO(M2M_RELEASE_VERSION_MAJOR_NO,\
 				M2M_RELEASE_VERSION_MINOR_NO, M2M_RELEASE_VERSION_PATCH_NO,\
 				M2M_RELEASE_VERSION_MAJOR_NO, M2M_RELEASE_VERSION_MINOR_NO,\
 				M2M_RELEASE_VERSION_PATCH_NO);
@@ -468,13 +468,13 @@ ERR2:
 	return ret;
 }
 
-sint8 wait_for_firmware_start(uint8 arg)
+int8_t wait_for_firmware_start(uint8_t arg)
 {
-	sint8 ret = M2M_SUCCESS;
-	uint32 reg = 0, cnt = 0;
-	uint32 u32Timeout = TIMEOUT;
-	volatile uint32 regAddress = NMI_STATE_REG;
-	volatile uint32 checkValue = M2M_FINISH_INIT_STATE;
+	int8_t ret = M2M_SUCCESS;
+	uint32_t reg = 0, cnt = 0;
+	uint32_t u32Timeout = TIMEOUT;
+	volatile uint32_t regAddress = NMI_STATE_REG;
+	volatile uint32_t checkValue = M2M_FINISH_INIT_STATE;
 	
 	if((M2M_WIFI_MODE_ATE_HIGH == arg)||(M2M_WIFI_MODE_ATE_LOW == arg)) {
 		regAddress = NMI_REV_REG;
@@ -504,10 +504,10 @@ ERR:
 	return ret;
 }
 
-sint8 chip_deinit(void)
+int8_t chip_deinit(void)
 {
-	uint32 reg = 0;
-	sint8 ret;
+	uint32_t reg = 0;
+	int8_t ret;
 
 	/**
 	stop the firmware, need a re-download
@@ -530,10 +530,10 @@ ERR1:
 
 #ifdef CONF_PERIPH
 
-sint8 set_gpio_dir(uint8 gpio, uint8 dir)
+int8_t set_gpio_dir(uint8_t gpio, uint8_t dir)
 {
-	uint32 val32;
-	sint8 ret;
+	uint32_t val32;
+	int8_t ret;
 
 	ret = nm_read_reg_with_ret(0x20108, &val32);
 	if(ret != M2M_SUCCESS) goto _EXIT;
@@ -549,10 +549,10 @@ sint8 set_gpio_dir(uint8 gpio, uint8 dir)
 _EXIT:
 	return ret;
 }
-sint8 set_gpio_val(uint8 gpio, uint8 val)
+int8_t set_gpio_val(uint8_t gpio, uint8_t val)
 {
-	uint32 val32;
-	sint8 ret;
+	uint32_t val32;
+	int8_t ret;
 
 	ret = nm_read_reg_with_ret(0x20100, &val32);
 	if(ret != M2M_SUCCESS) goto _EXIT;
@@ -569,24 +569,24 @@ _EXIT:
 	return ret;
 }
 
-sint8 get_gpio_val(uint8 gpio, uint8* val)
+int8_t get_gpio_val(uint8_t gpio, uint8_t* val)
 {
-	uint32 val32;
-	sint8 ret;
+	uint32_t val32;
+	int8_t ret;
 
 	ret = nm_read_reg_with_ret(0x20104, &val32);
 	if(ret != M2M_SUCCESS) goto _EXIT;
 
-	*val = (uint8)((val32 >> gpio) & 0x01);
+	*val = (uint8_t)((val32 >> gpio) & 0x01);
 
 _EXIT:
 	return ret;
 }
 
-sint8 pullup_ctrl(uint32 pinmask, uint8 enable)
+int8_t pullup_ctrl(uint32_t pinmask, uint8_t enable)
 {
-	sint8 s8Ret;
-	uint32 val32;
+	int8_t s8Ret;
+	uint32_t val32;
 	s8Ret = nm_read_reg_with_ret(0x142c, &val32);
 	if(s8Ret != M2M_SUCCESS) {
 		M2M_ERR("[pullup_ctrl]: failed to read\n");
@@ -607,17 +607,17 @@ _EXIT:
 }
 #endif /* CONF_PERIPH */
 
-sint8 nmi_get_otp_mac_address(uint8 *pu8MacAddr,  uint8 * pu8IsValid)
+int8_t nmi_get_otp_mac_address(uint8_t *pu8MacAddr,  uint8_t * pu8IsValid)
 {
-	sint8 ret;
-	uint32	u32RegValue;
-	uint8	mac[6];
+	int8_t ret;
+	uint32_t	u32RegValue;
+	uint8_t	mac[6];
 	tstrGpRegs strgp = {0};
 
 	ret = nm_read_reg_with_ret(rNMI_GP_REG_2, &u32RegValue);
 	if(ret != M2M_SUCCESS) goto _EXIT_ERR;
 
-	ret = nm_read_block(u32RegValue|0x30000,(uint8*)&strgp,sizeof(tstrGpRegs));
+	ret = nm_read_block(u32RegValue|0x30000,(uint8_t*)&strgp,sizeof(tstrGpRegs));
 	if(ret != M2M_SUCCESS) goto _EXIT_ERR;
 	u32RegValue = strgp.u32Mac_efuse_mib;
 
@@ -639,17 +639,17 @@ _EXIT_ERR:
 	return ret;
 }
 
-sint8 nmi_get_mac_address(uint8 *pu8MacAddr)
+int8_t nmi_get_mac_address(uint8_t *pu8MacAddr)
 {
-	sint8 ret;
-	uint32	u32RegValue;
-	uint8	mac[6];
+	int8_t ret;
+	uint32_t	u32RegValue;
+	uint8_t	mac[6];
 	tstrGpRegs strgp = {0};
 
 	ret = nm_read_reg_with_ret(rNMI_GP_REG_2, &u32RegValue);
 	if(ret != M2M_SUCCESS) goto _EXIT_ERR;
 
-	ret = nm_read_block(u32RegValue|0x30000,(uint8*)&strgp,sizeof(tstrGpRegs));
+	ret = nm_read_block(u32RegValue|0x30000,(uint8_t*)&strgp,sizeof(tstrGpRegs));
 	if(ret != M2M_SUCCESS) goto _EXIT_ERR;
 	u32RegValue = strgp.u32Mac_efuse_mib;
 

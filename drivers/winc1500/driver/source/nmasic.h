@@ -84,8 +84,8 @@
 #define rHAVE_RESERVED1_BIT     	(NBIT8)
 
 typedef struct{
-	uint32 u32Mac_efuse_mib;
-	uint32 u32Firmware_Ota_rev;
+	uint32_t u32Mac_efuse_mib;
+	uint32_t u32Firmware_Ota_rev;
 }tstrGpRegs;
 
 #ifdef __cplusplus
@@ -96,17 +96,17 @@ typedef struct{
 *	@fn		cpu_halt
 *	@brief	
 */
-sint8 cpu_halt(void);
+int8_t cpu_halt(void);
 /*
 *	@fn		chip_sleep
 *	@brief	
 */
-sint8 chip_sleep(void);
+int8_t chip_sleep(void);
 /*
 *	@fn		chip_wake
 *	@brief	
 */
-sint8 chip_wake(void);
+int8_t chip_wake(void);
 /*
 *	@fn		chip_idle
 *	@brief	
@@ -116,22 +116,22 @@ void chip_idle(void);
 *	@fn		enable_interrupts
 *	@brief	
 */
-sint8 enable_interrupts(void);
+int8_t enable_interrupts(void);
 /*
 *	@fn		cpu_start	
 *	@brief	
 */
-sint8 cpu_start(void);
+int8_t cpu_start(void);
 /*
 *	@fn		nmi_get_chipid
 *	@brief	
 */
-uint32 nmi_get_chipid(void);
+uint32_t nmi_get_chipid(void);
 /*
 *	@fn		nmi_get_rfrevid
 *	@brief	
 */
-uint32 nmi_get_rfrevid(void);
+uint32_t nmi_get_rfrevid(void);
 /*
 *	@fn		restore_pmu_settings_after_global_reset
 *	@brief	
@@ -151,62 +151,62 @@ void nmi_set_sys_clk_src_to_xo(void);
 *	@fn		chip_reset
 *	@brief	
 */
-sint8 chip_reset(void);
+int8_t chip_reset(void);
 /*
 *	@fn		wait_for_bootrom
 *	@brief	
 */
-sint8 wait_for_bootrom(uint8);
+int8_t wait_for_bootrom(uint8_t);
 /*
 *	@fn		wait_for_firmware_start
 *	@brief	
 */
-sint8 wait_for_firmware_start(uint8);
+int8_t wait_for_firmware_start(uint8_t);
 /*
 *	@fn		chip_deinit
 *	@brief	
 */
-sint8 chip_deinit(void);
+int8_t chip_deinit(void);
 /*
 *	@fn		chip_reset_and_cpu_halt
 *	@brief	
 */
-sint8 chip_reset_and_cpu_halt(void);
+int8_t chip_reset_and_cpu_halt(void);
 /*
 *	@fn		set_gpio_dir
 *	@brief	
 */
-sint8 set_gpio_dir(uint8 gpio, uint8 dir);
+int8_t set_gpio_dir(uint8_t gpio, uint8_t dir);
 /*
 *	@fn		set_gpio_val
 *	@brief	
 */
-sint8 set_gpio_val(uint8 gpio, uint8 val);
+int8_t set_gpio_val(uint8_t gpio, uint8_t val);
 /*
 *	@fn		get_gpio_val
 *	@brief	
 */
-sint8 get_gpio_val(uint8 gpio, uint8* val);
+int8_t get_gpio_val(uint8_t gpio, uint8_t* val);
 /*
 *	@fn		pullup_ctrl
 *	@brief	
 */
-sint8 pullup_ctrl(uint32 pinmask, uint8 enable);
+int8_t pullup_ctrl(uint32_t pinmask, uint8_t enable);
 /*
 *	@fn		nmi_get_otp_mac_address
 *	@brief	
 */
-sint8 nmi_get_otp_mac_address(uint8 *pu8MacAddr, uint8 * pu8IsValid);
+int8_t nmi_get_otp_mac_address(uint8_t *pu8MacAddr, uint8_t * pu8IsValid);
 /*
 *	@fn		nmi_get_mac_address
 *	@brief	
 */
-sint8 nmi_get_mac_address(uint8 *pu8MacAddr);
+int8_t nmi_get_mac_address(uint8_t *pu8MacAddr);
 /*
 *	@fn		chip_apply_conf
 *	@brief	
 */
-sint8 chip_apply_conf(uint32 u32conf);
+int8_t chip_apply_conf(uint32_t u32conf);
 
 #ifdef __cplusplus
 	 }

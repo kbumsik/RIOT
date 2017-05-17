@@ -63,7 +63,7 @@ static tpfOtaNotifCb  gpfOtaNotifCb = NULL;
 FUNCTION PROTOTYPES
 *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*/
 /**
-*	@fn			m2m_wifi_cb(uint8 u8OpCode, uint16 u16DataSize, uint32 u32Addr, uint8 grp)
+*	@fn			m2m_wifi_cb(uint8_t u8OpCode, uint16_t u16DataSize, uint32_t u32Addr, uint8_t grp)
 *	@brief		WiFi call back function
 *	@param [in]	u8OpCode
 *					HIF Opcode type.
@@ -77,14 +77,14 @@ FUNCTION PROTOTYPES
 *	@date
 *	@version	1.0
 */
-static void m2m_ota_cb(uint8 u8OpCode, uint16 u16DataSize, uint32 u32Addr)
+static void m2m_ota_cb(uint8_t u8OpCode, uint16_t u16DataSize, uint32_t u32Addr)
 {
-	sint8 ret = M2M_SUCCESS;
+	int8_t ret = M2M_SUCCESS;
 	if(u8OpCode == M2M_OTA_RESP_NOTIF_UPDATE_INFO)
 	{
 		tstrOtaUpdateInfo strOtaUpdateInfo;
-		m2m_memset((uint8*)&strOtaUpdateInfo,0,sizeof(tstrOtaUpdateInfo));
-		ret = hif_receive(u32Addr,(uint8*)&strOtaUpdateInfo,sizeof(tstrOtaUpdateInfo),0);
+		m2m_memset((uint8_t*)&strOtaUpdateInfo,0,sizeof(tstrOtaUpdateInfo));
+		ret = hif_receive(u32Addr,(uint8_t*)&strOtaUpdateInfo,sizeof(tstrOtaUpdateInfo),0);
 		if(ret == M2M_SUCCESS)
 		{
 			if(gpfOtaNotifCb)
@@ -94,8 +94,8 @@ static void m2m_ota_cb(uint8 u8OpCode, uint16 u16DataSize, uint32 u32Addr)
 	else if (u8OpCode == M2M_OTA_RESP_UPDATE_STATUS)
 	{
 		tstrOtaUpdateStatusResp strOtaUpdateStatusResp;
-		m2m_memset((uint8*)&strOtaUpdateStatusResp,0,sizeof(tstrOtaUpdateStatusResp));
-		ret = hif_receive(u32Addr, (uint8*) &strOtaUpdateStatusResp,sizeof(tstrOtaUpdateStatusResp), 0);
+		m2m_memset((uint8_t*)&strOtaUpdateStatusResp,0,sizeof(tstrOtaUpdateStatusResp));
+		ret = hif_receive(u32Addr, (uint8_t*) &strOtaUpdateStatusResp,sizeof(tstrOtaUpdateStatusResp), 0);
 		if(ret == M2M_SUCCESS)
 		{
 			if(gpfOtaUpdateCb)
@@ -110,7 +110,7 @@ static void m2m_ota_cb(uint8 u8OpCode, uint16 u16DataSize, uint32 u32Addr)
 }
 /*!
 @fn	\
-	NMI_API sint8  m2m_ota_init(tpfOtaUpdateCb pfOtaUpdateCb, tpfOtaNotifCb pfOtaNotifCb);
+	NMI_API int8_t  m2m_ota_init(tpfOtaUpdateCb pfOtaUpdateCb, tpfOtaNotifCb pfOtaNotifCb);
 
 @brief
 	Initialize the OTA layer.
@@ -124,9 +124,9 @@ static void m2m_ota_cb(uint8 u8OpCode, uint16 u16DataSize, uint32 u32Addr)
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 */
-NMI_API sint8  m2m_ota_init(tpfOtaUpdateCb pfOtaUpdateCb, tpfOtaNotifCb pfOtaNotifCb)
+NMI_API int8_t  m2m_ota_init(tpfOtaUpdateCb pfOtaUpdateCb, tpfOtaNotifCb pfOtaNotifCb)
 {
-	sint8 ret = M2M_SUCCESS;
+	int8_t ret = M2M_SUCCESS;
 
 	if(pfOtaUpdateCb){
 		gpfOtaUpdateCb = pfOtaUpdateCb;
@@ -145,7 +145,7 @@ NMI_API sint8  m2m_ota_init(tpfOtaUpdateCb pfOtaUpdateCb, tpfOtaNotifCb pfOtaNot
 }
 /*!
 @fn	\
-	NMI_API sint8  m2m_ota_notif_set_url(uint8 * u8Url);
+	NMI_API int8_t  m2m_ota_notif_set_url(uint8_t * u8Url);
 
 @brief
 	Set the OTA url
@@ -156,10 +156,10 @@ NMI_API sint8  m2m_ota_init(tpfOtaUpdateCb pfOtaUpdateCb, tpfOtaNotifCb pfOtaNot
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 */
-NMI_API sint8  m2m_ota_notif_set_url(uint8 * u8Url)
+NMI_API int8_t  m2m_ota_notif_set_url(uint8_t * u8Url)
 {
-	sint8 ret = M2M_SUCCESS;
-	uint16 u16UrlSize = m2m_strlen(u8Url) + 1;
+	int8_t ret = M2M_SUCCESS;
+	uint16_t u16UrlSize = m2m_strlen(u8Url) + 1;
 	/*Todo: we may change it to data pkt but we need to give it higer priority
 			but the priorty is not implemnted yet in data pkt
 	*/
@@ -170,7 +170,7 @@ NMI_API sint8  m2m_ota_notif_set_url(uint8 * u8Url)
 
 /*!
 @fn	\
-	NMI_API sint8  m2m_ota_notif_check_for_update(void);
+	NMI_API int8_t  m2m_ota_notif_check_for_update(void);
 
 @brief
 	check for ota update
@@ -178,16 +178,16 @@ NMI_API sint8  m2m_ota_notif_set_url(uint8 * u8Url)
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 */
-NMI_API sint8  m2m_ota_notif_check_for_update(void)
+NMI_API int8_t  m2m_ota_notif_check_for_update(void)
 {
-	sint8 ret = M2M_SUCCESS;
+	int8_t ret = M2M_SUCCESS;
 	ret = hif_send(M2M_REQ_GROUP_OTA,M2M_OTA_REQ_NOTIF_CHECK_FOR_UPDATE,NULL,0,NULL,0,0);
 	return ret;
 }
 
 /*!
 @fn	\
-	NMI_API sint8 m2m_ota_notif_sched(uint32 u32Period);
+	NMI_API int8_t m2m_ota_notif_sched(uint32_t u32Period);
 
 @brief
 	Schedule OTA update
@@ -198,16 +198,16 @@ NMI_API sint8  m2m_ota_notif_check_for_update(void)
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 */
-NMI_API sint8 m2m_ota_notif_sched(uint32 u32Period)
+NMI_API int8_t m2m_ota_notif_sched(uint32_t u32Period)
 {
-	sint8 ret = M2M_SUCCESS;
+	int8_t ret = M2M_SUCCESS;
 	ret = hif_send(M2M_REQ_GROUP_OTA,M2M_OTA_REQ_NOTIF_CHECK_FOR_UPDATE,NULL,0,NULL,0,0);
 	return ret;
 }
 
 /*!
 @fn	\
-	NMI_API sint8 m2m_ota_start_update(uint8 * u8DownloadUrl);
+	NMI_API int8_t m2m_ota_start_update(uint8_t * u8DownloadUrl);
 
 @brief
 	Request OTA start update using the downloaded url
@@ -219,10 +219,10 @@ NMI_API sint8 m2m_ota_notif_sched(uint32 u32Period)
 	The function SHALL return 0 for success and a negative value otherwise.
 
 */
-NMI_API sint8 m2m_ota_start_update(uint8 * u8DownloadUrl)
+NMI_API int8_t m2m_ota_start_update(uint8_t * u8DownloadUrl)
 {
-	sint8 ret = M2M_SUCCESS;
-	uint16 u16DurlSize = m2m_strlen(u8DownloadUrl) + 1;
+	int8_t ret = M2M_SUCCESS;
+	uint16_t u16DurlSize = m2m_strlen(u8DownloadUrl) + 1;
 	/*Todo: we may change it to data pkt but we need to give it higer priority
 			but the priorty is not implemnted yet in data pkt
 	*/
@@ -231,7 +231,7 @@ NMI_API sint8 m2m_ota_start_update(uint8 * u8DownloadUrl)
 }
 /*!
 @fn	\
-	NMI_API sint8 m2m_ota_start_update_crt(uint8 * u8DownloadUrl);
+	NMI_API int8_t m2m_ota_start_update_crt(uint8_t * u8DownloadUrl);
 
 @brief
 	Request OTA start for the Cortus app image.
@@ -243,10 +243,10 @@ NMI_API sint8 m2m_ota_start_update(uint8 * u8DownloadUrl)
 	The function SHALL return 0 for success and a negative value otherwise.
 
 */
-NMI_API sint8 m2m_ota_start_update_crt(uint8 * u8DownloadUrl)
+NMI_API int8_t m2m_ota_start_update_crt(uint8_t * u8DownloadUrl)
 {
-	sint8 ret = M2M_SUCCESS;
-	uint16 u16DurlSize = m2m_strlen(u8DownloadUrl) + 1;
+	int8_t ret = M2M_SUCCESS;
+	uint16_t u16DurlSize = m2m_strlen(u8DownloadUrl) + 1;
 	ret = hif_send(M2M_REQ_GROUP_OTA,M2M_OTA_REQ_START_CRT_UPDATE,u8DownloadUrl,u16DurlSize,NULL,0,0);
 	return ret;
 }
@@ -254,7 +254,7 @@ NMI_API sint8 m2m_ota_start_update_crt(uint8 * u8DownloadUrl)
 
 /*!
 @fn	\
-	NMI_API sint8 m2m_ota_rollback(void);
+	NMI_API int8_t m2m_ota_rollback(void);
 
 @brief
 	Request OTA Rollback image
@@ -262,15 +262,15 @@ NMI_API sint8 m2m_ota_start_update_crt(uint8 * u8DownloadUrl)
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 */
-NMI_API sint8 m2m_ota_rollback(void)
+NMI_API int8_t m2m_ota_rollback(void)
 {
-	sint8 ret = M2M_SUCCESS;
+	int8_t ret = M2M_SUCCESS;
 	ret = hif_send(M2M_REQ_GROUP_OTA,M2M_OTA_REQ_ROLLBACK_FW,NULL,0,NULL,0,0);
 	return ret;
 }
 /*!
 @fn	\
-	NMI_API sint8 m2m_ota_rollback_crt(void);
+	NMI_API int8_t m2m_ota_rollback_crt(void);
 
 @brief
 	Request Cortus application OTA Rollback image
@@ -278,16 +278,16 @@ NMI_API sint8 m2m_ota_rollback(void)
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 */
-NMI_API sint8 m2m_ota_rollback_crt(void)
+NMI_API int8_t m2m_ota_rollback_crt(void)
 {
-	sint8 ret = M2M_SUCCESS;
+	int8_t ret = M2M_SUCCESS;
 	ret = hif_send(M2M_REQ_GROUP_OTA,M2M_OTA_REQ_ROLLBACK_CRT,NULL,0,NULL,0,0);
 	return ret;
 }
 
 /*!
 @fn	\
-	NMI_API sint8 m2m_ota_abort(void);
+	NMI_API int8_t m2m_ota_abort(void);
 
 @brief
 	Request OTA Abort
@@ -295,9 +295,9 @@ NMI_API sint8 m2m_ota_rollback_crt(void)
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 */
-NMI_API sint8 m2m_ota_abort(void)
+NMI_API int8_t m2m_ota_abort(void)
 {
-	sint8 ret = M2M_SUCCESS;
+	int8_t ret = M2M_SUCCESS;
 	ret = hif_send(M2M_REQ_GROUP_OTA,M2M_OTA_REQ_ABORT,NULL,0,NULL,0,0);
 	return ret;
 }
@@ -305,7 +305,7 @@ NMI_API sint8 m2m_ota_abort(void)
 
 /*!
 @fn	\
-	NMI_API sint8 m2m_ota_switch_firmware(void);
+	NMI_API int8_t m2m_ota_switch_firmware(void);
 
 @brief
 	Switch to the upgraded Firmware
@@ -313,15 +313,15 @@ NMI_API sint8 m2m_ota_abort(void)
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 */
-NMI_API sint8 m2m_ota_switch_firmware(void)
+NMI_API int8_t m2m_ota_switch_firmware(void)
 {
-	sint8 ret = M2M_SUCCESS;
+	int8_t ret = M2M_SUCCESS;
 	ret = hif_send(M2M_REQ_GROUP_OTA,M2M_OTA_REQ_SWITCH_FIRMWARE,NULL,0,NULL,0,0);
 	return ret;
 }
 /*!
 @fn	\
-	NMI_API sint8 m2m_ota_switch_crt(void);
+	NMI_API int8_t m2m_ota_switch_crt(void);
 
 @brief
 	Switch to the upgraded cortus application.
@@ -329,16 +329,16 @@ NMI_API sint8 m2m_ota_switch_firmware(void)
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 */
-NMI_API sint8 m2m_ota_switch_crt(void)
+NMI_API int8_t m2m_ota_switch_crt(void)
 {
-	sint8 ret = M2M_SUCCESS;
+	int8_t ret = M2M_SUCCESS;
 	ret = hif_send(M2M_REQ_GROUP_OTA,M2M_OTA_REQ_SWITCH_CRT_IMG,NULL,0,NULL,0,0);
 	return ret;
 }
 
 /*!
 @fn	\
-	NMI_API sint8 m2m_ota_get_firmware_version(tstrM2mRev * pstrRev);
+	NMI_API int8_t m2m_ota_get_firmware_version(tstrM2mRev * pstrRev);
 
 @brief
 	Get the OTA Firmware version.
@@ -346,9 +346,9 @@ NMI_API sint8 m2m_ota_switch_crt(void)
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 */
-NMI_API sint8 m2m_ota_get_firmware_version(tstrM2mRev * pstrRev)
+NMI_API int8_t m2m_ota_get_firmware_version(tstrM2mRev * pstrRev)
 {
-	sint8 ret = M2M_SUCCESS;
+	int8_t ret = M2M_SUCCESS;
 	ret = hif_chip_wake();
 	if(ret == M2M_SUCCESS)
 	{
@@ -359,12 +359,12 @@ NMI_API sint8 m2m_ota_get_firmware_version(tstrM2mRev * pstrRev)
 }
 #if 0
 #define M2M_OTA_FILE	"../../../m2m_ota.dat"
-NMI_API sint8 m2m_ota_test(void)
+NMI_API int8_t m2m_ota_test(void)
 {
-	uint32 page  = 0;
-	uint8 buffer[1500];
-	uint32 u32Sz = 0;
-	sint8 ret = M2M_SUCCESS;
+	uint32_t page  = 0;
+	uint8_t buffer[1500];
+	uint32_t u32Sz = 0;
+	int8_t ret = M2M_SUCCESS;
 	FILE *fp =NULL;
 	fp = fopen(M2M_OTA_FILE,"rb");
 	if(fp)
@@ -392,7 +392,7 @@ NMI_API sint8 m2m_ota_test(void)
 			}
 			printf("page %d\n", (int)page);
 			fread(buffer,page,1,fp);
-			ret = hif_send(M2M_REQ_GROUP_OTA,M2M_OTA_REQ_TEST|M2M_REQ_DATA_PKT,NULL,0,(uint8*)&buffer,page,0);
+			ret = hif_send(M2M_REQ_GROUP_OTA,M2M_OTA_REQ_TEST|M2M_REQ_DATA_PKT,NULL,0,(uint8_t*)&buffer,page,0);
 			if(ret != M2M_SUCCESS)
 			{
 				M2M_ERR("\n");

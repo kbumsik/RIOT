@@ -94,9 +94,9 @@
 #define DATA_PKT_SZ_8K			(8 * 1024)
 #define DATA_PKT_SZ				DATA_PKT_SZ_8K
 
-static uint8 	gu8Crc_off	=   0;
+static uint8_t 	gu8Crc_off	=   0;
 
-static sint8 nmi_spi_read(uint8* b, uint16 sz)
+static int8_t nmi_spi_read(uint8_t* b, uint16_t sz)
 {
 	tstrNmSpiRw spi;
 	spi.pu8InBuf = NULL;
@@ -105,7 +105,7 @@ static sint8 nmi_spi_read(uint8* b, uint16 sz)
 	return nm_bus_ioctl(NM_BUS_IOCTL_RW, &spi);
 }
 
-static sint8 nmi_spi_write(uint8* b, uint16 sz)
+static int8_t nmi_spi_write(uint8_t* b, uint16_t sz)
 {
 	tstrNmSpiRw spi;
 	spi.pu8InBuf = b;
@@ -114,7 +114,7 @@ static sint8 nmi_spi_write(uint8* b, uint16 sz)
 	return nm_bus_ioctl(NM_BUS_IOCTL_RW, &spi);
 }
 #ifndef USE_OLD_SPI_SW
-static sint8 nmi_spi_rw(uint8 *bin,uint8* bout,uint16 sz)
+static int8_t nmi_spi_rw(uint8_t *bin,uint8_t* bout,uint16_t sz)
 {
 	tstrNmSpiRw spi;
 	spi.pu8InBuf = bin;
@@ -129,7 +129,7 @@ static sint8 nmi_spi_rw(uint8 *bin,uint8* bout,uint16 sz)
 
 ********************************************/
 
-static const uint8 crc7_syndrome_table[256] = {
+static const uint8_t crc7_syndrome_table[256] = {
 	0x00, 0x09, 0x12, 0x1b, 0x24, 0x2d, 0x36, 0x3f,
 	0x48, 0x41, 0x5a, 0x53, 0x6c, 0x65, 0x7e, 0x77,
 	0x19, 0x10, 0x0b, 0x02, 0x3d, 0x34, 0x2f, 0x26,
@@ -165,12 +165,12 @@ static const uint8 crc7_syndrome_table[256] = {
 };
 
 
-static uint8 crc7_byte(uint8 crc, uint8 data)
+static uint8_t crc7_byte(uint8_t crc, uint8_t data)
 {
 	return crc7_syndrome_table[(crc << 1) ^ data];
 }
 
-static uint8 crc7(uint8 crc, const uint8 *buffer, uint32 len)
+static uint8_t crc7(uint8_t crc, const uint8_t *buffer, uint32_t len)
 {
 	while (len--)
 		crc = crc7_byte(crc, *buffer++);
@@ -202,24 +202,24 @@ static uint8 crc7(uint8 crc, const uint8 *buffer, uint32 len)
 #define DATA_PKT_SZ_8K			(8 * 1024)
 #define DATA_PKT_SZ				DATA_PKT_SZ_8K
 
-static sint8 spi_cmd(uint8 cmd, uint32 adr, uint32 u32data, uint32 sz,uint8 clockless)
+static int8_t spi_cmd(uint8_t cmd, uint32_t adr, uint32_t u32data, uint32_t sz,uint8_t clockless)
 {
-	uint8 bc[9];
-	uint8 len = 5;
-	sint8 result = N_OK;
+	uint8_t bc[9];
+	uint8_t len = 5;
+	int8_t result = N_OK;
 
 	bc[0] = cmd;
 	switch (cmd) {
 	case CMD_SINGLE_READ:				/* single word (4 bytes) read */
-		bc[1] = (uint8)(adr >> 16);
-		bc[2] = (uint8)(adr >> 8);
-		bc[3] = (uint8)adr;
+		bc[1] = (uint8_t)(adr >> 16);
+		bc[2] = (uint8_t)(adr >> 8);
+		bc[3] = (uint8_t)adr;
 		len = 5;
 		break;
 	case CMD_INTERNAL_READ:			/* internal register read */
-		bc[1] = (uint8)(adr >> 8);
+		bc[1] = (uint8_t)(adr >> 8);
 		if(clockless)  bc[1] |= (1 << 7);
-		bc[2] = (uint8)adr;
+		bc[2] = (uint8_t)adr;
 		bc[3] = 0x00;
 		len = 5;
 		break;
@@ -243,41 +243,41 @@ static sint8 spi_cmd(uint8 cmd, uint32 adr, uint32 u32data, uint32 sz,uint8 cloc
 		break;
 	case CMD_DMA_WRITE:					/* dma write */
 	case CMD_DMA_READ:					/* dma read */
-		bc[1] = (uint8)(adr >> 16);
-		bc[2] = (uint8)(adr >> 8);
-		bc[3] = (uint8)adr;
-		bc[4] = (uint8)(sz >> 8);
-		bc[5] = (uint8)(sz);
+		bc[1] = (uint8_t)(adr >> 16);
+		bc[2] = (uint8_t)(adr >> 8);
+		bc[3] = (uint8_t)adr;
+		bc[4] = (uint8_t)(sz >> 8);
+		bc[5] = (uint8_t)(sz);
 		len = 7;
 		break;
 	case CMD_DMA_EXT_WRITE:		/* dma extended write */
 	case CMD_DMA_EXT_READ:			/* dma extended read */
-		bc[1] = (uint8)(adr >> 16);
-		bc[2] = (uint8)(adr >> 8);
-		bc[3] = (uint8)adr;
-		bc[4] = (uint8)(sz >> 16);
-		bc[5] = (uint8)(sz >> 8);
-		bc[6] = (uint8)(sz);
+		bc[1] = (uint8_t)(adr >> 16);
+		bc[2] = (uint8_t)(adr >> 8);
+		bc[3] = (uint8_t)adr;
+		bc[4] = (uint8_t)(sz >> 16);
+		bc[5] = (uint8_t)(sz >> 8);
+		bc[6] = (uint8_t)(sz);
 		len = 8;
 		break;
 	case CMD_INTERNAL_WRITE:		/* internal register write */
-		bc[1] = (uint8)(adr >> 8);
+		bc[1] = (uint8_t)(adr >> 8);
 		if(clockless)  bc[1] |= (1 << 7);
-		bc[2] = (uint8)(adr);
-		bc[3] = (uint8)(u32data >> 24);
-		bc[4] = (uint8)(u32data >> 16);
-		bc[5] = (uint8)(u32data >> 8);
-		bc[6] = (uint8)(u32data);
+		bc[2] = (uint8_t)(adr);
+		bc[3] = (uint8_t)(u32data >> 24);
+		bc[4] = (uint8_t)(u32data >> 16);
+		bc[5] = (uint8_t)(u32data >> 8);
+		bc[6] = (uint8_t)(u32data);
 		len = 8;
 		break;
 	case CMD_SINGLE_WRITE:			/* single word write */
-		bc[1] = (uint8)(adr >> 16);
-		bc[2] = (uint8)(adr >> 8);
-		bc[3] = (uint8)(adr);
-		bc[4] = (uint8)(u32data >> 24);
-		bc[5] = (uint8)(u32data >> 16);
-		bc[6] = (uint8)(u32data >> 8);
-		bc[7] = (uint8)(u32data);
+		bc[1] = (uint8_t)(adr >> 16);
+		bc[2] = (uint8_t)(adr >> 8);
+		bc[3] = (uint8_t)(adr);
+		bc[4] = (uint8_t)(u32data >> 24);
+		bc[5] = (uint8_t)(u32data >> 16);
+		bc[6] = (uint8_t)(u32data >> 8);
+		bc[7] = (uint8_t)(u32data);
 		len = 9;
 		break;
 	default:
@@ -287,7 +287,7 @@ static sint8 spi_cmd(uint8 cmd, uint32 adr, uint32 u32data, uint32 sz,uint8 cloc
 
 	if (result) {
 		if (!gu8Crc_off)
-			bc[len-1] = (crc7(0x7f, (const uint8 *)&bc[0], len-1)) << 1;
+			bc[len-1] = (crc7(0x7f, (const uint8_t *)&bc[0], len-1)) << 1;
 		else
 			len-=1;
 
@@ -300,11 +300,11 @@ static sint8 spi_cmd(uint8 cmd, uint32 adr, uint32 u32data, uint32 sz,uint8 cloc
 	return result;
 }
 
-static sint8 spi_data_rsp(uint8 cmd)
+static int8_t spi_data_rsp(uint8_t cmd)
 {
-	uint8 len;
-	uint8 rsp[3];
-	sint8 result = N_OK;
+	uint8_t len;
+	uint8_t rsp[3];
+	int8_t result = N_OK;
 
     if (!gu8Crc_off)
 		len = 2;
@@ -328,11 +328,11 @@ _fail_:
 	return result;
 }
 
-static sint8 spi_cmd_rsp(uint8 cmd)
+static int8_t spi_cmd_rsp(uint8_t cmd)
 {
-	uint8 rsp;
-	sint8 result = N_OK;
-	sint8 s8RetryCnt;
+	uint8_t rsp;
+	int8_t result = N_OK;
+	int8_t s8RetryCnt;
 
 	/**
 		Command/Control response
@@ -741,12 +741,12 @@ _error_:
 	return result;
 }
 #endif
-static sint8 spi_data_read(uint8 *b, uint16 sz,uint8 clockless)
+static int8_t spi_data_read(uint8_t *b, uint16_t sz,uint8_t clockless)
 {
-	sint16 retry, ix, nbytes;
-	sint8 result = N_OK;
-	uint8 crc[2];
-	uint8 rsp;
+	int16_t retry, ix, nbytes;
+	int8_t result = N_OK;
+	uint8_t crc[2];
+	uint8_t rsp;
 
 	/**
 		Data
@@ -810,13 +810,13 @@ static sint8 spi_data_read(uint8 *b, uint16 sz,uint8 clockless)
 	return result;
 }
 
-static sint8 spi_data_write(uint8 *b, uint16 sz)
+static int8_t spi_data_write(uint8_t *b, uint16_t sz)
 {
-	sint16 ix;
-	uint16 nbytes;
-	sint8 result = 1;
-	uint8 cmd, order, crc[2] = {0};
-	//uint8 rsp;
+	int16_t ix;
+	uint16_t nbytes;
+	int8_t result = 1;
+	uint8_t cmd, order, crc[2] = {0};
+	//uint8_t rsp;
 
 	/**
 		Data
@@ -890,12 +890,12 @@ static sint8 spi_data_write(uint8 *b, uint16 sz)
 
 ********************************************/
 
-static sint8 spi_write_reg(uint32 addr, uint32 u32data)
+static int8_t spi_write_reg(uint32_t addr, uint32_t u32data)
 {
-	uint8 retry = SPI_RETRY_COUNT;
-	sint8 result = N_OK;
-	uint8 cmd = CMD_SINGLE_WRITE;
-	uint8 clockless = 0;
+	uint8_t retry = SPI_RETRY_COUNT;
+	int8_t result = N_OK;
+	uint8_t cmd = CMD_SINGLE_WRITE;
+	uint8_t clockless = 0;
 	
 _RETRY_:	
 	if (addr <= 0x30)
@@ -927,7 +927,7 @@ _RETRY_:
 
 #else
 
-	result = spi_cmd_complete(cmd, addr, (uint8*)&u32data, 4, clockless);
+	result = spi_cmd_complete(cmd, addr, (uint8_t*)&u32data, 4, clockless);
 	if (result != N_OK) {
 		M2M_ERR( "[nmi spi]: Failed cmd, write reg (%08x)...\n", addr);
 		goto _FAIL_;
@@ -949,11 +949,11 @@ _FAIL_:
 	return result;
 }
 
-static sint8 nm_spi_write(uint32 addr, uint8 *buf, uint16 size)
+static int8_t nm_spi_write(uint32_t addr, uint8_t *buf, uint16_t size)
 {
-	sint8 result;
-	uint8 retry = SPI_RETRY_COUNT;
-	uint8 cmd = CMD_DMA_EXT_WRITE;
+	int8_t result;
+	uint8_t retry = SPI_RETRY_COUNT;
+	uint8_t cmd = CMD_DMA_EXT_WRITE;
 
 
 _RETRY_:
@@ -1017,13 +1017,13 @@ _FAIL_:
 	return result;
 }
 
-static sint8 spi_read_reg(uint32 addr, uint32 *u32data)
+static int8_t spi_read_reg(uint32_t addr, uint32_t *u32data)
 {
-	uint8 retry = SPI_RETRY_COUNT;
-	sint8 result = N_OK;
-	uint8 cmd = CMD_SINGLE_READ;
-	uint8 tmp[4];
-	uint8 clockless = 0;
+	uint8_t retry = SPI_RETRY_COUNT;
+	int8_t result = N_OK;
+	uint8_t cmd = CMD_SINGLE_READ;
+	uint8_t tmp[4];
+	uint8_t clockless = 0;
 
 _RETRY_:
 
@@ -1061,7 +1061,7 @@ _RETRY_:
 		goto _FAIL_;
 	}
 #else
-	result = spi_cmd_complete(cmd, addr, (uint8*)&tmp[0], 4, clockless);
+	result = spi_cmd_complete(cmd, addr, (uint8_t*)&tmp[0], 4, clockless);
 	if (result != N_OK) {
 		M2M_ERR( "[nmi spi]: Failed cmd, read reg (%08x)...\n", addr);
 		goto _FAIL_;
@@ -1070,9 +1070,9 @@ _RETRY_:
 #endif
 
 	*u32data = tmp[0] |
-		((uint32)tmp[1] << 8) |
-		((uint32)tmp[2] << 16) |
-		((uint32)tmp[3] << 24);
+		((uint32_t)tmp[1] << 8) |
+		((uint32_t)tmp[2] << 16) |
+		((uint32_t)tmp[3] << 24);
 		
 _FAIL_:
 	if(result != N_OK)
@@ -1090,14 +1090,14 @@ _FAIL_:
 	return result;
 }
 
-static sint8 nm_spi_read(uint32 addr, uint8 *buf, uint16 size)
+static int8_t nm_spi_read(uint32_t addr, uint8_t *buf, uint16_t size)
 {
-	uint8 cmd = CMD_DMA_EXT_READ;
-	sint8 result;
-	uint8 retry = SPI_RETRY_COUNT;
+	uint8_t cmd = CMD_DMA_EXT_READ;
+	int8_t result;
+	uint8_t retry = SPI_RETRY_COUNT;
 #if defined USE_OLD_SPI_SW
-	uint8 tmp[2];
-	uint8 single_byte_workaround = 0;
+	uint8_t tmp[2];
+	uint8_t single_byte_workaround = 0;
 #endif
 
 _RETRY_:
@@ -1170,7 +1170,7 @@ _FAIL_:
 
 static void spi_init_pkt_sz(void)
 {
-	uint32 val32;
+	uint32_t val32;
 
 	/* Make sure SPI max. packet size fits the defined DATA_PKT_SZ.  */
 	val32 = nm_spi_read_reg(SPI_BASE+0x24);
@@ -1188,7 +1188,7 @@ static void spi_init_pkt_sz(void)
 	nm_spi_write_reg(SPI_BASE+0x24, val32);
 }
 
-sint8 nm_spi_reset(void)
+int8_t nm_spi_reset(void)
 {
 	spi_cmd(CMD_RESET, 0, 0, 0, 0);
 	spi_cmd_rsp(CMD_RESET);
@@ -1203,10 +1203,10 @@ sint8 nm_spi_reset(void)
 *	@date	11 July 2012
 *	@version	1.0
 */
-sint8 nm_spi_init(void)
+int8_t nm_spi_init(void)
 {
-	uint32 chipid;
-	uint32 reg = 0;
+	uint32_t chipid;
+	uint32_t reg = 0;
 	
 
 	/**
@@ -1262,7 +1262,7 @@ sint8 nm_spi_init(void)
 *	@date	27 Feb 2015
 *	@version	1.0
 */ 
-sint8 nm_spi_deinit(void)
+int8_t nm_spi_deinit(void)
 {
 	gu8Crc_off = 0;
 	return M2M_SUCCESS;
@@ -1278,9 +1278,9 @@ sint8 nm_spi_deinit(void)
 *	@date	11 July 2012
 *	@version	1.0
 */
-uint32 nm_spi_read_reg(uint32 u32Addr)
+uint32_t nm_spi_read_reg(uint32_t u32Addr)
 {
-	uint32 u32Val;
+	uint32_t u32Val;
 
 	spi_read_reg(u32Addr, &u32Val);
 
@@ -1299,9 +1299,9 @@ uint32 nm_spi_read_reg(uint32 u32Addr)
 *	@date	11 July 2012
 *	@version	1.0
 */
-sint8 nm_spi_read_reg_with_ret(uint32 u32Addr, uint32* pu32RetVal)
+int8_t nm_spi_read_reg_with_ret(uint32_t u32Addr, uint32_t* pu32RetVal)
 {
-	sint8 s8Ret;
+	int8_t s8Ret;
 
 	s8Ret = spi_read_reg(u32Addr,pu32RetVal);
 
@@ -1323,9 +1323,9 @@ sint8 nm_spi_read_reg_with_ret(uint32 u32Addr, uint32* pu32RetVal)
 *	@date	11 July 2012
 *	@version	1.0
 */
-sint8 nm_spi_write_reg(uint32 u32Addr, uint32 u32Val)
+int8_t nm_spi_write_reg(uint32_t u32Addr, uint32_t u32Val)
 {
-	sint8 s8Ret;
+	int8_t s8Ret;
 
 	s8Ret = spi_write_reg(u32Addr, u32Val);
 
@@ -1349,9 +1349,9 @@ sint8 nm_spi_write_reg(uint32 u32Addr, uint32 u32Val)
 *	@date	11 July 2012
 *	@version	1.0
 */
-sint8 nm_spi_read_block(uint32 u32Addr, uint8 *puBuf, uint16 u16Sz)
+int8_t nm_spi_read_block(uint32_t u32Addr, uint8_t *puBuf, uint16_t u16Sz)
 {
-	sint8 s8Ret;
+	int8_t s8Ret;
 
 	s8Ret = nm_spi_read(u32Addr, puBuf, u16Sz);
 
@@ -1375,9 +1375,9 @@ sint8 nm_spi_read_block(uint32 u32Addr, uint8 *puBuf, uint16 u16Sz)
 *	@date	11 July 2012
 *	@version	1.0
 */
-sint8 nm_spi_write_block(uint32 u32Addr, uint8 *puBuf, uint16 u16Sz)
+int8_t nm_spi_write_block(uint32_t u32Addr, uint8_t *puBuf, uint16_t u16Sz)
 {
-	sint8 s8Ret;
+	int8_t s8Ret;
 
 	s8Ret = nm_spi_write(u32Addr, puBuf, u16Sz);
 

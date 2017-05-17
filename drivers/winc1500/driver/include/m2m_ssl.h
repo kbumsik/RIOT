@@ -61,14 +61,14 @@ INCLUDES
 
 /*!
 @typedef \
-	void (*tpfAppSslCb) (uint8 u8MsgType, void * pvMsg);
+	void (*tpfAppSslCb) (uint8_t u8MsgType, void * pvMsg);
 
 @brief A callback to get SSL notifications.
 
 @param[in] u8MsgType
 @param[in] pvMsg A structure to provide notification payload.
 */
-typedef void (*tpfAppSSLCb) (uint8 u8MsgType, void * pvMsg);
+typedef void (*tpfAppSSLCb) (uint8_t u8MsgType, void * pvMsg);
 
 /**@}
 */
@@ -88,10 +88,10 @@ FUNCTION PROTOTYPES
 				Application SSL callback function.
 	@return		The function SHALL return 0 for success and a negative value otherwise.
 */
-NMI_API sint8 m2m_ssl_init(tpfAppSSLCb pfAppSSLCb);
+NMI_API int8_t m2m_ssl_init(tpfAppSSLCb pfAppSSLCb);
 
 /*!
-	@fn	\	 NMI_API sint8 m2m_ssl_handshake_rsp(tstrEccReqInfo* strECCResp, uint8* pu8RspDataBuff, uint16 u16RspDataSz)
+	@fn	\	 NMI_API int8_t m2m_ssl_handshake_rsp(tstrEccReqInfo* strECCResp, uint8_t* pu8RspDataBuff, uint16_t u16RspDataSz)
 	@brief	 Sends ECC responses to the WINC
 	@param [in]	strECCResp
 				ECC Response struct.
@@ -101,10 +101,10 @@ NMI_API sint8 m2m_ssl_init(tpfAppSSLCb pfAppSSLCb);
 				Response data size.
 	@return		The function SHALL return 0 for success and a negative value otherwise.
 */
-NMI_API sint8 m2m_ssl_handshake_rsp(tstrEccReqInfo* strECCResp, uint8* pu8RspDataBuff, uint16 u16RspDataSz);
+NMI_API int8_t m2m_ssl_handshake_rsp(tstrEccReqInfo* strECCResp, uint8_t* pu8RspDataBuff, uint16_t u16RspDataSz);
 
 /*!
-	@fn	\	NMI_API sint8 m2m_ssl_send_certs_to_winc(uint8* pu8Buffer, uint32 u32BufferSz)
+	@fn	\	NMI_API int8_t m2m_ssl_send_certs_to_winc(uint8_t* pu8Buffer, uint32_t u32BufferSz)
 	@brief	Sends certificates to the WINC
 	@param [in]	pu8Buffer
 				Pointer to the certificates.
@@ -112,10 +112,10 @@ NMI_API sint8 m2m_ssl_handshake_rsp(tstrEccReqInfo* strECCResp, uint8* pu8RspDat
 				Size of the certificates.
 	@return		The function SHALL return 0 for success and a negative value otherwise.
 */
-NMI_API sint8 m2m_ssl_send_certs_to_winc(uint8* pu8Buffer, uint32 u32BufferSz);
+NMI_API int8_t m2m_ssl_send_certs_to_winc(uint8_t* pu8Buffer, uint32_t u32BufferSz);
 
 /*!
-	@fn	\	NMI_API sint8 m2m_ssl_retrieve_cert(uint16* pu16CurveType, uint8* pu8Hash, uint8* pu8Sig, tstrECPoint* pu8Key)
+	@fn	\	NMI_API int8_t m2m_ssl_retrieve_cert(uint16_t* pu16CurveType, uint8_t* pu8Hash, uint8_t* pu8Sig, tstrECPoint* pu8Key)
 	@brief	Retrieve the certificate to be verified from the WINC
 	@param [in]	pu16CurveType
 				Pointer to the certificate curve type.
@@ -127,10 +127,10 @@ NMI_API sint8 m2m_ssl_send_certs_to_winc(uint8* pu8Buffer, uint32 u32BufferSz);
 				Pointer to the certificate Key.
 	@return		The function SHALL return 0 for success and a negative value otherwise.
 */
-NMI_API sint8 m2m_ssl_retrieve_cert(uint16* pu16CurveType, uint8* pu8Hash, uint8* pu8Sig, tstrECPoint* pu8Key);
+NMI_API int8_t m2m_ssl_retrieve_cert(uint16_t* pu16CurveType, uint8_t* pu8Hash, uint8_t* pu8Sig, tstrECPoint* pu8Key);
 
 /*!
-	@fn	\	NMI_API sint8 m2m_ssl_retrieve_hash(uint8* pu8Hash, uint16 u16HashSz)
+	@fn	\	NMI_API int8_t m2m_ssl_retrieve_hash(uint8_t* pu8Hash, uint16_t u16HashSz)
 	@brief	Retrieve the certificate hash
 	@param [in]	pu8Hash
 				Pointer to the certificate hash.
@@ -138,7 +138,7 @@ NMI_API sint8 m2m_ssl_retrieve_cert(uint16* pu16CurveType, uint8* pu8Hash, uint8
 				Hash size.
 	@return		The function SHALL return 0 for success and a negative value otherwise.
 */
-NMI_API sint8 m2m_ssl_retrieve_hash(uint8* pu8Hash, uint16 u16HashSz);
+NMI_API int8_t m2m_ssl_retrieve_hash(uint8_t* pu8Hash, uint16_t u16HashSz);
 
 /*!
 	@fn	\	NMI_API void m2m_ssl_stop_processing_certs(void)
@@ -158,7 +158,7 @@ NMI_API void m2m_ssl_ecc_process_done(void);
 
 /*!
 @fn	\
-	NMI_API sint8 m2m_ssl_set_active_ciphersuites(uint32 u32SslCsBMP);
+	NMI_API int8_t m2m_ssl_set_active_ciphersuites(uint32_t u32SslCsBMP);
 	Override the default Active SSL ciphers in the SSL module with a certain combination selected by the caller in the form of
 	a bitmap containing the required ciphers to be on.
 	There is no need to call this function if the application will not change the default ciphersuites.
@@ -176,7 +176,7 @@ NMI_API void m2m_ssl_ecc_process_done(void);
 	- [SOCK_ERR_NO_ERROR](@ref SOCK_ERR_NO_ERROR)
 	- [SOCK_ERR_INVALID_ARG](@ref SOCK_ERR_INVALID_ARG)
 */
-sint8 m2m_ssl_set_active_ciphersuites(uint32 u32SslCsBMP);
+int8_t m2m_ssl_set_active_ciphersuites(uint32_t u32SslCsBMP);
 
  /**@}*/
 #endif /* __M2M_SSL_H__ */

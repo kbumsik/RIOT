@@ -52,23 +52,23 @@
 #define M2M_TIME_OUT_DELAY 10000
 
 /*states*/
-#define M2M_SUCCESS         ((sint8)0)
-#define M2M_ERR_SEND		((sint8)-1)
-#define M2M_ERR_RCV			((sint8)-2)
-#define M2M_ERR_MEM_ALLOC	((sint8)-3)
-#define M2M_ERR_TIME_OUT	((sint8)-4)
-#define M2M_ERR_INIT        ((sint8)-5)
-#define M2M_ERR_BUS_FAIL    ((sint8)-6)
-#define M2M_NOT_YET			((sint8)-7)
-#define M2M_ERR_FIRMWARE	((sint8)-8)
-#define M2M_SPI_FAIL		((sint8)-9)
-#define M2M_ERR_FIRMWARE_bURN	 ((sint8)-10)
-#define M2M_ACK				((sint8)-11)
-#define M2M_ERR_FAIL		((sint8)-12)
-#define M2M_ERR_FW_VER_MISMATCH         ((sint8)-13)
-#define M2M_ERR_SCAN_IN_PROGRESS         ((sint8)-14)
-#define M2M_ERR_INVALID_ARG				 ((sint8)-15)
-#define M2M_ERR_INVALID					((sint8)-16)
+#define M2M_SUCCESS         ((int8_t)0)
+#define M2M_ERR_SEND		((int8_t)-1)
+#define M2M_ERR_RCV			((int8_t)-2)
+#define M2M_ERR_MEM_ALLOC	((int8_t)-3)
+#define M2M_ERR_TIME_OUT	((int8_t)-4)
+#define M2M_ERR_INIT        ((int8_t)-5)
+#define M2M_ERR_BUS_FAIL    ((int8_t)-6)
+#define M2M_NOT_YET			((int8_t)-7)
+#define M2M_ERR_FIRMWARE	((int8_t)-8)
+#define M2M_SPI_FAIL		((int8_t)-9)
+#define M2M_ERR_FIRMWARE_bURN	 ((int8_t)-10)
+#define M2M_ACK				((int8_t)-11)
+#define M2M_ERR_FAIL		((int8_t)-12)
+#define M2M_ERR_FW_VER_MISMATCH         ((int8_t)-13)
+#define M2M_ERR_SCAN_IN_PROGRESS         ((int8_t)-14)
+#define M2M_ERR_INVALID_ARG				 ((int8_t)-15)
+#define M2M_ERR_INVALID					((int8_t)-16)
 
 /*i2c MAASTER ERR*/
 #define I2C_ERR_LARGE_ADDRESS 	  0xE1UL	/*the address exceed the max addressing mode in i2c flash*/
@@ -124,28 +124,28 @@
 #define DATA_PKT_OFFSET	4
 
 #ifndef BIG_ENDIAN
-#define BYTE_0(word)   					((uint8)(((word) >> 0 	) & 0x000000FFUL))
-#define BYTE_1(word)  	 				((uint8)(((word) >> 8 	) & 0x000000FFUL))
-#define BYTE_2(word)   					((uint8)(((word) >> 16) & 0x000000FFUL))
-#define BYTE_3(word)   					((uint8)(((word) >> 24) & 0x000000FFUL))
+#define BYTE_0(word)   					((uint8_t)(((word) >> 0 	) & 0x000000FFUL))
+#define BYTE_1(word)  	 				((uint8_t)(((word) >> 8 	) & 0x000000FFUL))
+#define BYTE_2(word)   					((uint8_t)(((word) >> 16) & 0x000000FFUL))
+#define BYTE_3(word)   					((uint8_t)(((word) >> 24) & 0x000000FFUL))
 #else
-#define BYTE_0(word)   					((uint8)(((word) >> 24) & 0x000000FFUL))
-#define BYTE_1(word)  	 				((uint8)(((word) >> 16) & 0x000000FFUL))
-#define BYTE_2(word)   					((uint8)(((word) >> 8 	) & 0x000000FFUL))
-#define BYTE_3(word)   					((uint8)(((word) >> 0 	) & 0x000000FFUL))
+#define BYTE_0(word)   					((uint8_t)(((word) >> 24) & 0x000000FFUL))
+#define BYTE_1(word)  	 				((uint8_t)(((word) >> 16) & 0x000000FFUL))
+#define BYTE_2(word)   					((uint8_t)(((word) >> 8 	) & 0x000000FFUL))
+#define BYTE_3(word)   					((uint8_t)(((word) >> 0 	) & 0x000000FFUL))
 #endif
 
 /**@}*/
 #ifdef __cplusplus
      extern "C" {
  #endif
-NMI_API void m2m_memcpy(uint8* pDst,uint8* pSrc,uint32 sz);
-NMI_API void m2m_memset(uint8* pBuf,uint8 val,uint32 sz);
-NMI_API uint16 m2m_strlen(uint8 * pcStr);
-NMI_API sint8 m2m_memcmp(uint8 *pu8Buff1,uint8 *pu8Buff2 ,uint32 u32Size);
-NMI_API uint8 m2m_strncmp(uint8 *pcS1, uint8 *pcS2, uint16 u16Len);
-NMI_API uint8 * m2m_strstr(uint8 *pcIn, uint8 *pcStr);
-NMI_API uint8 m2m_checksum(uint8* buf, int sz);
+NMI_API void m2m_memcpy(uint8_t* pDst,uint8_t* pSrc,uint32_t sz);
+NMI_API void m2m_memset(uint8_t* pBuf,uint8_t val,uint32_t sz);
+NMI_API uint16_t m2m_strlen(uint8_t * pcStr);
+NMI_API int8_t m2m_memcmp(uint8_t *pu8Buff1,uint8_t *pu8Buff2 ,uint32_t u32Size);
+NMI_API uint8_t m2m_strncmp(uint8_t *pcS1, uint8_t *pcS2, uint16_t u16Len);
+NMI_API uint8_t * m2m_strstr(uint8_t *pcIn, uint8_t *pcStr);
+NMI_API uint8_t m2m_checksum(uint8_t* buf, int sz);
 
 #ifdef __cplusplus
 }

@@ -40,7 +40,7 @@
  */
 #include "common/include/nm_common.h"
 
-void m2m_memcpy(uint8* pDst,uint8* pSrc,uint32 sz)
+void m2m_memcpy(uint8_t* pDst,uint8_t* pSrc,uint32_t sz)
 {
 	if(sz == 0) return;
 	do
@@ -50,9 +50,9 @@ void m2m_memcpy(uint8* pDst,uint8* pSrc,uint32 sz)
 		pSrc++;
 	}while(--sz);
 }
-uint8 m2m_checksum(uint8* buf, int sz)
+uint8_t m2m_checksum(uint8_t* buf, int sz)
 {
-	uint8 cs = 0;
+	uint8_t cs = 0;
 	while(--sz)
 	{
 		cs ^= *buf;
@@ -62,7 +62,7 @@ uint8 m2m_checksum(uint8* buf, int sz)
 	return cs;
 }
 
-void m2m_memset(uint8* pBuf,uint8 val,uint32 sz)
+void m2m_memset(uint8_t* pBuf,uint8_t val,uint32_t sz)
 {
 	if(sz == 0) return;
 	do
@@ -72,9 +72,9 @@ void m2m_memset(uint8* pBuf,uint8 val,uint32 sz)
 	}while(--sz);
 }
 
-uint16 m2m_strlen(uint8 * pcStr)
+uint16_t m2m_strlen(uint8_t * pcStr)
 {
-	uint16	u16StrLen = 0;
+	uint16_t	u16StrLen = 0;
 	while(*pcStr)
 	{
 		u16StrLen ++;
@@ -83,11 +83,11 @@ uint16 m2m_strlen(uint8 * pcStr)
 	return u16StrLen;
 }
 
-uint8 m2m_strncmp(uint8 *pcS1, uint8 *pcS2, uint16 u16Len)
+uint8_t m2m_strncmp(uint8_t *pcS1, uint8_t *pcS2, uint16_t u16Len)
 {
     for ( ; u16Len > 0; pcS1++, pcS2++, --u16Len)
 	if (*pcS1 != *pcS2)
-	    return ((*(uint8 *)pcS1 < *(uint8 *)pcS2) ? -1 : +1);
+	    return ((*(uint8_t *)pcS1 < *(uint8_t *)pcS2) ? -1 : +1);
 	else if (*pcS1 == '\0')
 	    return 0;
     return 0;
@@ -97,33 +97,33 @@ uint8 m2m_strncmp(uint8 *pcS1, uint8 *pcS2, uint16 u16Len)
 If pcStr is part of pcIn it returns a valid pointer to the start of pcStr within pcIn.
 Otherwise a NULL Pointer is returned.
 */
-uint8 * m2m_strstr(uint8 *pcIn, uint8 *pcStr)
+uint8_t * m2m_strstr(uint8_t *pcIn, uint8_t *pcStr)
 {
-    uint8 u8c;
-    uint16 u16StrLen;
+    uint8_t u8c;
+    uint16_t u16StrLen;
 
     u8c = *pcStr++;
     if (!u8c)
-        return (uint8 *) pcIn;	// Trivial empty string case
+        return (uint8_t *) pcIn;	// Trivial empty string case
 
     u16StrLen = m2m_strlen(pcStr);
     do {
-        uint8 u8Sc;
+        uint8_t u8Sc;
 
         do {
             u8Sc = *pcIn++;
             if (!u8Sc)
-                return (uint8 *) 0;
+                return (uint8_t *) 0;
         } while (u8Sc != u8c);
     } while (m2m_strncmp(pcIn, pcStr, u16StrLen) != 0);
 
-    return (uint8 *) (pcIn - 1);
+    return (uint8_t *) (pcIn - 1);
 }
 
-sint8 m2m_memcmp(uint8 *pu8Buff1,uint8 *pu8Buff2 ,uint32 u32Size)
+int8_t m2m_memcmp(uint8_t *pu8Buff1,uint8_t *pu8Buff2 ,uint32_t u32Size)
 {
-	uint32	i;
-	sint8		s8Result = 0;
+	uint32_t	i;
+	int8_t		s8Result = 0;
 	for(i	 = 0 ; i < u32Size ; i++)
 	{
 		if(pu8Buff1[i] != pu8Buff2[i])

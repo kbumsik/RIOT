@@ -58,11 +58,11 @@
 *			    pointer holds address of structure "tstrM2mRev" that contains the firmware version parameters
 *	@version	1.0
 */
-sint8 nm_get_firmware_info(tstrM2mRev* M2mRev)
+int8_t nm_get_firmware_info(tstrM2mRev* M2mRev)
 {
-	uint16  curr_drv_ver, min_req_drv_ver,curr_firm_ver;
-	uint32	reg = 0;
-	sint8	ret = M2M_SUCCESS;
+	uint16_t  curr_drv_ver, min_req_drv_ver,curr_firm_ver;
+	uint32_t	reg = 0;
+	int8_t	ret = M2M_SUCCESS;
 
 	ret = nm_read_reg_with_ret(NMI_REV_REG, &reg);
 	//In case the Firmware running is ATE fw
@@ -101,28 +101,28 @@ sint8 nm_get_firmware_info(tstrM2mRev* M2mRev)
 *			    pointer holds address of structure "tstrM2mRev" that contains the firmware version parameters
 *	@version	1.0
 */
-sint8 nm_get_firmware_full_info(tstrM2mRev* pstrRev)
+int8_t nm_get_firmware_full_info(tstrM2mRev* pstrRev)
 {
-	uint16  curr_drv_ver, min_req_drv_ver,curr_firm_ver;
-	uint32	reg = 0;
-	sint8	ret = M2M_SUCCESS;
+	uint16_t  curr_drv_ver, min_req_drv_ver,curr_firm_ver;
+	uint32_t	reg = 0;
+	int8_t	ret = M2M_SUCCESS;
 	tstrGpRegs strgp = {0};
 	if (pstrRev != NULL)
 	{
-		m2m_memset((uint8*)pstrRev,0,sizeof(tstrM2mRev));
+		m2m_memset((uint8_t*)pstrRev,0,sizeof(tstrM2mRev));
 		ret = nm_read_reg_with_ret(rNMI_GP_REG_2, &reg);
 		if(ret == M2M_SUCCESS)
 		{
 			if(reg != 0)
 			{
-				ret = nm_read_block(reg|0x30000,(uint8*)&strgp,sizeof(tstrGpRegs));
+				ret = nm_read_block(reg|0x30000,(uint8_t*)&strgp,sizeof(tstrGpRegs));
 				if(ret == M2M_SUCCESS)
 				{
 					reg = strgp.u32Firmware_Ota_rev;
 					reg &= 0x0000ffff;
 					if(reg != 0)
 					{
-						ret = nm_read_block(reg|0x30000,(uint8*)pstrRev,sizeof(tstrM2mRev));
+						ret = nm_read_block(reg|0x30000,(uint8_t*)pstrRev,sizeof(tstrM2mRev));
 						if(ret == M2M_SUCCESS)
 						{
 							curr_firm_ver   = M2M_MAKE_VERSION(pstrRev->u8FirmwareMajor, pstrRev->u8FirmwareMinor,pstrRev->u8FirmwarePatch);
@@ -164,29 +164,29 @@ EXIT:
 			
 *	@version	1.0
 */
-sint8 nm_get_ota_firmware_info(tstrM2mRev* pstrRev)
+int8_t nm_get_ota_firmware_info(tstrM2mRev* pstrRev)
 {
-	uint16  curr_drv_ver, min_req_drv_ver,curr_firm_ver;
-	uint32	reg = 0;
-	sint8	ret;
+	uint16_t  curr_drv_ver, min_req_drv_ver,curr_firm_ver;
+	uint32_t	reg = 0;
+	int8_t	ret;
 	tstrGpRegs strgp = {0};
 
 	if (pstrRev != NULL)
 	{
-		m2m_memset((uint8*)pstrRev,0,sizeof(tstrM2mRev));
+		m2m_memset((uint8_t*)pstrRev,0,sizeof(tstrM2mRev));
 		ret = nm_read_reg_with_ret(rNMI_GP_REG_2, &reg);
 		if(ret == M2M_SUCCESS)
 		{
 			if(reg != 0)
 			{
-				ret = nm_read_block(reg|0x30000,(uint8*)&strgp,sizeof(tstrGpRegs));
+				ret = nm_read_block(reg|0x30000,(uint8_t*)&strgp,sizeof(tstrGpRegs));
 				if(ret == M2M_SUCCESS)
 				{
 					reg = strgp.u32Firmware_Ota_rev;
 					reg >>= 16;
 					if(reg != 0)
 					{
-						ret = nm_read_block(reg|0x30000,(uint8*)pstrRev,sizeof(tstrM2mRev));
+						ret = nm_read_block(reg|0x30000,(uint8_t*)pstrRev,sizeof(tstrM2mRev));
 						if(ret == M2M_SUCCESS)
 						{
 							curr_firm_ver   = M2M_MAKE_VERSION(pstrRev->u8FirmwareMajor, pstrRev->u8FirmwareMinor,pstrRev->u8FirmwarePatch);
@@ -233,9 +233,9 @@ EXIT:
 *	@date	10 Oct 2014
 *	@version	1.0
 */
-sint8 nm_drv_init_download_mode()
+int8_t nm_drv_init_download_mode(void)
 {
-	sint8 ret = M2M_SUCCESS;
+	int8_t ret = M2M_SUCCESS;
 
 	ret = nm_bus_iface_init(NULL);
 	if (M2M_SUCCESS != ret) {
@@ -276,13 +276,13 @@ ERR1:
 *	@date	15 July 2012
 *	@version	1.0
 */
-sint8 nm_drv_init(void * arg)
+int8_t nm_drv_init(void * arg)
 {
-	sint8 ret = M2M_SUCCESS;
-	uint8 u8Mode;
+	int8_t ret = M2M_SUCCESS;
+	uint8_t u8Mode;
 	
 	if(NULL != arg) {
-		u8Mode = *((uint8 *)arg);
+		u8Mode = *((uint8_t *)arg);
 		if((u8Mode < M2M_WIFI_MODE_NORMAL)||(u8Mode >= M2M_WIFI_MODE_MAX)) {
 			u8Mode = M2M_WIFI_MODE_NORMAL;
 		}
@@ -355,9 +355,9 @@ ERR1:
 *	@date	17 July 2012
 *	@version	1.0
 */
-sint8 nm_drv_deinit(void * arg)
+int8_t nm_drv_deinit(void * arg)
 {
-	sint8 ret;
+	int8_t ret;
 
 	ret = chip_deinit();
 	if (M2M_SUCCESS != ret) {

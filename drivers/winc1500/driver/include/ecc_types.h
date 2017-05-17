@@ -120,19 +120,19 @@ typedef enum EcNamedCurve{
 @brief	Elliptic Curve point representation	
 */
 typedef struct EcPoint{
-	uint8	X[ECC_POINT_MAX_SIZE];
+	uint8_t	X[ECC_POINT_MAX_SIZE];
 	/*!<
 		The X-coordinate of the ec point.
 	*/
-	uint8	Y[ECC_POINT_MAX_SIZE];
+	uint8_t	Y[ECC_POINT_MAX_SIZE];
 	/*!<
 		The Y-coordinate of the ec point.
 	*/
-	uint16	u16Size;
+	uint16_t	u16Size;
 	/*!<
 		Point size in bytes (for each of the coordinates).
 	*/
-	uint16	u16PrivKeyID;
+	uint16_t	u16PrivKeyID;
 	/*!<
 		ID for the corresponding private key.
 	*/
@@ -148,9 +148,9 @@ typedef struct EcPoint{
 	The structure defines the ECC domain parameters for curves defined over prime finite fields.
 */
 typedef struct EcDomainParam{
-	uint32		p[ECC_POINT_MAX_SIZE_WORDS];
-	uint32		a[ECC_POINT_MAX_SIZE_WORDS];
-	uint32		b[ECC_POINT_MAX_SIZE_WORDS];
+	uint32_t		p[ECC_POINT_MAX_SIZE_WORDS];
+	uint32_t		a[ECC_POINT_MAX_SIZE_WORDS];
+	uint32_t		b[ECC_POINT_MAX_SIZE_WORDS];
 	tstrECPoint	G;
 }tstrECDomainParam;
 
@@ -180,26 +180,26 @@ typedef enum{
 
 typedef struct{
 	tstrECPoint	strPubKey;
-	uint8		au8Key[ECC_POINT_MAX_SIZE];
+	uint8_t		au8Key[ECC_POINT_MAX_SIZE];
 }tstrEcdhReqInfo;
 
 
 typedef struct{
-	uint32	u32nSig;
+	uint32_t	u32nSig;
 }tstrEcdsaVerifyReqInfo;
 
 
 typedef struct{
-	uint16	u16CurveType;
-	uint16	u16HashSz;
+	uint16_t	u16CurveType;
+	uint16_t	u16HashSz;
 }tstrEcdsaSignReqInfo;
 
 
 typedef struct{
-	uint16		u16REQ;
-	uint16		u16Status;
-	uint32		u32UserData;
-	uint32		u32SeqNo;
+	uint16_t		u16REQ;
+	uint16_t		u16Status;
+	uint32_t		u32UserData;
+	uint32_t		u32SeqNo;
 	union{
 		tstrEcdhReqInfo			strEcdhREQ;
 		tstrEcdsaSignReqInfo	strEcdsaSignREQ;

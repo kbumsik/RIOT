@@ -321,13 +321,13 @@ typedef enum {
  *@brief	Used to save statistics for receive(RX) test case
  */
 typedef struct {
-	uint32 num_rx_pkts;
+	uint32_t num_rx_pkts;
 	/*!< Number of total RX packets
 	 */
-	uint32 num_err_pkts;
+	uint32_t num_err_pkts;
 	/*!< Number of RX failed packets
 	 */
-	 uint32 num_good_pkts;
+	 uint32_t num_good_pkts;
 	/*!< Number of RX packets actually received
 	 */
 } tstrM2mAteRxStatus;
@@ -338,7 +338,7 @@ typedef struct {
  *@see    tenuM2mAteRxPwrMode
  */
 typedef struct {
-	uint8 u8RxPwrMode;
+	uint8_t u8RxPwrMode;
 	/*!< RX power mode review \ref tenuM2mAteRxPwrMode
 	 */
 } tstrM2mAteInit;
@@ -348,43 +348,43 @@ typedef struct {
  *@brief	Used for the transmission(Tx) test configuration.
  */
 typedef struct {
-	uint32	num_frames;	
+	uint32_t	num_frames;	
 	/*!< Number of frames to be sent where maximum number allowed is 4294967295 ul, and ZERO means infinite number of frames
 	 */
-	uint32	data_rate;
+	uint32_t	data_rate;
 	/*!< Rate to send packets, to select a rate use values from the enumeration \ref tenuM2mAteTxIndexOfRates and pass it to \ref m2m_ate_get_tx_rate
 	 */
-	uint8	channel_num;
+	uint8_t	channel_num;
 	/*!< Channel number as enumerated at \ref tenuM2mAteChannels
 	 */
-	uint8    duty_cycle; 
+	uint8_t    duty_cycle; 
 	/*!< Duty cycle value between from 1 to 10, where maximum = 1, minimum = 10. As enumerated \ref tenuM2mAteTxDutyCycle
 	 */
-	uint16    frame_len;
+	uint16_t    frame_len;
     /*!< Use @ref M2M_ATE_MAX_FRAME_LENGTH (1024) as the maximum value while @ref M2M_ATE_MIN_FRAME_LENGTH (1) is the minimum value
 	 */
-	uint8     tx_gain_sel;
+	uint8_t     tx_gain_sel;
 	/*!< TX gain mode selection value \ref tenuM2mAteTxGainSetting
 	 */
-	uint8     dpd_ctrl;
+	uint8_t     dpd_ctrl;
 	/*!< DPD mode value\ref tenuM2mAteTxDpdControl
 	 */
-	uint8     use_pmu;
+	uint8_t     use_pmu;
 	/*!< This is 0 if PMU is not used otherwise it must be be 1 \ref tenuM2mAtePMUSetting
 	 */
-	uint8     phy_burst_tx; 
+	uint8_t     phy_burst_tx; 
 	/*!< Source of Burst TX either PHY or MAC \ref tenuM2mAteTxSource
 	 */
-	uint8     cw_tx; 
+	uint8_t     cw_tx; 
 	/*!< Mode of Phy TX transmission either normal TX sequence or CW(Continuous Wave) TX sequence \ref tenuM2mAteTxMode
 	 */
-	uint32     xo_offset_x1000; 
+	uint32_t     xo_offset_x1000; 
 	/*!< Signed XO offset value in Part Per Million(PPM) multiplied by 1000.
 	 */
-	uint8     use_efuse_xo_offset;
+	uint8_t     use_efuse_xo_offset;
 	/*!< Set to 0 to use the XO offset provided in xo_offset_x1000. Set to 1 to use XO offset programmed on WINC efuse. 
 	*/
-	uint8 peer_mac_addr[6];
+	uint8_t peer_mac_addr[6];
 	/*!< Set peer address to send directed frames to a certain address.
 	*/
 } tstrM2mAteTx;
@@ -394,33 +394,33 @@ typedef struct {
  *@brief	Used for the reception(Rx) test configuration.
  */
 typedef struct {
-	uint8		channel_num;
+	uint8_t		channel_num;
 	/*!< Channel number \ref tenuM2mAteChannels
 	 */
-	uint8     use_pmu;
+	uint8_t     use_pmu;
 	/*!< This is 0 if PMU is not used otherwise it must be be 1 \ref tenuM2mAtePMUSetting
 	 */
-	uint32     xo_offset_x1000; 
+	uint32_t     xo_offset_x1000; 
 	/*!< Signed XO offset value in PPM (Part Per Million) multiplied by 1000.
 	 */
-	uint8     use_efuse_xo_offset;
+	uint8_t     use_efuse_xo_offset;
 	/*!< Set to 0 to use the XO offset provided in xo_offset_x1000. Set to 1 to use XO offset programmed on WINC efuse. 
 	*/
-	uint8    self_mac_addr[6];
+	uint8_t    self_mac_addr[6];
 	/*!< Set to the self mac address required to be overriden. 
 	*/
-	uint8    peer_mac_addr[6];
+	uint8_t    peer_mac_addr[6];
 	/*!< Set to the source mac address expected to filter frames from. 
 	*/
-	uint8    mac_filter_en_da;
+	uint8_t    mac_filter_en_da;
 	/*!< Flag set to enable or disable reception with destination address as a filter. Using the following flags \ref M2M_ATE_RX_ENABLE_DA 
 	\ref M2M_ATE_RX_DISABLE_DA 
 	*/
-	uint8    mac_filter_en_sa;
+	uint8_t    mac_filter_en_sa;
 	/*!< Flag set to enable or disable reception with source address as a filter.Using the following flags \ref M2M_ATE_RX_ENABLE_SA 
 	\ref M2M_ATE_RX_DISABLE_SA 
 	*/
-	uint8   override_self_mac_addr;
+	uint8_t   override_self_mac_addr;
 	/*!< Flag set to enable or disable self mac address feature. Using the following flags \ref M2M_ATE_DISABLE_SELF_MACADDR 
 	\ref M2M_ATE_SET_SELF_MACADDR 
 	*/
@@ -438,7 +438,7 @@ FUNCTION PROTOTYPES
  */
 /*!
 @fn	\
-	sint8 m2m_ate_init(void);
+	int8_t m2m_ate_init(void);
 
 @brief
 	This function used to download the ATE firmware from flash and start it.
@@ -448,12 +448,12 @@ FUNCTION PROTOTYPES
 @see
 	m2m_ate_init_param	
 */
-sint8 m2m_ate_init(void);
+int8_t m2m_ate_init(void);
 
 
 /*!
 @fn	\
-	sint8 m2m_ate_init(tstrM2mAteInit *pstrInit);
+	int8_t m2m_ate_init(tstrM2mAteInit *pstrInit);
 
 @brief
 	This function is used to download and start the ATE firmware with an initialization value 
@@ -465,11 +465,11 @@ sint8 m2m_ate_init(void);
 @see
 	m2m_ate_init
 */
-sint8 m2m_ate_init_param(tstrM2mAteInit *pstrInit);
+int8_t m2m_ate_init_param(tstrM2mAteInit *pstrInit);
 
 /*!
 @fn	\
-	sint8 m2m_ate_deinit(void);
+	int8_t m2m_ate_deinit(void);
 
 @brief
 	De-Initialization of ATE firmware mode 
@@ -477,11 +477,11 @@ sint8 m2m_ate_init_param(tstrM2mAteInit *pstrInit);
 @return
 	The function SHALL return @ref M2M_SUCCESS for success and a negative value otherwise.
 */
-sint8 m2m_ate_deinit(void);
+int8_t m2m_ate_deinit(void);
 
 /*!
 @fn	\
-	sint8 m2m_ate_set_fw_state(uint8);
+	int8_t m2m_ate_set_fw_state(uint8_t);
 
 @brief
 	This function is used to change the ATE firmware status from running to stopped or vice versa.
@@ -493,11 +493,11 @@ sint8 m2m_ate_deinit(void);
 @see
 	m2m_ate_init
 */
-sint8 m2m_ate_set_fw_state(uint8);
+int8_t m2m_ate_set_fw_state(uint8_t);
 
 /*!
 @fn	\
-	sint8 m2m_ate_get_fw_state(uint8);
+	int8_t m2m_ate_get_fw_state(uint8_t);
 
 @brief
 	This function is used to return the status of ATE firmware.
@@ -507,11 +507,11 @@ sint8 m2m_ate_set_fw_state(uint8);
 @see
 	m2m_ate_init, m2m_ate_set_fw_state
 */
-sint8 m2m_ate_get_fw_state(void);
+int8_t m2m_ate_get_fw_state(void);
 
 /*!
 @fn	\
-	uint32 m2m_ate_get_tx_rate(uint8);
+	uint32_t m2m_ate_get_tx_rate(uint8_t);
 
 @brief
 	This function is used to return value of TX rate required by application developer.
@@ -523,11 +523,11 @@ sint8 m2m_ate_get_fw_state(void);
 @see
 	tenuM2mAteTxIndexOfRates
 */
-uint32 m2m_ate_get_tx_rate(uint8);
+uint32_t m2m_ate_get_tx_rate(uint8_t);
 
 /*!
 @fn	\
-	sint8 m2m_ate_get_tx_status(void);
+	int8_t m2m_ate_get_tx_status(void);
 
 @brief
 	This function is used to return the status of TX test case either running or stopped.
@@ -537,11 +537,11 @@ uint32 m2m_ate_get_tx_rate(uint8);
 @see
 	m2m_ate_start_tx, m2m_ate_stop_tx
 */
-sint8 m2m_ate_get_tx_status(void);
+int8_t m2m_ate_get_tx_status(void);
 
 /*!
 @fn	\
-	sint8 m2m_ate_start_tx(tstrM2mAteTx *)
+	int8_t m2m_ate_start_tx(tstrM2mAteTx *)
 
 @brief
 	This function is used to start the TX test case.
@@ -553,11 +553,11 @@ sint8 m2m_ate_get_tx_status(void);
 @see
 	m2m_ate_init, m2m_ate_stop_tx, m2m_ate_get_tx_status
 */
-sint8 m2m_ate_start_tx(tstrM2mAteTx *);
+int8_t m2m_ate_start_tx(tstrM2mAteTx *);
 
 /*!
 @fn	\
-	sint8 m2m_ate_stop_tx(void)
+	int8_t m2m_ate_stop_tx(void)
 
 @brief
 	This function is used to stop the TX test case.
@@ -567,11 +567,11 @@ sint8 m2m_ate_start_tx(tstrM2mAteTx *);
 @see
 	m2m_ate_init, m2m_ate_start_tx, m2m_ate_get_tx_status
 */
-sint8 m2m_ate_stop_tx(void);
+int8_t m2m_ate_stop_tx(void);
 
 /*!
 @fn	\
-	sint8 m2m_ate_get_rx_status(uint8);
+	int8_t m2m_ate_get_rx_status(uint8_t);
 
 @brief
 	This function is used to return the status of RX test case either running or stopped.
@@ -581,11 +581,11 @@ sint8 m2m_ate_stop_tx(void);
 @see
 	m2m_ate_start_rx, m2m_ate_stop_rx
 */
-sint8 m2m_ate_get_rx_status(void);
+int8_t m2m_ate_get_rx_status(void);
 
 /*!
 @fn	\
-	sint8 m2m_ate_start_rx(tstrM2mAteRx *)
+	int8_t m2m_ate_start_rx(tstrM2mAteRx *)
 
 @brief
 	This function is used to start RX test case.
@@ -597,11 +597,11 @@ sint8 m2m_ate_get_rx_status(void);
 @see
 	m2m_ate_init, m2m_ate_stop_rx, m2m_ate_get_rx_status
 */
-sint8 m2m_ate_start_rx(tstrM2mAteRx *);
+int8_t m2m_ate_start_rx(tstrM2mAteRx *);
 
 /*!
 @fn	\
-	sint8 m2m_ate_stop_rx(void)
+	int8_t m2m_ate_stop_rx(void)
 
 @brief
 	This function is used to stop RX test case.
@@ -611,11 +611,11 @@ sint8 m2m_ate_start_rx(tstrM2mAteRx *);
 @see
 	m2m_ate_init, m2m_ate_start_rx, m2m_ate_get_rx_status
 */
-sint8 m2m_ate_stop_rx(void);
+int8_t m2m_ate_stop_rx(void);
 
 /*!
 @fn	\
-	sint8 m2m_ate_read_rx_status(tstrM2mAteRxStatus *)
+	int8_t m2m_ate_read_rx_status(tstrM2mAteRxStatus *)
 
 @brief
 	This function is used to read RX statistics from the ATE firmware.
@@ -627,11 +627,11 @@ sint8 m2m_ate_stop_rx(void);
 @see
 	m2m_ate_init, m2m_ate_start_rx
 */
-sint8 m2m_ate_read_rx_status(tstrM2mAteRxStatus *);
+int8_t m2m_ate_read_rx_status(tstrM2mAteRxStatus *);
 
 /*!
 @fn	\
-	sint8 m2m_ate_set_dig_gain(double dGaindB)
+	int8_t m2m_ate_set_dig_gain(double dGaindB)
 
 @brief
 	This function is used to set the digital gain value to the HW registers in dB.
@@ -643,11 +643,11 @@ sint8 m2m_ate_read_rx_status(tstrM2mAteRxStatus *);
 @see
 m2m_ate_get_dig_gain, m2m_ate_get_pa_gain,m2m_ate_get_ppa_gain,m2m_ate_get_tot_gain
 */
-sint8 m2m_ate_set_dig_gain(double dGaindB);
+int8_t m2m_ate_set_dig_gain(double dGaindB);
 
 /*!
 @fn	\
-	sint8 m2m_ate_get_dig_gain(double * dGaindB)
+	int8_t m2m_ate_get_dig_gain(double * dGaindB)
 
 @brief
 	This function is used to retrieve the digital gain value from the HW registers in dB. 
@@ -660,23 +660,23 @@ sint8 m2m_ate_set_dig_gain(double dGaindB);
 @see
 m2m_ate_set_dig_gain, m2m_ate_get_pa_gain,m2m_ate_get_ppa_gain,m2m_ate_get_tot_gain
 */
-sint8 m2m_ate_get_dig_gain(double * dGaindB);
+int8_t m2m_ate_get_dig_gain(double * dGaindB);
 
 /*!
 @fn	\
-	void m2m_ate_set_pa_gain(uint8 gain_db)
+	void m2m_ate_set_pa_gain(uint8_t gain_db)
 
 @brief
 	This function is used to set the PA gain (18/15/12/9/6/3/0 only)
 
-@param [in]	uint8 gain_db
+@param [in]	uint8_t gain_db
 		PA gain level allowed (18/15/12/9/6/3/0 only)
 
 */
-void m2m_ate_set_pa_gain(uint8 gain_db);
+void m2m_ate_set_pa_gain(uint8_t gain_db);
 /*!
 @fn	\
-	sint8 m2m_ate_get_pa_gain(double *paGaindB)
+	int8_t m2m_ate_get_pa_gain(double *paGaindB)
 
 @brief
 	This function is used to get the Power Amplifier(PA) gain
@@ -688,27 +688,27 @@ void m2m_ate_set_pa_gain(uint8 gain_db);
 @see
 m2m_ate_set_dig_gain, m2m_ate_get_dig_gain,m2m_ate_get_ppa_gain,m2m_ate_get_tot_gain
 */
-sint8 m2m_ate_get_pa_gain(double *paGaindB);
+int8_t m2m_ate_get_pa_gain(double *paGaindB);
 
 /*!
 @fn	\
-	sint8 m2m_ate_get_ppa_gain(double * ppaGaindB)
+	int8_t m2m_ate_get_ppa_gain(double * ppaGaindB)
 
 @brief
 	This function is used to get the Pre-Power Amplifier(PPA) gain
 
-@param [out]	uint32 * ppaGaindB
+@param [out]	uint32_t * ppaGaindB
 		The retrieved PPA gain value obtained from HW registers in dB.
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 @see
 m2m_ate_set_dig_gain, m2m_ate_get_dig_gain,m2m_ate_get_pa_gain,m2m_ate_get_tot_gain
 */
-sint8 m2m_ate_get_ppa_gain(double * ppaGaindB);
+int8_t m2m_ate_get_ppa_gain(double * ppaGaindB);
 
 /*!
 @fn	\
-	sint8 m2m_ate_get_tot_gain(double * totGaindB)
+	int8_t m2m_ate_get_tot_gain(double * totGaindB)
 
 @brief
 	This function is used to calculate the total tx gain value
@@ -720,7 +720,7 @@ sint8 m2m_ate_get_ppa_gain(double * ppaGaindB);
 @see
 m2m_ate_set_dig_gain, m2m_ate_get_dig_gain,m2m_ate_get_pa_gain,m2m_ate_get_ppa_gain
 */
-sint8 m2m_ate_get_tot_gain(double * totGaindB);
+int8_t m2m_ate_get_tot_gain(double * totGaindB);
    //@}
 	
 #ifdef __cplusplus

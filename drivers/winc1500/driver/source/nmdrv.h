@@ -49,18 +49,18 @@
 *  @brief		Structure holding firmware version parameters and build date/time
 */
 typedef struct {
-	uint32 u32Chipid; /* HW revision which will be basically the chip ID */
-	uint8 u8FirmwareMajor; /* Version Major Number which represents the official release base */
-	uint8 u8FirmwareMinor; /* Version Minor Number which represents the engineering release base */
-	uint8 u8FirmwarePatch;	/* Version pathc Number which represents the pathces release base */
-	uint8 u8DriverMajor; /* Version Major Number which represents the official release base */
-	uint8 u8DriverMinor; /* Version Minor Number which represents the engineering release base */
-	uint8 u8DriverPatch; /* Version Patch Number which represents the pathces release base */
-	uint8 BuildDate[sizeof(__DATE__)];
-	uint8 BuildTime[sizeof(__TIME__)];
-	uint8 _PAD8_;
-	uint16 u16FirmwareSvnNum;
-	uint16 _PAD16_[2];
+	uint32_t u32Chipid; /* HW revision which will be basically the chip ID */
+	uint8_t u8FirmwareMajor; /* Version Major Number which represents the official release base */
+	uint8_t u8FirmwareMinor; /* Version Minor Number which represents the engineering release base */
+	uint8_t u8FirmwarePatch;	/* Version pathc Number which represents the pathces release base */
+	uint8_t u8DriverMajor; /* Version Major Number which represents the official release base */
+	uint8_t u8DriverMinor; /* Version Minor Number which represents the engineering release base */
+	uint8_t u8DriverPatch; /* Version Patch Number which represents the pathces release base */
+	uint8_t BuildDate[sizeof(__DATE__)];
+	uint8_t BuildTime[sizeof(__TIME__)];
+	uint8_t _PAD8_;
+	uint16_t u16FirmwareSvnNum;
+	uint16_t _PAD16_[2];
 } tstrM2mRev;
 
 /**
@@ -69,8 +69,8 @@ typedef struct {
 */
 typedef struct {
 	tstrM2mRev binVerInfo;
-    uint32	   flashOffset;
-	uint32     payloadSize;
+    uint32_t	   flashOffset;
+	uint32_t     payloadSize;
 } tstrM2mBinaryHeader;
 
 #ifdef __cplusplus
@@ -83,7 +83,7 @@ typedef struct {
 *			    pointer holds address of structure "tstrM2mRev" that contains the firmware version parameters
 *	@version	1.0
 */
-sint8 nm_get_firmware_info(tstrM2mRev* M2mRev);
+int8_t nm_get_firmware_info(tstrM2mRev* M2mRev);
 /**
 *	@fn		nm_get_firmware_full_info(tstrM2mRev* pstrRev)
 *	@brief	Get Firmware version info
@@ -91,7 +91,7 @@ sint8 nm_get_firmware_info(tstrM2mRev* M2mRev);
 *			    pointer holds address of structure "tstrM2mRev" that contains the firmware version parameters
 *	@version	1.0
 */
-sint8 nm_get_firmware_full_info(tstrM2mRev* pstrRev);
+int8_t nm_get_firmware_full_info(tstrM2mRev* pstrRev);
 /**
 *	@fn		nm_get_ota_firmware_info(tstrM2mRev* pstrRev)
 *	@brief	Get Firmware version info
@@ -100,13 +100,13 @@ sint8 nm_get_firmware_full_info(tstrM2mRev* pstrRev);
 			
 *	@version	1.0
 */
-sint8 nm_get_ota_firmware_info(tstrM2mRev* pstrRev);
+int8_t nm_get_ota_firmware_info(tstrM2mRev* pstrRev);
 /*
 *	@fn		nm_drv_init
 *	@brief	Initialize NMC1000 driver
 *	@return	ZERO in case of success and Negative error code in case of failure
 */
-sint8 nm_drv_init_download_mode(void);
+int8_t nm_drv_init_download_mode(void);
 
 /*
 *	@fn		nm_drv_init
@@ -117,7 +117,7 @@ sint8 nm_drv_init_download_mode(void);
 *	@return	ZERO in case of success and Negative error code in case of failure
 
 */
-sint8 nm_drv_init(void * arg);
+int8_t nm_drv_init(void * arg);
 
 /**
 *	@fn		nm_drv_deinit
@@ -127,7 +127,7 @@ sint8 nm_drv_init(void * arg);
 *				Generic argument TBD
 *	@return	ZERO in case of success and Negative error code in case of failure
 */
-sint8 nm_drv_deinit(void * arg);
+int8_t nm_drv_deinit(void * arg);
 
 #ifdef __cplusplus
 	 }

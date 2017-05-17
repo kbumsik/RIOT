@@ -52,7 +52,9 @@
 /*!< 
 *        Attribute used to define memory section to map Functions in host memory.
 */
-#define CONST const
+#ifndef CONST
+  #define CONST const
+#endif
 
 /*!< 
 *     Used for code portability.
@@ -87,45 +89,45 @@
 typedef void (*tpfNmBspIsr)(void);
   /*!
  * @ingroup DataTypes
- * @typedef      unsigned char	uint8;
+ * @typedef      unsigned char	uint8_t;
  * @brief        Range of values between 0 to 255
  */
-typedef unsigned char	uint8;
+typedef unsigned char	uint8_t;
 
  /*!
  * @ingroup DataTypes
- * @typedef      unsigned short	uint16;
+ * @typedef      unsigned short	uint16_t;
  * @brief        Range of values between 0 to 65535
  */
-typedef unsigned short	uint16;
+typedef unsigned short	uint16_t;
 
  /*!
  * @ingroup Data Types
- * @typedef      unsigned long	uint32;
+ * @typedef      unsigned long	uint32_t;
  * @brief        Range of values between 0 to 4294967295
  */ 
-typedef unsigned long	uint32;
+typedef unsigned long	uint32_t;
   /*!
  * @ingroup Data Types
- * @typedef      signed char		sint8;
+ * @typedef      signed char		int8_t;
  * @brief        Range of values between -128 to 127
  */
-typedef signed char		sint8;
+typedef signed char		int8_t;
 
  /*!
  * @ingroup DataTypes
- * @typedef      signed short	sint16;
+ * @typedef      signed short	int16_t;
  * @brief        Range of values between -32768 to 32767
  */
-typedef signed short	sint16;
+typedef signed short	int16_t;
 
   /*!
  * @ingroup DataTypes
- * @typedef      signed long		sint32;
+ * @typedef      signed long		int32_t;
  * @brief        Range of values between -2147483648 to 2147483647
  */
 
-typedef signed long		sint32;
+typedef signed long		int32_t;
  //@}
 
 #ifndef CORTUS_APP
@@ -149,7 +151,7 @@ extern "C"{
  */
  /**@{*/
 /*!
- * @fn           sint8 nm_bsp_init(void);
+ * @fn           int8_t nm_bsp_init(void);
  * @brief		 This function is used to initialize the <strong>B</strong>oard <strong>S</strong>upport <strong>P</strong>ackage <strong>(BSP)</strong> in order to prepare the WINC
  *				 before it start working.
  *
@@ -165,7 +167,7 @@ extern "C"{
  * @return       The function returns @ref M2M_SUCCESS for successful operations and a negative value otherwise.
 
  */
-sint8 nm_bsp_init(void);
+int8_t nm_bsp_init(void);
  /**@}*/
 
  
@@ -176,7 +178,7 @@ sint8 nm_bsp_init(void);
  */
  /**@{*/
 /*!
- * @fn           sint8 nm_bsp_deinit(void);
+ * @fn           int8_t nm_bsp_deinit(void);
  * @pre          The BSP should be initialized through \ref nm_bsp_init first.
  * @brief		 This function is used to de-initialize the BSP and turn off the WINC board.
  *				 
@@ -189,7 +191,7 @@ sint8 nm_bsp_init(void);
  * @return      The function returns @ref M2M_SUCCESS for successful operations and a negative value otherwise.
 
  */
-sint8 nm_bsp_deinit(void);
+int8_t nm_bsp_deinit(void);
  /**@}*/
 
  
@@ -227,7 +229,7 @@ void nm_bsp_reset(void);
 */
 /**@{*/
 /*!
- * @fn           void nm_bsp_sleep(uint32);
+ * @fn           void nm_bsp_sleep(uint32_t);
  * @brief   	 Used to put the host to sleep for the specified duration.
  *				 Forcing the host to sleep for extended period may lead to host not being able to respond to WINC board events.It's important to
  *				 be considerate while choosing the sleep period. 
@@ -239,7 +241,7 @@ void nm_bsp_reset(void);
  * @see           nm_bsp_init               
  * @return       None
  */
-void nm_bsp_sleep(uint32 u32TimeMsec);
+void nm_bsp_sleep(uint32_t u32TimeMsec);
 /**@}*/
 
   
@@ -273,7 +275,7 @@ void nm_bsp_register_isr(tpfNmBspIsr pfIsr);
 */
 /**@{*/
 /*!
- * @fn           void nm_bsp_interrupt_ctrl(uint8);
+ * @fn           void nm_bsp_interrupt_ctrl(uint8_t);
  * @pre			 The interrupt must be registered using nm_bsp_register_isr first.
  * @brief        Enable/Disable interrupts
  *				 This function can be used to enable/disable the WINC to host interrupt as the depending on how the driver is implemented.
@@ -285,7 +287,7 @@ void nm_bsp_register_isr(tpfNmBspIsr pfIsr);
  * @return       None
 
  */
-void nm_bsp_interrupt_ctrl(uint8 u8Enable);
+void nm_bsp_interrupt_ctrl(uint8_t u8Enable);
   /**@}*/
 
 #ifdef __cplusplus

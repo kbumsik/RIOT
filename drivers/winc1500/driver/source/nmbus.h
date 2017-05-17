@@ -55,7 +55,7 @@ extern "C"{
 *	@brief	Initialize bus interface
 *	@return	M2M_SUCCESS in case of success and M2M_ERR_BUS_FAIL in case of failure
 */
-sint8 nm_bus_iface_init(void *);
+int8_t nm_bus_iface_init(void *);
 
 
 /**
@@ -63,7 +63,7 @@ sint8 nm_bus_iface_init(void *);
 *	@brief	Deinitialize bus interface
 *	@return	M2M_SUCCESS in case of success and M2M_ERR_BUS_FAIL in case of failure
 */
-sint8 nm_bus_iface_deinit(void);
+int8_t nm_bus_iface_deinit(void);
 
 /**
 *	@fn		nm_bus_reset
@@ -71,14 +71,14 @@ sint8 nm_bus_iface_deinit(void);
 *	@return	M2M_SUCCESS in case of success and M2M_ERR_BUS_FAIL in case of failure
 *	@version	1.0
 */
-sint8 nm_bus_reset(void);
+int8_t nm_bus_reset(void);
 
 /**
 *	@fn		nm_bus_iface_reconfigure
 *	@brief	reconfigure bus interface
 *	@return	M2M_SUCCESS in case of success and M2M_ERR_BUS_FAIL in case of failure
 */
-sint8 nm_bus_iface_reconfigure(void *ptr);
+int8_t nm_bus_iface_reconfigure(void *ptr);
 
 /**
 *	@fn		nm_read_reg
@@ -87,7 +87,7 @@ sint8 nm_bus_iface_reconfigure(void *ptr);
 *				Register address
 *	@return	Register value
 */
-uint32 nm_read_reg(uint32 u32Addr);
+uint32_t nm_read_reg(uint32_t u32Addr);
 
 /**
 *	@fn		nm_read_reg_with_ret
@@ -98,7 +98,7 @@ uint32 nm_read_reg(uint32 u32Addr);
 *				Pointer to u32 variable used to return the read value
 *	@return	ZERO in case of success and M2M_ERR_BUS_FAIL in case of failure
 */
-sint8 nm_read_reg_with_ret(uint32 u32Addr, uint32* pu32RetVal);
+int8_t nm_read_reg_with_ret(uint32_t u32Addr, uint32_t* pu32RetVal);
 
 /**
 *	@fn		nm_write_reg
@@ -109,7 +109,7 @@ sint8 nm_read_reg_with_ret(uint32 u32Addr, uint32* pu32RetVal);
 *				Value to be written to the register
 *	@return	ZERO in case of success and M2M_ERR_BUS_FAIL in case of failure
 */
-sint8 nm_write_reg(uint32 u32Addr, uint32 u32Val);
+int8_t nm_write_reg(uint32_t u32Addr, uint32_t u32Val);
 
 /**
 *	@fn		nm_read_block
@@ -122,7 +122,7 @@ sint8 nm_write_reg(uint32 u32Addr, uint32 u32Val);
 *				Number of bytes to read. The buffer size must be >= u32Sz
 *	@return	ZERO in case of success and M2M_ERR_BUS_FAIL in case of failure
 */ 
-sint8 nm_read_block(uint32 u32Addr, uint8 *puBuf, uint32 u32Sz);
+int8_t nm_read_block(uint32_t u32Addr, uint8_t *puBuf, uint32_t u32Sz);
 
 /**
 *	@fn		nm_write_block
@@ -135,7 +135,7 @@ sint8 nm_read_block(uint32 u32Addr, uint8 *puBuf, uint32 u32Sz);
 *				Number of bytes to write. The buffer size must be >= u32Sz
 *	@return	ZERO in case of success and M2M_ERR_BUS_FAIL in case of failure
 */ 
-sint8 nm_write_block(uint32 u32Addr, uint8 *puBuf, uint32 u32Sz);
+int8_t nm_write_block(uint32_t u32Addr, uint8_t *puBuf, uint32_t u32Sz);
 
 
 

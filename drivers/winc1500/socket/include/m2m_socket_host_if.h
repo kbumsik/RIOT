@@ -216,13 +216,13 @@ DATA TYPES
 *  @brief	
 */
 typedef struct{	
-	uint16		u16Family;
-	uint16		u16Port;
-	uint32		u32IPAddr;
+	uint16_t		u16Family;
+	uint16_t		u16Port;
+	uint32_t		u32IPAddr;
 }tstrSockAddr;
 
 
-typedef sint8			SOCKET;
+typedef int8_t			SOCKET;
 typedef tstrSockAddr	tstrUIPSockAddr;
 
 
@@ -236,7 +236,7 @@ typedef tstrSockAddr	tstrUIPSockAddr;
 */
 typedef struct{
 	char		acHostName[HOSTNAME_MAX_SIZE];
-	uint32		u32HostIP;
+	uint32_t		u32HostIP;
 }tstrDnsReply;
 
 
@@ -246,8 +246,8 @@ typedef struct{
 typedef struct{
 	tstrSockAddr	strAddr;
 	SOCKET			sock;
-	uint8			u8Void;
-	uint16			u16SessionID;
+	uint8_t			u8Void;
+	uint16_t			u16SessionID;
 }tstrBindCmd;
 
 
@@ -256,8 +256,8 @@ typedef struct{
 */
 typedef struct{
 	SOCKET		sock;
-	sint8		s8Status;
-	uint16		u16SessionID;
+	int8_t		s8Status;
+	uint16_t		u16SessionID;
 }tstrBindReply;
 
 
@@ -266,8 +266,8 @@ typedef struct{
 */
 typedef struct{
 	SOCKET	sock;
-	uint8	u8BackLog;
-	uint16	u16SessionID;
+	uint8_t	u8BackLog;
+	uint16_t	u16SessionID;
 }tstrListenCmd;
 
 
@@ -284,8 +284,8 @@ typedef struct{
 */
 typedef struct{
 	SOCKET		sock;
-	sint8		s8Status;
-	uint16		u16SessionID;
+	int8_t		s8Status;
+	uint16_t		u16SessionID;
 }tstrListenReply;
 
 
@@ -296,7 +296,7 @@ typedef struct{
 	tstrSockAddr	strAddr;
 	SOCKET			sListenSock;
 	SOCKET			sConnectedSock;
-	uint16			u16AppDataOffset;
+	uint16_t			u16AppDataOffset;
 	/*!<
 		In further packet send requests the host interface should put the user application
 		data at this offset in the allocated shared data packet.
@@ -310,8 +310,8 @@ typedef struct{
 typedef struct{
 	tstrSockAddr	strAddr;
 	SOCKET			sock;
-	uint8			u8SslFlags;
-	uint16			u16SessionID;
+	uint8_t			u8SslFlags;
+	uint16_t			u16SessionID;
 }tstrConnectCmd;
 
 
@@ -324,8 +324,8 @@ typedef struct{
 */
 typedef struct{
 	SOCKET		sock;
-	sint8		s8Error;
-	uint16		u16AppDataOffset;
+	int8_t		s8Error;
+	uint16_t		u16AppDataOffset;
 	/*!<
 		In further packet send requests the host interface should put the user application
 		data at this offset in the allocated shared data packet.
@@ -338,11 +338,11 @@ typedef struct{
 */
 typedef struct{
 	SOCKET			sock;
-	uint8			u8Void;
-	uint16			u16DataSize;
+	uint8_t			u8Void;
+	uint16_t			u16DataSize;
 	tstrSockAddr	strAddr;
-	uint16			u16SessionID;
-	uint16			u16Void;
+	uint16_t			u16SessionID;
+	uint16_t			u16Void;
 }tstrSendCmd;
 
 
@@ -355,10 +355,10 @@ typedef struct{
 */
 typedef struct{
 	SOCKET		sock;
-	uint8		u8Void;
-	sint16		s16SentBytes;
-	uint16		u16SessionID;
-	uint16		u16Void;
+	uint8_t		u8Void;
+	int16_t		s16SentBytes;
+	uint16_t		u16SessionID;
+	uint16_t		u16Void;
 }tstrSendReply;
 
 
@@ -366,10 +366,10 @@ typedef struct{
 *  @brief
 */
 typedef struct{
-	uint32		u32Timeoutmsec;
+	uint32_t		u32Timeoutmsec;
 	SOCKET		sock;
-	uint8		u8Void;
-	uint16		u16SessionID;
+	uint8_t		u8Void;
+	uint16_t		u16SessionID;
 }tstrRecvCmd;
 
 
@@ -379,11 +379,11 @@ typedef struct{
 */
 typedef struct{
 	tstrSockAddr	strRemoteAddr;
-	sint16			s16RecvStatus;
-	uint16			u16DataOffset;
+	int16_t			s16RecvStatus;
+	uint16_t			u16DataOffset;
 	SOCKET			sock;
-	uint8			u8Void;
-	uint16			u16SessionID;
+	uint8_t			u8Void;
+	uint16_t			u16SessionID;
 }tstrRecvReply;
 
 
@@ -391,16 +391,16 @@ typedef struct{
 *  @brief
 */
 typedef struct{
-	uint32		u32OptionValue;
+	uint32_t		u32OptionValue;
 	SOCKET		sock;
-	uint8 		u8Option;
-	uint16		u16SessionID;
+	uint8_t 		u8Option;
+	uint16_t		u16SessionID;
 }tstrSetSocketOptCmd;
 
 
 typedef struct{
 	SOCKET		sslSock;
-	uint8		__PAD24__[3];
+	uint8_t		__PAD24__[3];
 }tstrSSLSocketCreateCmd;
 
 
@@ -409,32 +409,32 @@ typedef struct{
 */
 typedef struct{
 	SOCKET		sock;
-	uint8 		u8Option;
-	uint16		u16SessionID;
-	uint32		u32OptLen;
-	uint8		au8OptVal[SSL_MAX_OPT_LEN];
+	uint8_t 		u8Option;
+	uint16_t		u16SessionID;
+	uint32_t		u32OptLen;
+	uint8_t		au8OptVal[SSL_MAX_OPT_LEN];
 }tstrSSLSetSockOptCmd;
 
 
 /*!
 */
 typedef struct{
-	uint32	u32DestIPAddr;
-	uint32	u32CmdPrivate;
-	uint16	u16PingCount;
-	uint8	u8TTL;
-	uint8	__PAD8__;
+	uint32_t	u32DestIPAddr;
+	uint32_t	u32CmdPrivate;
+	uint16_t	u16PingCount;
+	uint8_t	u8TTL;
+	uint8_t	__PAD8__;
 }tstrPingCmd;
 
 
 typedef struct{
-	uint32	u32IPAddr;
-	uint32	u32CmdPrivate;
-	uint32	u32RTT;
-	uint16	u16Success;
-	uint16	u16Fail;
-	uint8	u8ErrorCode;
-	uint8	__PAD24__[3];
+	uint32_t	u32IPAddr;
+	uint32_t	u32CmdPrivate;
+	uint32_t	u32RTT;
+	uint16_t	u16Success;
+	uint16_t	u16Fail;
+	uint8_t	u8ErrorCode;
+	uint8_t	__PAD24__[3];
 }tstrPingReply;
 
 
@@ -447,7 +447,7 @@ typedef struct{
 @sa		tenuSslCertExpSettings
 */
 typedef struct{
-	uint32	u32CertExpValidationOpt;
+	uint32_t	u32CertExpValidationOpt;
 	/*!<
 		See @tenuSslCertExpSettings for possible values.
 	*/

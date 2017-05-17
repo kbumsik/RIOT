@@ -73,7 +73,7 @@ typedef void (*tpfOtaNotifCb) (tstrOtaUpdateInfo * pstrOtaUpdateInfo);
 
 
 /*!
-@typedef void (*tpfOtaUpdateCb) (uint8 u8OtaUpdateStatusType ,uint8 u8OtaUpdateStatus);
+@typedef void (*tpfOtaUpdateCb) (uint8_t u8OtaUpdateStatusType ,uint8_t u8OtaUpdateStatus);
 
 @brief 
    A callback to get OTA status update, the callback provide the status type and its status.
@@ -87,7 +87,7 @@ typedef void (*tpfOtaNotifCb) (tstrOtaUpdateInfo * pstrOtaUpdateInfo);
 	tenuOtaUpdateStatusType
 	tenuOtaUpdateStatus
  */
-typedef void (*tpfOtaUpdateCb) (uint8 u8OtaUpdateStatusType ,uint8 u8OtaUpdateStatus);
+typedef void (*tpfOtaUpdateCb) (uint8_t u8OtaUpdateStatusType ,uint8_t u8OtaUpdateStatus);
  /**@}*/
 /*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 FUNCTION PROTOTYPES
@@ -107,7 +107,7 @@ FUNCTION PROTOTYPES
  /**@{*/
 /*!
 @fn	\
-	NMI_API sint8  m2m_ota_init(tpfOtaUpdateCb  pfOtaUpdateCb,tpfOtaNotifCb  pfOtaNotifCb)
+	NMI_API int8_t  m2m_ota_init(tpfOtaUpdateCb  pfOtaUpdateCb,tpfOtaNotifCb  pfOtaNotifCb)
 
 @param [in]	pfOtaUpdateCb
 				OTA Update callback function
@@ -118,7 +118,7 @@ FUNCTION PROTOTYPES
 @return		
 	The function returns @ref M2M_SUCCESS for successful operations  and a negative value otherwise.
 */
-NMI_API sint8  m2m_ota_init(tpfOtaUpdateCb  pfOtaUpdateCb,tpfOtaNotifCb  pfOtaNotifCb);
+NMI_API int8_t  m2m_ota_init(tpfOtaUpdateCb  pfOtaUpdateCb,tpfOtaNotifCb  pfOtaNotifCb);
  /**@}*/
  
  /** @defgroup OtaNotifStFn m2m_ota_notif_set_url
@@ -128,7 +128,7 @@ NMI_API sint8  m2m_ota_init(tpfOtaUpdateCb  pfOtaUpdateCb,tpfOtaNotifCb  pfOtaNo
  /**@{*/
 /*!
 @fn	\
-	NMI_API sint8  m2m_ota_notif_set_url(uint8 * u8Url);
+	NMI_API int8_t  m2m_ota_notif_set_url(uint8_t * u8Url);
 
 @param [in]	u8Url
 			 Set the OTA notification server URL, the functions need to be called before any check for update.
@@ -140,7 +140,7 @@ NMI_API sint8  m2m_ota_init(tpfOtaUpdateCb  pfOtaUpdateCb,tpfOtaNotifCb  pfOtaNo
 @return		
 	The function returns @ref M2M_SUCCESS for successful operations  and a negative value otherwise.
 */
-NMI_API sint8  m2m_ota_notif_set_url(uint8 * u8Url);
+NMI_API int8_t  m2m_ota_notif_set_url(uint8_t * u8Url);
  /**@}*/
  /** @defgroup OtaNotifCheckFn m2m_ota_notif_check_for_update
  *  @ingroup WLANAPI
@@ -151,7 +151,7 @@ NMI_API sint8  m2m_ota_notif_set_url(uint8 * u8Url);
   /**@{*/
 /*!
 @fn	\
-	NMI_API sint8  m2m_ota_notif_check_for_update(void);
+	NMI_API int8_t  m2m_ota_notif_check_for_update(void);
 
 @warning 
 		Function is not implemented (not supported at the current version)
@@ -162,7 +162,7 @@ NMI_API sint8  m2m_ota_notif_set_url(uint8 * u8Url);
 @return		
 	The function returns @ref M2M_SUCCESS for successful operations  and a negative value otherwise.
 */
-NMI_API sint8  m2m_ota_notif_check_for_update(void);
+NMI_API int8_t  m2m_ota_notif_check_for_update(void);
  /**@}*/
  /** @defgroup OtaSched m2m_ota_notif_sched
 *  @ingroup WLANAPI
@@ -171,7 +171,7 @@ NMI_API sint8  m2m_ota_notif_check_for_update(void);
   /**@{*/
 /*!
 @fn	\
-	NMI_API sint8 m2m_ota_notif_sched(uint32 u32Period);
+	NMI_API int8_t m2m_ota_notif_sched(uint32_t u32Period);
 
 
 @param [in]	u32Period
@@ -184,7 +184,7 @@ NMI_API sint8  m2m_ota_notif_check_for_update(void);
 @return		
 	The function returns @ref M2M_SUCCESS for successful operations  and a negative value otherwise.
 */
-NMI_API sint8 m2m_ota_notif_sched(uint32 u32Period);
+NMI_API int8_t m2m_ota_notif_sched(uint32_t u32Period);
   /**@}*/
 /** @defgroup OtaStartUpdatefn m2m_ota_start_update
 *  @ingroup WLANAPI
@@ -195,7 +195,7 @@ NMI_API sint8 m2m_ota_notif_sched(uint32 u32Period);
   /**@{*/
 /*!
 @fn	\
-	NMI_API sint8 m2m_ota_start_update(uint8 * u8DownloadUrl);
+	NMI_API int8_t m2m_ota_start_update(uint8_t * u8DownloadUrl);
 
 @param [in]	u8DownloadUrl
 		The download firmware URL, you get it from device info according to the application server
@@ -214,7 +214,7 @@ NMI_API sint8 m2m_ota_notif_sched(uint32 u32Period);
 \section Example
    The example shows an example of how the OTA image update is carried out.
 @code
-static void OtaUpdateCb(uint8 u8OtaUpdateStatusType ,uint8 u8OtaUpdateStatus)
+static void OtaUpdateCb(uint8_t u8OtaUpdateStatusType ,uint8_t u8OtaUpdateStatus)
 {
 	if(u8OtaUpdateStatusType == DL_STATUS) {
 		if(u8OtaUpdateStatus == OTA_STATUS_SUCSESS) {
@@ -229,7 +229,7 @@ static void OtaUpdateCb(uint8 u8OtaUpdateStatusType ,uint8 u8OtaUpdateStatus)
 		}
 	}
 }
-void wifi_event_cb(uint8 u8WiFiEvent, void * pvMsg)
+void wifi_event_cb(uint8_t u8WiFiEvent, void * pvMsg)
 {
 	case M2M_WIFI_REQ_DHCP_CONF:
 	{
@@ -246,7 +246,7 @@ int main (void)
 	tstr1xAuthCredentials gstrCred1x    = AUTH_CREDENTIALS;
 	nm_bsp_init();
 	
-	m2m_memset((uint8*)&param, 0, sizeof(param));
+	m2m_memset((uint8_t*)&param, 0, sizeof(param));
 	param.pfAppWifiCb = wifi_event_cb;
 	
 	//Initialize the WINC Driver
@@ -274,7 +274,7 @@ int main (void)
 @endcode		
 
 */
-NMI_API sint8 m2m_ota_start_update(uint8 * u8DownloadUrl);
+NMI_API int8_t m2m_ota_start_update(uint8_t * u8DownloadUrl);
     /**@}*/
 /** @defgroup OtaStartUpdatefn m2m_ota_start_update_crt
 *  @ingroup WLANAPI
@@ -285,7 +285,7 @@ NMI_API sint8 m2m_ota_start_update(uint8 * u8DownloadUrl);
   /**@{*/
 /*!
 @fn	\
-	NMI_API sint8 m2m_ota_start_update_crt(uint8 * u8DownloadUrl);
+	NMI_API int8_t m2m_ota_start_update_crt(uint8_t * u8DownloadUrl);
 
 @param [in]	u8DownloadUrl
 		The cortus application image url.
@@ -301,7 +301,7 @@ NMI_API sint8 m2m_ota_start_update(uint8 * u8DownloadUrl);
 @return		
 	The function returns @ref M2M_SUCCESS for successful operations  and a negative value otherwise.
 */
-NMI_API sint8 m2m_ota_start_update_crt(uint8 * u8DownloadUrl);
+NMI_API int8_t m2m_ota_start_update_crt(uint8_t * u8DownloadUrl);
   /**@}*/
 /** @defgroup OtaRollbackfn m2m_ota_rollback
 *  @ingroup WLANAPI
@@ -314,7 +314,7 @@ NMI_API sint8 m2m_ota_start_update_crt(uint8 * u8DownloadUrl);
   /**@{*/
 /*!
 @fn	\
-	NMI_API sint8 m2m_ota_rollback(void);
+	NMI_API int8_t m2m_ota_rollback(void);
 
 @sa 
 	m2m_ota_init
@@ -323,7 +323,7 @@ NMI_API sint8 m2m_ota_start_update_crt(uint8 * u8DownloadUrl);
 @return		
 	The function returns @ref M2M_SUCCESS for successful operations  and a negative value otherwise.
 */
-NMI_API sint8 m2m_ota_rollback(void);
+NMI_API int8_t m2m_ota_rollback(void);
     /**@}*/
 /** @defgroup OtaRollbackfn m2m_ota_rollback_crt
 *  @ingroup WLANAPI
@@ -336,7 +336,7 @@ NMI_API sint8 m2m_ota_rollback(void);
   /**@{*/
 /*!
 @fn	\
-	NMI_API sint8 m2m_ota_rollback_crt(void);
+	NMI_API int8_t m2m_ota_rollback_crt(void);
 
 @sa 
 	m2m_ota_init
@@ -345,7 +345,7 @@ NMI_API sint8 m2m_ota_rollback(void);
 @return		
 	The function returns @ref M2M_SUCCESS for successful operations  and a negative value otherwise.
 */
-NMI_API sint8 m2m_ota_rollback_crt(void);
+NMI_API int8_t m2m_ota_rollback_crt(void);
   /**@}*/
 /** @defgroup OtaAbortfn m2m_ota_abort
 *  @ingroup WLANAPI
@@ -356,12 +356,12 @@ NMI_API sint8 m2m_ota_rollback_crt(void);
   /**@{*/
 /*!
 @fn	\
-	NMI_API sint8 m2m_ota_abort(void);
+	NMI_API int8_t m2m_ota_abort(void);
 
 @return
 	The function returns @ref M2M_SUCCESS for successful operation and a negative value otherwise.
 */
-NMI_API sint8 m2m_ota_abort(void);
+NMI_API int8_t m2m_ota_abort(void);
   /**@}*/
   /**@}*/
 /** @defgroup OtaSwitchFirmware m2m_ota_switch_firmware
@@ -372,7 +372,7 @@ NMI_API sint8 m2m_ota_abort(void);
   /**@{*/
 /*!
 @fn	\
-	NMI_API sint8 m2m_ota_switch_firmware(void);
+	NMI_API int8_t m2m_ota_switch_firmware(void);
 
 @warning
    It is important to note that if the API succeeds, system restart is required (re-initializing the driver with hardware reset) updating the host driver version may be required 
@@ -384,7 +384,7 @@ NMI_API sint8 m2m_ota_abort(void);
 @return		
 	The function returns @ref M2M_SUCCESS for successful operations  and a negative value otherwise.
 */
-NMI_API sint8 m2m_ota_switch_firmware(void);
+NMI_API int8_t m2m_ota_switch_firmware(void);
   /**@}*/
   /**@}*/
 /** @defgroup OtaSwitchFirmware m2m_ota_switch_crt
@@ -395,7 +395,7 @@ NMI_API sint8 m2m_ota_switch_firmware(void);
   /**@{*/
 /*!
 @fn	\
-	NMI_API sint8 m2m_ota_switch_firmware(void);
+	NMI_API int8_t m2m_ota_switch_firmware(void);
 
 @warning
    It is important to note that if the API succeeds, system restart is required (re-initializing the driver with hardware reset) updating the host driver version may be required 
@@ -407,10 +407,10 @@ NMI_API sint8 m2m_ota_switch_firmware(void);
 @return		
 	The function returns @ref M2M_SUCCESS for successful operations  and a negative value otherwise.
 */
-NMI_API sint8 m2m_ota_switch_crt(void);
+NMI_API int8_t m2m_ota_switch_crt(void);
 /*!
 @fn	\
-	NMI_API sint8 m2m_ota_get_firmware_version(void);
+	NMI_API int8_t m2m_ota_get_firmware_version(void);
 
 @brief
 	Get the OTA Firmware version.
@@ -418,9 +418,9 @@ NMI_API sint8 m2m_ota_switch_crt(void);
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 */
-NMI_API sint8 m2m_ota_get_firmware_version(tstrM2mRev *pstrRev);
+NMI_API int8_t m2m_ota_get_firmware_version(tstrM2mRev *pstrRev);
   /**@}*/
-NMI_API sint8 m2m_ota_test(void);
+NMI_API int8_t m2m_ota_test(void);
 
 #ifdef __cplusplus
 }

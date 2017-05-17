@@ -49,11 +49,11 @@
 
 					#define DATA_TO_REPLACE	"THIS IS A NEW SECTOR IN FLASH"
 
-					int main()
+					int main(void)
 					{
-						uint8	au8FlashContent[FLASH_SECTOR_SZ] = {0};
-						uint32	u32FlashTotalSize = 0;
-						uint32	u32FlashOffset = 0;
+						uint8_t	au8FlashContent[FLASH_SECTOR_SZ] = {0};
+						uint32_t	u32FlashTotalSize = 0;
+						uint32_t	u32FlashOffset = 0;
 	
 						ret = m2m_wifi_download_mode();
 						if(M2M_SUCCESS != ret)
@@ -118,7 +118,7 @@
  *	@brief	Enable spi flash operations
  *	@version	1.0
  */
-sint8 spi_flash_enable(uint8 enable);
+int8_t spi_flash_enable(uint8_t enable);
 /** \defgroup SPIFLASHAPI Function
  *   @ingroup SPIFLASH
  */
@@ -128,12 +128,12 @@ sint8 spi_flash_enable(uint8 enable);
  */
   /**@{*/
 /*!
- * @fn             uint32 spi_flash_get_size(void);
- * @brief         Returns with \ref uint32 value which is total flash size\n
+ * @fn             uint32_t spi_flash_get_size(void);
+ * @brief         Returns with \ref uint32_t value which is total flash size\n
  * @note         Returned value in Mb (Mega Bit).
  * @return      SPI flash size in case of success and a ZERO value in case of failure.
  */
-uint32 spi_flash_get_size(void);
+uint32_t spi_flash_get_size(void);
  /**@}*/
 
   /** @defgroup SPiFlashRead spi_flash_read
@@ -141,7 +141,7 @@ uint32 spi_flash_get_size(void);
  */
   /**@{*/
 /*!
- * @fn             sint8 spi_flash_read(uint8 *, uint32, uint32);
+ * @fn             int8_t spi_flash_read(uint8_t *, uint32_t, uint32_t);
  * @brief          Read a specified portion of data from SPI Flash.\n
  * @param [out]    pu8Buf
  *                 Pointer to data buffer which will fill in with data in case of successful operation.
@@ -160,7 +160,7 @@ uint32 spi_flash_get_size(void);
  * @sa             m2m_wifi_download_mode, spi_flash_get_size
  * @return        The function returns @ref M2M_SUCCESS for successful operations  and a negative value otherwise.
  */
-sint8 spi_flash_read(uint8 *pu8Buf, uint32 u32Addr, uint32 u32Sz);
+int8_t spi_flash_read(uint8_t *pu8Buf, uint32_t u32Addr, uint32_t u32Sz);
  /**@}*/
 
   /** @defgroup SPiFlashWrite spi_flash_write
@@ -168,7 +168,7 @@ sint8 spi_flash_read(uint8 *pu8Buf, uint32 u32Addr, uint32 u32Sz);
  */
   /**@{*/
 /*!
- * @fn             sint8 spi_flash_write(uint8 *, uint32, uint32);
+ * @fn             int8_t spi_flash_write(uint8_t *, uint32_t, uint32_t);
  * @brief          Write a specified portion of data to SPI Flash.\n
  * @param [in]     pu8Buf
  *                 Pointer to data buffer which contains the required to be written.
@@ -191,7 +191,7 @@ sint8 spi_flash_read(uint8 *pu8Buf, uint32 u32Addr, uint32 u32Sz);
  * @return       The function returns @ref M2M_SUCCESS for successful operations  and a negative value otherwise.
  
  */
-sint8 spi_flash_write(uint8* pu8Buf, uint32 u32Offset, uint32 u32Sz);
+int8_t spi_flash_write(uint8_t* pu8Buf, uint32_t u32Offset, uint32_t u32Sz);
  /**@}*/
 
   /** @defgroup SPiFlashErase spi_flash_erase
@@ -199,7 +199,7 @@ sint8 spi_flash_write(uint8* pu8Buf, uint32 u32Offset, uint32 u32Sz);
  */
   /**@{*/
 /*!
- * @fn             sint8 spi_flash_erase(uint32, uint32);
+ * @fn             int8_t spi_flash_erase(uint32_t, uint32_t);
  * @brief          Erase a specified portion of SPI Flash.\n
  * @param [in]     u32Offset
  *                 Address (Offset) to erase from the SPI flash.
@@ -217,6 +217,6 @@ sint8 spi_flash_write(uint8* pu8Buf, uint32 u32Offset, uint32 u32Sz);
  * @return       The function returns @ref M2M_SUCCESS for successful operations  and a negative value otherwise.
 
  */
-sint8 spi_flash_erase(uint32 u32Offset, uint32 u32Sz);
+int8_t spi_flash_erase(uint32_t u32Offset, uint32_t u32Sz);
  /**@}*/
 #endif	//__SPI_FLASH_H__

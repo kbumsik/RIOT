@@ -39,15 +39,14 @@
  *
  */
 
-#ifndef _NM_BSP_SAMD21_H_
-#define _NM_BSP_SAMD21_H_
+#ifndef _NM_BSP_RIOT_H_
+#define _NM_BSP_RIOT_H_
 
 #include "conf_winc.h"
-#include "math.h"
 
 #define NM_EDGE_INTERRUPT		(1)
 
 #define NM_DEBUG				CONF_WINC_DEBUG
 #define NM_BSP_PRINTF			CONF_WINC_PRINTF
 
-#endif /* _NM_BSP_SAMD21_H_ */
+#endif /* _NM_BSP_RIOT_H_ */

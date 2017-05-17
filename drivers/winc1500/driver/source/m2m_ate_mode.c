@@ -94,10 +94,10 @@ MACROS
 /*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 VARIABLES
 *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*/
-volatile static uint8	gu8AteIsRunning	= 0;	/*!< ATE firmware status, 1 means ATE is running otherwise stopped */
-volatile static uint8	gu8RxState		= 0;	/*!< RX status, 1 means Rx is running otherwise stopped */
-volatile static uint8	gu8TxState		= 0;	/*!< TX status, 1 means Tx is running otherwise stopped */
-volatile static uint32	gaAteFwTxRates[M2M_ATE_MAX_NUM_OF_RATES] =
+volatile static uint8_t	gu8AteIsRunning	= 0;	/*!< ATE firmware status, 1 means ATE is running otherwise stopped */
+volatile static uint8_t	gu8RxState		= 0;	/*!< RX status, 1 means Rx is running otherwise stopped */
+volatile static uint8_t	gu8TxState		= 0;	/*!< TX status, 1 means Tx is running otherwise stopped */
+volatile static uint32_t	gaAteFwTxRates[M2M_ATE_MAX_NUM_OF_RATES] =
 {
 	0x01, 0x02, 0x05, 0x0B,							/*B-Rats*/
 	0x06, 0x09, 0x0C, 0x12, 0x18, 0x24, 0x30, 0x36,	/*G-Rats*/
@@ -107,12 +107,12 @@ volatile static uint32	gaAteFwTxRates[M2M_ATE_MAX_NUM_OF_RATES] =
 /*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 STATIC FUNCTIONS
 *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*/
-static void m2m_ate_set_rx_status(uint8 u8Value)
+static void m2m_ate_set_rx_status(uint8_t u8Value)
 {
 	gu8RxState = u8Value;
 }
 
-static void m2m_ate_set_tx_status(uint8 u8Value)
+static void m2m_ate_set_tx_status(uint8_t u8Value)
 {
 	gu8TxState = u8Value;
 }
@@ -122,7 +122,7 @@ FUNCTION IMPLEMENTATION
 *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*/
 /*!
 @fn	\
-	sint8 m2m_ate_init(void);
+	int8_t m2m_ate_init(void);
 
 @brief
 	This function used to download ATE firmware from flash and start it
@@ -130,10 +130,10 @@ FUNCTION IMPLEMENTATION
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 */
-sint8 m2m_ate_init(void)
+int8_t m2m_ate_init(void)
 {
-	sint8 s8Ret = M2M_SUCCESS;
-	uint8 u8WifiMode = M2M_WIFI_MODE_ATE_HIGH;
+	int8_t s8Ret = M2M_SUCCESS;
+	uint8_t u8WifiMode = M2M_WIFI_MODE_ATE_HIGH;
 	
 	s8Ret = nm_drv_init(&u8WifiMode);
 	
@@ -142,7 +142,7 @@ sint8 m2m_ate_init(void)
 
 /*!
 @fn	\
-	sint8 m2m_ate_init(tstrM2mAteInit *pstrInit);
+	int8_t m2m_ate_init(tstrM2mAteInit *pstrInit);
 
 @brief
 	This function used to download ATE firmware from flash and start it
@@ -150,9 +150,9 @@ sint8 m2m_ate_init(void)
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 */
-sint8 m2m_ate_init_param(tstrM2mAteInit *pstrInit)
+int8_t m2m_ate_init_param(tstrM2mAteInit *pstrInit)
 {
-	sint8 s8Ret = M2M_SUCCESS;
+	int8_t s8Ret = M2M_SUCCESS;
 	
 	s8Ret = nm_drv_init((void*)&pstrInit->u8RxPwrMode);
 	
@@ -161,7 +161,7 @@ sint8 m2m_ate_init_param(tstrM2mAteInit *pstrInit)
 
 /*!
 @fn	\
-	sint8 m2m_ate_deinit(void);
+	int8_t m2m_ate_deinit(void);
 
 @brief
 	De-Initialization of ATE firmware mode 
@@ -169,14 +169,14 @@ sint8 m2m_ate_init_param(tstrM2mAteInit *pstrInit)
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 */
-sint8 m2m_ate_deinit(void)
+int8_t m2m_ate_deinit(void)
 {
 	return nm_drv_deinit(NULL);
 }
 
 /*!
 @fn	\
-	sint8 m2m_ate_set_fw_state(uint8);
+	int8_t m2m_ate_set_fw_state(uint8_t);
 
 @brief
 	This function used to change ATE firmware status from running to stopped or vice versa.
@@ -188,9 +188,9 @@ sint8 m2m_ate_deinit(void)
 \sa
 	m2m_ate_init
 */
-sint8 m2m_ate_set_fw_state(uint8 u8State)
+int8_t m2m_ate_set_fw_state(uint8_t u8State)
 {
-	sint8		s8Ret	= M2M_SUCCESS;
+	int8_t		s8Ret	= M2M_SUCCESS;
 	uint32_t	u32Val	= 0;
 	
 	if((M2M_ATE_FW_STATE_STOP == u8State) && (M2M_ATE_FW_STATE_STOP != gu8AteIsRunning))
@@ -256,7 +256,7 @@ __EXIT:
 
 /*!
 @fn	\
-	sint8 m2m_ate_get_fw_state(uint8);
+	int8_t m2m_ate_get_fw_state(uint8_t);
 
 @brief
 	This function used to return status of ATE firmware.
@@ -266,14 +266,14 @@ __EXIT:
 \sa
 	m2m_ate_init, m2m_ate_set_fw_state
 */
-sint8 m2m_ate_get_fw_state(void)
+int8_t m2m_ate_get_fw_state(void)
 {
 	return gu8AteIsRunning;
 }
 
 /*!
 @fn	\
-	uint32 m2m_ate_get_tx_rate(uint8);
+	uint32_t m2m_ate_get_tx_rate(uint8_t);
 
 @brief
 	This function used to return value of TX rate required by application developer.
@@ -285,7 +285,7 @@ sint8 m2m_ate_get_fw_state(void)
 \sa
 	tenuM2mAteTxIndexOfRates
 */
-uint32 m2m_ate_get_tx_rate(uint8 u8Index)
+uint32_t m2m_ate_get_tx_rate(uint8_t u8Index)
 {
 	if(M2M_ATE_MAX_NUM_OF_RATES <= u8Index)
 	{
@@ -296,7 +296,7 @@ uint32 m2m_ate_get_tx_rate(uint8 u8Index)
 
 /*!
 @fn	\
-	sint8 m2m_ate_get_tx_status(void);
+	int8_t m2m_ate_get_tx_status(void);
 
 @brief
 	This function used to return status of TX test case either running or stopped.
@@ -306,14 +306,14 @@ uint32 m2m_ate_get_tx_rate(uint8 u8Index)
 \sa
 	m2m_ate_start_tx, m2m_ate_stop_tx
 */
-sint8 m2m_ate_get_tx_status(void)
+int8_t m2m_ate_get_tx_status(void)
 {
 	return gu8TxState;
 }
 
 /*!
 @fn	\
-	sint8 m2m_ate_start_tx(tstrM2mAteTx *)
+	int8_t m2m_ate_start_tx(tstrM2mAteTx *)
 
 @brief
 	This function used to start TX test case.
@@ -325,10 +325,10 @@ sint8 m2m_ate_get_tx_status(void)
 \sa
 	m2m_ate_init, m2m_ate_stop_tx, m2m_ate_get_tx_status
 */
-sint8 m2m_ate_start_tx(tstrM2mAteTx * strM2mAteTx)
+int8_t m2m_ate_start_tx(tstrM2mAteTx * strM2mAteTx)
 {
-	sint8		s8Ret = M2M_SUCCESS;
-	uint8	u8LoopCntr = 0;
+	int8_t		s8Ret = M2M_SUCCESS;
+	uint8_t	u8LoopCntr = 0;
 	uint32_t 	val32;
 
 	
@@ -429,7 +429,7 @@ __EXIT:
 
 /*!
 @fn	\
-	sint8 m2m_ate_stop_tx(void)
+	int8_t m2m_ate_stop_tx(void)
 
 @brief
 	This function used to stop TX test case.
@@ -439,9 +439,9 @@ __EXIT:
 \sa
 	m2m_ate_init, m2m_ate_start_tx, m2m_ate_get_tx_status
 */
-sint8 m2m_ate_stop_tx(void)
+int8_t m2m_ate_stop_tx(void)
 {
-	sint8	s8Ret = M2M_SUCCESS;
+	int8_t	s8Ret = M2M_SUCCESS;
 	
 	s8Ret = nm_write_reg(rInterrupt_CORTUS_1, 1);
 	if(M2M_SUCCESS == s8Ret)
@@ -454,7 +454,7 @@ sint8 m2m_ate_stop_tx(void)
 
 /*!
 @fn	\
-	sint8 m2m_ate_get_rx_status(uint8);
+	int8_t m2m_ate_get_rx_status(uint8_t);
 
 @brief
 	This function used to return status of RX test case either running or stopped.
@@ -464,14 +464,14 @@ sint8 m2m_ate_stop_tx(void)
 \sa
 	m2m_ate_start_rx, m2m_ate_stop_rx
 */
-sint8 m2m_ate_get_rx_status(void)
+int8_t m2m_ate_get_rx_status(void)
 {
 	return gu8RxState;
 }
 
 /*!
 @fn	\
-	sint8 m2m_ate_start_rx(tstrM2mAteRx *)
+	int8_t m2m_ate_start_rx(tstrM2mAteRx *)
 
 @brief
 	This function used to start RX test case.
@@ -483,10 +483,10 @@ sint8 m2m_ate_get_rx_status(void)
 \sa
 	m2m_ate_init, m2m_ate_stop_rx, m2m_ate_get_rx_status
 */
-sint8 m2m_ate_start_rx(tstrM2mAteRx * strM2mAteRxStr)
+int8_t m2m_ate_start_rx(tstrM2mAteRx * strM2mAteRxStr)
 {
-	sint8		s8Ret = M2M_SUCCESS;
-	uint32  	val32;
+	int8_t		s8Ret = M2M_SUCCESS;
+	uint32_t  	val32;
 	if(NULL == strM2mAteRxStr) 
 	{
 		s8Ret = M2M_ATE_ERR_VALIDATE;
@@ -562,7 +562,7 @@ __EXIT:
 
 /*!
 @fn	\
-	sint8 m2m_ate_stop_rx(void)
+	int8_t m2m_ate_stop_rx(void)
 
 @brief
 	This function used to stop RX test case.
@@ -572,7 +572,7 @@ __EXIT:
 \sa
 	m2m_ate_init, m2m_ate_start_rx, m2m_ate_get_rx_status
 */
-sint8 m2m_ate_stop_rx(void)
+int8_t m2m_ate_stop_rx(void)
 {
 	m2m_ate_set_rx_status(0);
 	nm_bsp_sleep(200);  /*Recommended*/	
@@ -581,7 +581,7 @@ sint8 m2m_ate_stop_rx(void)
 
 /*!
 @fn	\
-	sint8 m2m_ate_read_rx_status(tstrM2mAteRxStatus *)
+	int8_t m2m_ate_read_rx_status(tstrM2mAteRxStatus *)
 
 @brief
 	This function used to read RX statistics from ATE firmware.
@@ -593,9 +593,9 @@ sint8 m2m_ate_stop_rx(void)
 \sa
 	m2m_ate_init, m2m_ate_start_rx
 */
-sint8 m2m_ate_read_rx_status(tstrM2mAteRxStatus *strM2mAteRxStatus)
+int8_t m2m_ate_read_rx_status(tstrM2mAteRxStatus *strM2mAteRxStatus)
 {
-	sint8	s8Ret = M2M_SUCCESS;
+	int8_t	s8Ret = M2M_SUCCESS;
 	
 	if(NULL == strM2mAteRxStatus) 
 	{
@@ -627,7 +627,7 @@ __EXIT:
 }
 /*!
 @fn	\
-	sint8 m2m_ate_set_dig_gain(double dGaindB)
+	int8_t m2m_ate_set_dig_gain(double dGaindB)
 
 @brief
 	This function is used to set the digital gain
@@ -637,7 +637,7 @@ __EXIT:
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 */
-sint8 m2m_ate_set_dig_gain(double dGaindB)
+int8_t m2m_ate_set_dig_gain(double dGaindB)
 {
 	uint32_t dGain, val32;
 	dGain = (uint32_t)(pow(10, dGaindB/20.0) * 1024.0);
@@ -650,7 +650,7 @@ sint8 m2m_ate_set_dig_gain(double dGaindB)
 }
 /*!
 @fn	\
-	sint8 m2m_ate_get_dig_gain(double * dGaindB)
+	int8_t m2m_ate_get_dig_gain(double * dGaindB)
 
 @brief
 	This function is used to get the digital gain
@@ -660,9 +660,9 @@ sint8 m2m_ate_set_dig_gain(double dGaindB)
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 */
-sint8 m2m_ate_get_dig_gain(double * dGaindB)
+int8_t m2m_ate_get_dig_gain(double * dGaindB)
 {
-	uint32 dGain, val32;
+	uint32_t dGain, val32;
 	
 	if(!dGaindB) return M2M_ERR_INVALID_ARG;
 	
@@ -675,19 +675,19 @@ sint8 m2m_ate_get_dig_gain(double * dGaindB)
 }
 /*!
 @fn	\
-	void m2m_ate_set_pa_gain(uint8 gain_db)
+	void m2m_ate_set_pa_gain(uint8_t gain_db)
 
 @brief
 	This function is used to set the PA gain (18/15/12/9/6/3/0 only)
 
-@param [in]	uint8 gain_db
+@param [in]	uint8_t gain_db
 		PA gain level allowed (18/15/12/9/6/3/0 only)
 
 */
-void m2m_ate_set_pa_gain(uint8 gain_db)
+void m2m_ate_set_pa_gain(uint8_t gain_db)
 {
-	uint32 PA_1e9c;
-	uint8 aGain[] = {
+	uint32_t PA_1e9c;
+	uint8_t aGain[] = {
 		/* "0 dB"  */ 0x00,
 		/* "3 dB"  */ 0x01,
 		/* "6 dB"  */ 0x03,
@@ -699,12 +699,12 @@ void m2m_ate_set_pa_gain(uint8 gain_db)
 	PA_1e9c = nm_read_reg(0x1e9c);
 	/* TX bank 0. */
 	PA_1e9c &= ~(0x3ful << 8);
-	PA_1e9c |= (((uint32)aGain[gain_db/3] & 0x3f) << 8);
+	PA_1e9c |= (((uint32_t)aGain[gain_db/3] & 0x3f) << 8);
 	nm_write_reg(0x1e9c, PA_1e9c);
 }
 /*!
 @fn	\
-	sint8 m2m_ate_get_pa_gain(double *paGaindB)
+	int8_t m2m_ate_get_pa_gain(double *paGaindB)
 
 @brief
 	This function is used to get the PA gain
@@ -714,10 +714,10 @@ void m2m_ate_set_pa_gain(uint8 gain_db)
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 */
-sint8 m2m_ate_get_pa_gain(double *paGaindB)
+int8_t m2m_ate_get_pa_gain(double *paGaindB)
 {
-	uint32 val32, paGain;
-	uint32 m_cmbPAGainStep;
+	uint32_t val32, paGain;
+	uint32_t m_cmbPAGainStep;
 	
 	if(!paGaindB) 
 		return M2M_ERR_INVALID_ARG;
@@ -756,19 +756,19 @@ sint8 m2m_ate_get_pa_gain(double *paGaindB)
 }
 /*!
 @fn	\
-	sint8 m2m_ate_get_ppa_gain(double * ppaGaindB)
+	int8_t m2m_ate_get_ppa_gain(double * ppaGaindB)
 
 @brief
 	This function is used to get the PPA gain
 
-@param [out]	uint32 * ppaGaindB
+@param [out]	uint32_t * ppaGaindB
 		The retrieved PPA gain value obtained from HW registers in dB.
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 */
-sint8 m2m_ate_get_ppa_gain(double * ppaGaindB)
+int8_t m2m_ate_get_ppa_gain(double * ppaGaindB)
 {
-	uint32 val32, ppaGain, m_cmbPPAGainStep;
+	uint32_t val32, ppaGain, m_cmbPPAGainStep;
 	
 	if(!ppaGaindB) return M2M_ERR_INVALID_ARG;
 
@@ -798,7 +798,7 @@ sint8 m2m_ate_get_ppa_gain(double * ppaGaindB)
 }
 /*!
 @fn	\
-	sint8 m2m_ate_get_tot_gain(double * totGaindB)
+	int8_t m2m_ate_get_tot_gain(double * totGaindB)
 
 @brief
 	This function is used to calculate the total gain
@@ -808,7 +808,7 @@ sint8 m2m_ate_get_ppa_gain(double * ppaGaindB)
 @return
 	The function SHALL return 0 for success and a negative value otherwise.
 */
-sint8 m2m_ate_get_tot_gain(double * totGaindB)
+int8_t m2m_ate_get_tot_gain(double * totGaindB)
 {
 	double dGaindB, paGaindB, ppaGaindB;	
 	

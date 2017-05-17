@@ -59,24 +59,24 @@
 *	@date	11 July 2012
 *	@version	1.0
 */
- sint8 nm_i2c_read_reg_with_ret(uint32 u32Addr, uint32* pu32RetVal)
+ int8_t nm_i2c_read_reg_with_ret(uint32_t u32Addr, uint32_t* pu32RetVal)
 {
-	uint8 b[6];
-	uint8 rsz;
+	uint8_t b[6];
+	uint8_t rsz;
 	tstrNmI2cDefault strI2c;
-	sint8 s8Ret = M2M_SUCCESS;
+	int8_t s8Ret = M2M_SUCCESS;
 
 	if(u32Addr < 0xff) { /* clockless i2c */
 		b[0] = 0x09;
-		b[1] = (uint8)(u32Addr);
+		b[1] = (uint8_t)(u32Addr);
 		rsz = 1;
 		strI2c.u16Sz = 2;
 	} else {
 		b[0] = 0x80;
-		b[1] = (uint8)(u32Addr >> 24);
-		b[2] = (uint8)(u32Addr >> 16);
-		b[3] = (uint8)(u32Addr >> 8);
-		b[4] = (uint8)(u32Addr);
+		b[1] = (uint8_t)(u32Addr >> 24);
+		b[2] = (uint8_t)(u32Addr >> 16);
+		b[3] = (uint8_t)(u32Addr >> 8);
+		b[4] = (uint8_t)(u32Addr);
 		b[5] = 0x04;
 		rsz = 4;
 		strI2c.u16Sz = 6;
@@ -102,7 +102,7 @@
 	if (rsz == 1) {
 		*pu32RetVal = b[0];
 	} else {
-		*pu32RetVal = b[0] | ((uint32)b[1] << 8) | ((uint32)b[2] << 16) | ((uint32)b[3] << 24);
+		*pu32RetVal = b[0] | ((uint32_t)b[1] << 8) | ((uint32_t)b[2] << 16) | ((uint32_t)b[3] << 24);
 	}
 	return s8Ret;
 }
@@ -117,9 +117,9 @@
 *	@date	11 July 2012
 *	@version	1.0
 */
-uint32 nm_i2c_read_reg(uint32 u32Addr)
+uint32_t nm_i2c_read_reg(uint32_t u32Addr)
 {
-	uint32 val;
+	uint32_t val;
 	nm_i2c_read_reg_with_ret(u32Addr, &val);
 	return val;
 }
@@ -136,28 +136,28 @@ uint32 nm_i2c_read_reg(uint32 u32Addr)
 *	@date	11 July 2012
 *	@version	1.0
 */
-sint8 nm_i2c_write_reg(uint32 u32Addr, uint32 u32Val)
+int8_t nm_i2c_write_reg(uint32_t u32Addr, uint32_t u32Val)
 {
 	tstrNmI2cDefault strI2c;
-	uint8 b[16];
-	sint8 s8Ret = M2M_SUCCESS;
+	uint8_t b[16];
+	int8_t s8Ret = M2M_SUCCESS;
 
 	if(u32Addr < 0xff) { /* clockless i2c */
 		b[0] = 0x19;
-		b[1] = (uint8)(u32Addr);
-		b[2] = (uint8)(u32Val);
+		b[1] = (uint8_t)(u32Addr);
+		b[2] = (uint8_t)(u32Val);
 		strI2c.u16Sz = 3;
 	} else {
 		b[0] = 0x90;
-		b[1] = (uint8)(u32Addr >> 24);
-		b[2] = (uint8)(u32Addr >> 16);
-		b[3] = (uint8)(u32Addr >> 8);
-		b[4] = (uint8)u32Addr;
+		b[1] = (uint8_t)(u32Addr >> 24);
+		b[2] = (uint8_t)(u32Addr >> 16);
+		b[3] = (uint8_t)(u32Addr >> 8);
+		b[4] = (uint8_t)u32Addr;
 		b[5] = 0x04;
-		b[6] = (uint8)u32Val;
-		b[7] = (uint8)(u32Val >> 8);
-		b[8] = (uint8)(u32Val >> 16);
-		b[9] = (uint8)(u32Val >> 24);
+		b[6] = (uint8_t)u32Val;
+		b[7] = (uint8_t)(u32Val >> 8);
+		b[8] = (uint8_t)(u32Val >> 16);
+		b[9] = (uint8_t)(u32Val >> 24);
 		strI2c.u16Sz = 10;
 	}
 
@@ -186,19 +186,19 @@ sint8 nm_i2c_write_reg(uint32 u32Addr, uint32 u32Val)
 *	@date	11 July 2012
 *	@version	1.0
 */
-sint8 nm_i2c_read_block(uint32 u32Addr, uint8 *pu8Buf, uint16 u16Sz)
+int8_t nm_i2c_read_block(uint32_t u32Addr, uint8_t *pu8Buf, uint16_t u16Sz)
 {
 	tstrNmI2cDefault strI2c;
-	uint8 au8Buf[7];
-	sint8 s8Ret = M2M_SUCCESS;
+	uint8_t au8Buf[7];
+	int8_t s8Ret = M2M_SUCCESS;
 
 	au8Buf[0] = 0x02;
-	au8Buf[1] = (uint8)(u32Addr >> 24);
-	au8Buf[2] = (uint8)(u32Addr >> 16);
-	au8Buf[3] = (uint8)(u32Addr >> 8);
-	au8Buf[4] = (uint8)(u32Addr >> 0);
-	au8Buf[5] = (uint8)(u16Sz >> 8);
-	au8Buf[6] = (uint8)(u16Sz);
+	au8Buf[1] = (uint8_t)(u32Addr >> 24);
+	au8Buf[2] = (uint8_t)(u32Addr >> 16);
+	au8Buf[3] = (uint8_t)(u32Addr >> 8);
+	au8Buf[4] = (uint8_t)(u32Addr >> 0);
+	au8Buf[5] = (uint8_t)(u16Sz >> 8);
+	au8Buf[6] = (uint8_t)(u16Sz);
 
 	strI2c.pu8Buf = au8Buf;
 	strI2c.u16Sz = sizeof(au8Buf);
@@ -237,19 +237,19 @@ sint8 nm_i2c_read_block(uint32 u32Addr, uint8 *pu8Buf, uint16 u16Sz)
 *	@date	11 July 2012
 *	@version	1.0
 */
-sint8 nm_i2c_write_block(uint32 u32Addr, uint8 *pu8Buf, uint16 u16Sz)
+int8_t nm_i2c_write_block(uint32_t u32Addr, uint8_t *pu8Buf, uint16_t u16Sz)
 {
-	uint8 au8Buf[7];
+	uint8_t au8Buf[7];
 	tstrNmI2cSpecial strI2c;
-	sint8 s8Ret = M2M_SUCCESS;
+	int8_t s8Ret = M2M_SUCCESS;
 
 	au8Buf[0] = 0x12;
-	au8Buf[1] = (uint8)(u32Addr >> 24);
-	au8Buf[2] = (uint8)(u32Addr >> 16);
-	au8Buf[3] = (uint8)(u32Addr >> 8);
-	au8Buf[4] = (uint8)(u32Addr);
-	au8Buf[5] = (uint8)(u16Sz >> 8);
-	au8Buf[6] = (uint8)(u16Sz);
+	au8Buf[1] = (uint8_t)(u32Addr >> 24);
+	au8Buf[2] = (uint8_t)(u32Addr >> 16);
+	au8Buf[3] = (uint8_t)(u32Addr >> 8);
+	au8Buf[4] = (uint8_t)(u32Addr);
+	au8Buf[5] = (uint8_t)(u16Sz >> 8);
+	au8Buf[6] = (uint8_t)(u16Sz);
 
 	strI2c.pu8Buf1 = au8Buf;
 	strI2c.pu8Buf2 = pu8Buf;

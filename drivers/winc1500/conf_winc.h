@@ -4,7 +4,7 @@
  *
  * \brief WINC1500 configuration.
  *
- * Copyright (c) 2016 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2016-2017 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -46,12 +46,8 @@
 extern "C" {
 #endif
 
-#include "board.h"
-
 /* This configuration files comes with empty settings! */
-/* Default settings for SAML22 Xplained Pro with WINC on EXT1 are */
-/* available in comments for reference. */
-#warning Please modify conf_winc.h for WINC module settings!
+/* Default settings for SAMW25 Xplained Pro. */
 
 /*
    ---------------------------------
@@ -59,9 +55,15 @@ extern "C" {
    ---------------------------------
 */
 
-#define CONF_WINC_PIN_RESET				0 /* PIN_PA20 */
-#define CONF_WINC_PIN_CHIP_ENABLE		0 /* PIN_PC03 */
-#define CONF_WINC_PIN_WAKE				0 /* PIN_PA21 */
+#ifndef WINC1500_RESET_PIN
+  #define WINC1500_RESET_PIN  (GPIO_PIN(PB, 6))
+#endif
+#ifndef WINC1500_CHIP_EN_PIN
+  #define WINC1500_CHIP_EN_PIN (GPIO_PIN(PB, 5))
+#endif
+#ifndef WINC1500_WAKE_PIN
+  #define WINC1500_WAKE_PIN (GPIO_PIN(PB, 7))
+#endif
 
 /*
    ---------------------------------
@@ -72,27 +74,25 @@ extern "C" {
 #define CONF_WINC_USE_SPI				(1)
 
 /** SPI pin and instance settings. */
-#define CONF_WINC_SPI_MODULE			0 /* SERCOM3 */
-#define CONF_WINC_SPI_SERCOM_MUX		0 /* SPI_SIGNAL_MUX_SETTING_E */
-#define CONF_WINC_SPI_PINMUX_PAD0		0 /* PINMUX_PB02C_SERCOM3_PAD0 */ /* in */
-#define CONF_WINC_SPI_PINMUX_PAD1		0 /* PINMUX_PB02C_SERCOM3_PAD1 */ /* cs driven from software */
-#define CONF_WINC_SPI_PINMUX_PAD2		0 /* PINMUX_PB02C_SERCOM3_PAD2 */ /* out */
-#define CONF_WINC_SPI_PINMUX_PAD3		0 /* PINMUX_PB02C_SERCOM3_PAD3 */ /* sck */
-#define CONF_WINC_SPI_CS_PIN			0 /* PIN_PB21 */
-
-/** SPI interrupt pin. */
-#define CONF_WINC_SPI_INT_PIN			0 /* PIN_PC02A_EIC_EXTINT10 */
-#define CONF_WINC_SPI_INT_MUX			0 /* PINMUX_PC02A_EIC_EXTINT10 */
-#define CONF_WINC_SPI_INT_EIC			0 /* (10) */
+#if !defined(WINC1500_SPI)
+  #define WINC1500_SPI SPI_DEV(0)
+#endif
+#if !defined(WINC1500_INTN_PIN)
+  #define WINC1500_INTN_PIN   (GPIO_PIN(PB, 4))
+#endif
+#if !defined(WINC1500_SPI_CS_PIN)
+  #define WINC1500_SPI_CS_PIN (GPIO_PIN(PA, 5))
+#endif
 
 /** SPI clock. */
-#define CONF_WINC_SPI_CLOCK				(12000000)
+#define CONF_WINC_SPI_CLOCK				(10000000)
 
 /*
    ---------------------------------
    --------- Debug Options ---------
    ---------------------------------
 */
+#include <stdio.h>
 
 #define CONF_WINC_DEBUG					(1)
 #define CONF_WINC_PRINTF				printf

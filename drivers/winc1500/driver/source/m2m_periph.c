@@ -63,7 +63,7 @@ DATA TYPES
 /*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 STATIC FUNCTIONS
 *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*/
-static sint8 get_gpio_idx(uint8 u8GpioNum)
+static int8_t get_gpio_idx(uint8_t u8GpioNum)
 {
 	if(u8GpioNum >= M2M_PERIPH_GPIO_MAX) return -1;
 	if(u8GpioNum == M2M_PERIPH_GPIO15) { return 15;
@@ -80,9 +80,9 @@ static sint8 get_gpio_idx(uint8 u8GpioNum)
 /*
  * GPIO read/write skeleton with wakeup/sleep capability.
  */
-static sint8 gpio_ioctl(uint8 op, uint8 u8GpioNum, uint8 u8InVal, uint8 * pu8OutVal)
+static int8_t gpio_ioctl(uint8_t op, uint8_t u8GpioNum, uint8_t u8InVal, uint8_t * pu8OutVal)
 {
-	sint8 ret, gpio;
+	int8_t ret, gpio;
 
 	ret = hif_chip_wake();
 	if(ret != M2M_SUCCESS) goto _EXIT;
@@ -91,11 +91,11 @@ static sint8 gpio_ioctl(uint8 op, uint8 u8GpioNum, uint8 u8InVal, uint8 * pu8Out
 	if(gpio < 0) goto _EXIT1;
 
 	if(op == GPIO_OP_DIR) {
-		ret = set_gpio_dir((uint8)gpio, u8InVal);
+		ret = set_gpio_dir((uint8_t)gpio, u8InVal);
 	} else if(op == GPIO_OP_SET) {
-		ret = set_gpio_val((uint8)gpio, u8InVal);
+		ret = set_gpio_val((uint8_t)gpio, u8InVal);
 	} else if(op == GPIO_OP_GET) {
-		ret = get_gpio_val((uint8)gpio, pu8OutVal);
+		ret = get_gpio_val((uint8_t)gpio, pu8OutVal);
 	}
 	if(ret != M2M_SUCCESS) goto _EXIT1;
 
@@ -109,52 +109,52 @@ FUNCTION IMPLEMENTATION
 *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*/
 
 
-sint8 m2m_periph_init(tstrPerphInitParam * param)
+int8_t m2m_periph_init(tstrPerphInitParam * param)
 {
 	return M2M_SUCCESS;
 }
 
-sint8 m2m_periph_gpio_set_dir(uint8 u8GpioNum, uint8 u8GpioDir)
+int8_t m2m_periph_gpio_set_dir(uint8_t u8GpioNum, uint8_t u8GpioDir)
 {
 	return gpio_ioctl(GPIO_OP_DIR, u8GpioNum, u8GpioDir, NULL);
 }
 
-sint8 m2m_periph_gpio_set_val(uint8 u8GpioNum, uint8 u8GpioVal)
+int8_t m2m_periph_gpio_set_val(uint8_t u8GpioNum, uint8_t u8GpioVal)
 {
 	return gpio_ioctl(GPIO_OP_SET, u8GpioNum, u8GpioVal, NULL);
 }
 
-sint8 m2m_periph_gpio_get_val(uint8 u8GpioNum, uint8 * pu8GpioVal)
+int8_t m2m_periph_gpio_get_val(uint8_t u8GpioNum, uint8_t * pu8GpioVal)
 {
 	return gpio_ioctl(GPIO_OP_GET, u8GpioNum, 0, pu8GpioVal);
 }
 
-sint8 m2m_periph_gpio_pullup_ctrl(uint8 u8GpioNum, uint8 u8PullupEn)
+int8_t m2m_periph_gpio_pullup_ctrl(uint8_t u8GpioNum, uint8_t u8PullupEn)
 {
 	/* TBD */
 	return M2M_SUCCESS;
 }
 
-sint8 m2m_periph_i2c_master_init(tstrI2cMasterInitParam * param)
+int8_t m2m_periph_i2c_master_init(tstrI2cMasterInitParam * param)
 {
 	/* TBD */
 	return M2M_SUCCESS;
 }
 
-sint8 m2m_periph_i2c_master_write(uint8 u8SlaveAddr, uint8 * pu8Buf, uint16 u16BufLen, uint8 flags)
+int8_t m2m_periph_i2c_master_write(uint8_t u8SlaveAddr, uint8_t * pu8Buf, uint16_t u16BufLen, uint8_t flags)
 {
 	/* TBD */
 	return M2M_SUCCESS;
 }
 
-sint8 m2m_periph_i2c_master_read(uint8 u8SlaveAddr, uint8 * pu8Buf, uint16 u16BufLen, uint16 * pu16ReadLen, uint8 flags)
+int8_t m2m_periph_i2c_master_read(uint8_t u8SlaveAddr, uint8_t * pu8Buf, uint16_t u16BufLen, uint16_t * pu16ReadLen, uint8_t flags)
 {
 	/* TBD */
 	return M2M_SUCCESS;
 }
 
 
-sint8 m2m_periph_pullup_ctrl(uint32 pinmask, uint8 enable)
+int8_t m2m_periph_pullup_ctrl(uint32_t pinmask, uint8_t enable)
 {
 	return pullup_ctrl(pinmask, enable);
 }
