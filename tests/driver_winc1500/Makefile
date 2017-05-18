@@ -13,12 +13,11 @@ USEMODULE += winc1500
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
 # development process:
-#CFLAGS += -DDEVELHELP
+CFLAGS += -DDEVELHELP -g3 -ggdb3
 
 # add current directory to the include path. Putting it in CFLAGS will make
 # it go to the beginning, before the standard includes.
 # That way xbee_params.h get's included and auto configuration can pick it up.
-CFLAGS += -I$(CURDIR)
 CFLAGS += -I$(RIOTBASE)/drivers/winc1500
 
 include $(RIOTBASE)/Makefile.include

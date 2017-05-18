@@ -46,8 +46,30 @@
 extern "C" {
 #endif
 
-/* This configuration files comes with empty settings! */
-/* Default settings for SAMW25 Xplained Pro. */
+#include "board.h"
+
+/*
+   ---------------------------------
+   ---------- SPI settings ---------
+   ---------------------------------
+*/
+
+#define CONF_WINC_USE_SPI				(1)
+
+/** SPI pin and instance settings. */
+#ifndef WINC1500_SPI
+  #define WINC1500_SPI SPI_DEV(0)
+#endif
+#ifndef WINC1500_INTN_PIN
+  #define WINC1500_INTN_PIN   (GPIO_PIN(PB, 4))
+#endif
+#ifndef WINC1500_SPI_CS_PIN
+  #define WINC1500_SPI_CS_PIN (GPIO_PIN(PA, 5))
+#endif
+
+/** SPI clock. */ //TODO: Remove?
+#define CONF_WINC_SPI_CLOCK				SPI_CLK_10MHZ
+#define CONF_WINC_SPI_MODE				SPI_MODE_0
 
 /*
    ---------------------------------
@@ -65,27 +87,6 @@ extern "C" {
   #define WINC1500_WAKE_PIN (GPIO_PIN(PB, 7))
 #endif
 
-/*
-   ---------------------------------
-   ---------- SPI settings ---------
-   ---------------------------------
-*/
-
-#define CONF_WINC_USE_SPI				(1)
-
-/** SPI pin and instance settings. */
-#if !defined(WINC1500_SPI)
-  #define WINC1500_SPI SPI_DEV(0)
-#endif
-#if !defined(WINC1500_INTN_PIN)
-  #define WINC1500_INTN_PIN   (GPIO_PIN(PB, 4))
-#endif
-#if !defined(WINC1500_SPI_CS_PIN)
-  #define WINC1500_SPI_CS_PIN (GPIO_PIN(PA, 5))
-#endif
-
-/** SPI clock. */
-#define CONF_WINC_SPI_CLOCK				(10000000)
 
 /*
    ---------------------------------

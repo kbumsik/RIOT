@@ -52,8 +52,8 @@
 /*!< 
 *        Attribute used to define memory section to map Functions in host memory.
 */
-#ifndef CONST
-  #define CONST const
+#ifndef WINC1500_CONST
+  #define WINC1500_CONST const
 #endif
 
 /*!< 

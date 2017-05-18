@@ -1404,7 +1404,7 @@ NMI_API int8_t m2m_wifi_p2p_disconnect(void);
  /**@{*/
 /*!
 @fn	\
-	NMI_API int8_t m2m_wifi_enable_ap(CONST tstrM2MAPConfig* pstrM2MAPConfig);
+	NMI_API int8_t m2m_wifi_enable_ap(WINC1500_CONST tstrM2MAPConfig* pstrM2MAPConfig);
 
 @param [in]	pstrM2MAPConfig
 				A structure holding the AP configurations.

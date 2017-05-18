@@ -77,7 +77,7 @@ static int8_t spi_rw(uint8_t* pu8Mosi, uint8_t* pu8Miso, uint16_t u16Sz)
 		u8SkipMiso = 1;
 	}
 
-	spi_acquire(WINC1500_SPI, SPI_CS_UNDEF, SPI_MODE_0, SPI_CLK_10MHZ);
+	spi_acquire(WINC1500_SPI, SPI_CS_UNDEF, CONF_WINC_SPI_MODE, CONF_WINC_SPI_CLOCK);
 	gpio_clear(WINC1500_SPI_CS_PIN);
 
 	while (u16Sz) {
