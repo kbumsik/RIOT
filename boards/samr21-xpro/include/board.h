@@ -51,6 +51,20 @@ extern "C" {
                                      .reset_pin = GPIO_PIN(PB, 15)}
 
 /**
+ * @name    winc1500 configuration
+ *
+ * {spi bus, spi speed, cs pin, int pin, reset pin, sleep pin}
+ */
+#define WINC1500_SPI            (SPI_DEV(1))
+#define WINC1500_INTN_PIN       (GPIO_PIN(PA, 22))
+#define WINC1500_SPI_CS_PIN     (GPIO_PIN(PB, 3))  //TODO: check if it is correctly driven by software
+
+#define WINC1500_RESET_PIN      (GPIO_PIN(PA, 13))
+#define WINC1500_CHIP_EN_PIN    (GPIO_PIN(PA, 23))  // Internally pulled-down
+#define WINC1500_WAKE_PIN       (GPIO_PIN(PA, 28))
+/** @} */
+
+/**
  * @name    LED pin definitions and handlers
  * @{
  */
