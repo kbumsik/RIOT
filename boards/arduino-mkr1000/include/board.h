@@ -31,6 +31,21 @@
 extern "C" {
 #endif
 
+
+/**
+ * @name    winc1500 configuration
+ *
+ * {spi bus, spi speed, cs pin, int pin, reset pin, sleep pin}
+ */
+#define WINC1500_SPI            (SPI_DEV(1))
+#define WINC1500_INTN_PIN       (GPIO_PIN(PB, 9))
+#define WINC1500_SPI_CS_PIN     (GPIO_PIN(PA, 14))  //TODO: check if it is correctly driven by software
+
+#define WINC1500_RESET_PIN      (GPIO_PIN(PA, 27))  // Internally pulled-down
+#define WINC1500_CHIP_EN_PIN    (GPIO_PIN(PA, 28))  // Internally pulled-down
+#define WINC1500_WAKE_PIN       (GPIO_PIN(PB, 8))
+/** @} */
+
 /**
  * @name   LED pin definitions and handlers
  * @{

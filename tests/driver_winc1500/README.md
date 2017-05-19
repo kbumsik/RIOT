@@ -23,3 +23,21 @@
 |:---:|-----------|
 | 11  | I2C_SDA   |
 | 12  | I2C_SCL   |
+
+
+## Porting note
+
+- MKR1000 is not responding.
+    - I suspect it's interrupt problem
+    - Need to look at intruppt counter
+    ```
+    static void isr(void)
+    {
+    	gu8Interrupt++;
+    #ifdef NM_LEVEL_INTERRUPT
+    	nm_bsp_interrupt_ctrl(0);
+    #endif
+    }
+    ```
+    in m2m_hif.c
+- moving m2m_wifi_connect outside

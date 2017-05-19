@@ -58,7 +58,7 @@ extern "C" {
 
 /** SPI pin and instance settings. */
 #ifndef WINC1500_SPI
-  #define WINC1500_SPI SPI_DEV(0)
+  #define WINC1500_SPI        (SPI_DEV(0))
 #endif
 #ifndef WINC1500_INTN_PIN
   #define WINC1500_INTN_PIN   (GPIO_PIN(PB, 4))

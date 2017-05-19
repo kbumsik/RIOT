@@ -97,6 +97,9 @@
 #define MAIN_WLAN_PSK         "stony2014" /* < Password for Destination SSID */
 
 /* Gloabal flags */
+static volatile enum {
+	SCAN_STOPPED = 0, SCAN_ONLY = 1, SCAN_CONNECTING = 2
+	} state_scanning = SCAN_STOPPED;
 static volatile uint8_t state_connected = 0;
 static volatile uint8_t state_rssi_updated = 0;
 static volatile int8_t *rssi;
@@ -108,7 +111,7 @@ static uint8_t num_founded_ap = 0;
 /* Shell functions */
 static int _init(int argc, char **argv);
 static int _chipinfo(int argc, char **argv);
-//static int _scan(int argc, char **argv);
+static int _scan(int argc, char **argv);
 static int _connect(int argc, char **argv);
 static int _rssi(int argc, char **argv);
 
@@ -118,7 +121,7 @@ static void wifi_cb(uint8_t u8MsgType, void *pvMsg);
 static const shell_command_t shell_commands[] = {
     { "init", "initializes WINC1500 module", _init },
     { "chipinfo", "Display WINC1500 module", _chipinfo },
-    //{ "scan", "Scan for Access Points available", _scan },
+    { "scan", "Scan for Access Points available", _scan },
     { "connect", "Connect to an Access Point", _connect },
     { "rssi", "Display RSSI for the connected AP", _rssi },
     { NULL, NULL, NULL }
@@ -161,7 +164,9 @@ static void wifi_cb(uint8_t u8MsgType, void *pvMsg)
 		uint16_t scan_ssid_len = strlen((const char *)pstrScanResult->au8SSID);
 
 		/* display founded AP. */
-		printf("[%d] SSID:%s\r\n", scan_request_index, pstrScanResult->au8SSID);
+		if (state_scanning == SCAN_ONLY) {
+			printf("[%d] SSID:%s\r\n", scan_request_index, pstrScanResult->au8SSID);
+		}
 
 		num_founded_ap = m2m_wifi_get_num_ap_found();
 		if (scan_ssid_len) {
@@ -176,12 +181,6 @@ static void wifi_cb(uint8_t u8MsgType, void *pvMsg)
 				 * Initiate a connection request.
 				 */
 				printf("Found %s \r\n", MAIN_WLAN_SSID);
-				m2m_wifi_connect((char *)MAIN_WLAN_SSID,
-						sizeof(MAIN_WLAN_SSID),
-						MAIN_WLAN_AUTH,
-						(void *)MAIN_WLAN_PSK,
-						M2M_WIFI_CH_ALL);
-				break;
 			}
 		}
 
@@ -189,8 +188,8 @@ static void wifi_cb(uint8_t u8MsgType, void *pvMsg)
 			m2m_wifi_req_scan_result(scan_request_index);
 			scan_request_index++;
 		} else {
-			printf("can not find AP %s\r\n", MAIN_WLAN_SSID);
-			m2m_wifi_request_scan(M2M_WIFI_CH_ALL);
+			/* Scanning Finished */
+			state_scanning = SCAN_STOPPED;
 		}
 
 		break;
@@ -202,6 +201,7 @@ static void wifi_cb(uint8_t u8MsgType, void *pvMsg)
 		if (pstrWifiState->u8CurrState == M2M_WIFI_CONNECTED) {
 			m2m_wifi_request_dhcp_client();
 		} else if (pstrWifiState->u8CurrState == M2M_WIFI_DISCONNECTED) {
+			state_connected = 0;
 			printf("Wi-Fi disconnected\n");
 		}
 		break;
@@ -210,6 +210,7 @@ static void wifi_cb(uint8_t u8MsgType, void *pvMsg)
 	case M2M_WIFI_REQ_DHCP_CONF:
 	{
 		uint8_t *pu8IPAddress = (uint8_t *)pvMsg;
+		state_scanning = SCAN_STOPPED;
 		state_connected = 1;
 		printf("Wi-Fi connected\r\n");
 		printf("Wi-Fi IP is %u.%u.%u.%u\r\n",
@@ -227,6 +228,7 @@ static void wifi_cb(uint8_t u8MsgType, void *pvMsg)
 
 	default:
 	{
+		printf("Unknown WiFi message: %d\n", u8MsgType);
 		break;
 	}
 	}
@@ -291,13 +293,51 @@ static int _chipinfo(int argc, char **argv)
     return 0;
 }
 
+static int _scan(int argc, char **argv)
+{
+	volatile int8_t state = 0;
+	
+	/* Wait for other scanning request */
+	while (state_scanning != SCAN_STOPPED) {
+	} 
+	/* Request scan. */
+	state_scanning = SCAN_ONLY;
+	m2m_wifi_request_scan(M2M_WIFI_CH_ALL);
+
+	while (1) {
+		/* Handle pending events from network controller. */
+		while (m2m_wifi_handle_events(NULL) != M2M_SUCCESS) {
+		}
+		state = state_scanning;
+		if (state != SCAN_ONLY) {
+			break;
+		}
+	}
+	if (state == SCAN_STOPPED) {
+    	puts("[OK]");
+		return 0;
+	} else {
+		return -1;
+	}
+
+}
+
 static int _connect(int argc, char **argv)
 {
 	volatile uint8_t state = 0;
 	
-	/* Request scan. */
-	m2m_wifi_request_scan(M2M_WIFI_CH_ALL);
-
+	/* Wait for other scanning request */
+	while (state_scanning != SCAN_STOPPED) {
+	} 
+	/* Request scan and connecting. */
+	state_scanning = SCAN_CONNECTING;
+	state_connected = 0;
+	
+	m2m_wifi_connect((char *)MAIN_WLAN_SSID,
+			sizeof(MAIN_WLAN_SSID),
+			MAIN_WLAN_AUTH,
+			(void *)MAIN_WLAN_PSK,
+			M2M_WIFI_CH_ALL);
 	while (1) {
 		/* Handle pending events from network controller. */
 		while (m2m_wifi_handle_events(NULL) != M2M_SUCCESS) {
@@ -308,6 +348,7 @@ static int _connect(int argc, char **argv)
 		}
 	}
 	if (state == 1) {
+    	puts("[OK]");
 		return 0;
 	} else {
 		return -1;
