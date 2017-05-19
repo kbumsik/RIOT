@@ -4,7 +4,7 @@
  *
  * \brief This module contains NMC1500 ASIC specific internal APIs.
  *
- * Copyright (c) 2016-2017 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2016 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -67,10 +67,9 @@
 #define REV_B0         (0x2B0)
 #define REV_3A0        (0x3A0)
 #define GET_CHIPID()	nmi_get_chipid()
-#define ISNMC1000(id)   ((((id) & 0xfffff000) == 0x100000) ? 1 : 0)
-#define ISNMC1500(id)   ((((id) & 0xfffff000) == 0x150000) ? 1 : 0)
-#define ISNMC3000(id)   ((((id) & 0xfff00000) == 0x300000) ? 1 : 0)
-#define REV(id)         (((id) & 0x00000fff ))
+#define ISNMC1000(id)   (((id & 0xfffff000) == 0x100000) ? 1 : 0)
+#define ISNMC1500(id)   (((id & 0xfffff000) == 0x150000) ? 1 : 0)
+#define REV(id)         ( ((id) & 0x00000fff ) )
 #define EFUSED_MAC(value) (value & 0xffff0000)
 
 #define rHAVE_SDIO_IRQ_GPIO_BIT     (NBIT0)
@@ -81,135 +80,69 @@
 #define rHAVE_LEGACY_RF_SETTINGS    (NBIT5)
 #define rHAVE_LOGS_DISABLED_BIT		(NBIT6)
 #define rHAVE_ETHERNET_MODE_BIT		(NBIT7)
-#define rHAVE_RESERVED1_BIT     	(NBIT8)
 
 typedef struct{
-	uint32_t u32Mac_efuse_mib;
-	uint32_t u32Firmware_Ota_rev;
+	uint32 u32Mac_efuse_mib;
+	uint32 u32Firmware_Ota_rev;
 }tstrGpRegs;
 
 #ifdef __cplusplus
      extern "C" {
-#endif
+ #endif
+/**
+*	@fn		nm_clkless_wake
+*	@brief	Wakeup the chip using clockless registers
+*	@return	ZERO in case of success and M2M_ERR_BUS_FAIL in case of failure
+*	@author	Samer Sarhan
+*/
+sint8 nm_clkless_wake(void);
 
-/*
-*	@fn		cpu_halt
-*	@brief	
-*/
-int8_t cpu_halt(void);
-/*
-*	@fn		chip_sleep
-*	@brief	
-*/
-int8_t chip_sleep(void);
-/*
-*	@fn		chip_wake
-*	@brief	
-*/
-int8_t chip_wake(void);
-/*
-*	@fn		chip_idle
-*	@brief	
-*/
+sint8 chip_wake(void);
+
 void chip_idle(void);
-/*
-*	@fn		enable_interrupts
-*	@brief	
-*/
-int8_t enable_interrupts(void);
-/*
-*	@fn		cpu_start	
-*	@brief	
-*/
-int8_t cpu_start(void);
-/*
-*	@fn		nmi_get_chipid
-*	@brief	
-*/
-uint32_t nmi_get_chipid(void);
-/*
-*	@fn		nmi_get_rfrevid
-*	@brief	
-*/
-uint32_t nmi_get_rfrevid(void);
-/*
-*	@fn		restore_pmu_settings_after_global_reset
-*	@brief	
-*/
+
+void enable_rf_blocks(void);
+
+sint8 enable_interrupts(void);
+
+sint8 cpu_start(void);
+
+uint32 nmi_get_chipid(void);
+
+uint32 nmi_get_rfrevid(void);
+
 void restore_pmu_settings_after_global_reset(void);
-/*
-*	@fn		nmi_update_pll
-*	@brief	
-*/
+
 void nmi_update_pll(void);
-/*
-*	@fn		nmi_set_sys_clk_src_to_xo
-*	@brief	
-*/
+
 void nmi_set_sys_clk_src_to_xo(void);
-/*
-*	@fn		chip_reset
-*	@brief	
-*/
-int8_t chip_reset(void);
-/*
-*	@fn		wait_for_bootrom
-*	@brief	
-*/
-int8_t wait_for_bootrom(uint8_t);
-/*
-*	@fn		wait_for_firmware_start
-*	@brief	
-*/
-int8_t wait_for_firmware_start(uint8_t);
-/*
-*	@fn		chip_deinit
-*	@brief	
-*/
-int8_t chip_deinit(void);
-/*
-*	@fn		chip_reset_and_cpu_halt
-*	@brief	
-*/
-int8_t chip_reset_and_cpu_halt(void);
-/*
-*	@fn		set_gpio_dir
-*	@brief	
-*/
-int8_t set_gpio_dir(uint8_t gpio, uint8_t dir);
-/*
-*	@fn		set_gpio_val
-*	@brief	
-*/
-int8_t set_gpio_val(uint8_t gpio, uint8_t val);
-/*
-*	@fn		get_gpio_val
-*	@brief	
-*/
-int8_t get_gpio_val(uint8_t gpio, uint8_t* val);
-/*
-*	@fn		pullup_ctrl
-*	@brief	
-*/
-int8_t pullup_ctrl(uint32_t pinmask, uint8_t enable);
-/*
-*	@fn		nmi_get_otp_mac_address
-*	@brief	
-*/
-int8_t nmi_get_otp_mac_address(uint8_t *pu8MacAddr, uint8_t * pu8IsValid);
-/*
-*	@fn		nmi_get_mac_address
-*	@brief	
-*/
-int8_t nmi_get_mac_address(uint8_t *pu8MacAddr);
-/*
-*	@fn		chip_apply_conf
-*	@brief	
-*/
-int8_t chip_apply_conf(uint32_t u32conf);
+
+sint8 chip_reset(void);
+
+sint8 wait_for_bootrom(uint8);
+
+sint8 wait_for_firmware_start(uint8);
+
+sint8 chip_deinit(void);
+
+sint8 chip_reset_and_cpu_halt(void);
+
+sint8 set_gpio_dir(uint8 gpio, uint8 dir);
+
+sint8 set_gpio_val(uint8 gpio, uint8 val);
+
+sint8 get_gpio_val(uint8 gpio, uint8* val);
+
+sint8 pullup_ctrl(uint32 pinmask, uint8 enable);
+
+sint8 nmi_get_otp_mac_address(uint8 *pu8MacAddr, uint8 * pu8IsValid);
+
+sint8 nmi_get_mac_address(uint8 *pu8MacAddr);
+
+sint8 chip_apply_conf(uint32 u32conf);
 
 #ifdef __cplusplus
 	 }
-#endif
+ #endif
 
 #endif	/*_NMASIC_H_*/

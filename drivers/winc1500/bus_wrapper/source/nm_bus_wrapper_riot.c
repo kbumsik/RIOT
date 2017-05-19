@@ -103,17 +103,17 @@ static int8_t spi_rw(uint8_t* pu8Mosi, uint8_t* pu8Miso, uint16_t u16Sz)
 *	@brief	Initialize the bus wrapper
 *	@return	M2M_SUCCESS in case of success and M2M_ERR_BUS_FAIL in case of failure
 */
-int8_t nm_bus_init(void *pvinit)
+sint8 nm_bus_init(void *pvinit)
 {
-	int8_t result = M2M_SUCCESS;
-	
-	/* Configure SPI peripheral. */
-	spi_init(WINC1500_SPI);
+	sint8 result = M2M_SUCCESS;
 	
 	/* Configure CS PIN. */
 	/* This step will set the CS high */
 	gpio_init(WINC1500_SPI_CS_PIN, GPIO_OUT);
 	gpio_set(WINC1500_SPI_CS_PIN);
+
+	/* Configure SPI peripheral. */
+	spi_init(WINC1500_SPI);
 
 	/* Reset WINC1500. */
 	nm_bsp_reset();
@@ -131,9 +131,9 @@ int8_t nm_bus_init(void *pvinit)
 *	@return	M2M_SUCCESS in case of success and M2M_ERR_BUS_FAIL in case of failure
 *	@note	For SPI only, it's important to be able to send/receive at the same time
 */
-int8_t nm_bus_ioctl(uint8_t u8Cmd, void* pvParameter)
+sint8 nm_bus_ioctl(uint8 u8Cmd, void* pvParameter)
 {
-	int8_t s8Ret = 0;
+	sint8 s8Ret = 0;
 	switch(u8Cmd)
 	{
 		case NM_BUS_IOCTL_RW: {
@@ -154,10 +154,10 @@ int8_t nm_bus_ioctl(uint8_t u8Cmd, void* pvParameter)
 *	@fn		nm_bus_deinit
 *	@brief	De-initialize the bus wrapper
 */
-int8_t nm_bus_deinit(void)
+sint8 nm_bus_deinit(void)
 {
 	int8_t result = M2M_SUCCESS;
-	// TODO: Deinit SPI?
+	/* Code for Disabling SPI bus */
 	return result;
 }
 
@@ -168,7 +168,7 @@ int8_t nm_bus_deinit(void)
 *					re-init configuration data
 *	@return		M2M_SUCCESS in case of success and M2M_ERR_BUS_FAIL in case of failure
 */
-int8_t nm_bus_reinit(void* config)
+sint8 nm_bus_reinit(void* config)
 {
 	return M2M_SUCCESS;
 }

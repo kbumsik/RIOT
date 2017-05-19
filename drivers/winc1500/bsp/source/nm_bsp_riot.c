@@ -84,7 +84,7 @@ static void init_chip_pins(void)
  *	@brief	Initialize BSP
  *	@return	0 in case of success and -1 in case of failure
  */
-int8_t nm_bsp_init(void)
+sint8 nm_bsp_init(void)
 {
 	gpfIsr = NULL;
 
@@ -94,6 +94,8 @@ int8_t nm_bsp_init(void)
 	/* Perform chip reset. */
 	nm_bsp_reset();
 
+	// TODO: Enable global interrupt?
+
 	return M2M_SUCCESS;
 }
 
@@ -102,7 +104,7 @@ int8_t nm_bsp_init(void)
  *	@brief	De-iInitialize BSP
  *	@return	0 in case of success and -1 in case of failure
  */
-int8_t nm_bsp_deinit(void)
+sint8 nm_bsp_deinit(void)
 {
 	/* Configure control pins as input no pull up. */
 	gpio_clear(WINC1500_RESET_PIN);
@@ -143,7 +145,10 @@ void nm_bsp_reset(void)
  */
 void nm_bsp_sleep(uint32_t u32TimeMsec)
 {
-	xtimer_usleep(u32TimeMsec);	// TODO: Or loop?
+	while (u32TimeMsec--) {
+		xtimer_usleep(1);	// TODO: Or loop?
+	}
+	
 }
 
 /*
@@ -164,7 +169,7 @@ void nm_bsp_register_isr(tpfNmBspIsr pfIsr)
  *	@param[IN]	u8Enable
  *				'0' disable interrupts. '1' enable interrupts
  */
-void nm_bsp_interrupt_ctrl(uint8_t u8Enable)
+void nm_bsp_interrupt_ctrl(uint8 u8Enable)
 {
 	if (u8Enable) {
 		gpio_init_int(WINC1500_INTN_PIN, GPIO_IN, GPIO_FALLING, chip_isr, NULL);
