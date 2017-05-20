@@ -2,8 +2,6 @@ APPLICATION = driver_winc1500
 include ../Makefile.tests_common
 ####################
 #####################
-
-BOARD ?= samd21-xpro
 FEATURES_REQUIRED = periph_uart periph_spi periph_gpio 
 
 USEMODULE += shell
