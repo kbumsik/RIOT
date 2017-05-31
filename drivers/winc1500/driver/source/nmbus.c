@@ -4,7 +4,7 @@
  *
  * \brief This module contains NMC1000 bus APIs implementation.
  *
- * Copyright (c) 2016 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2016-2017 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -55,11 +55,10 @@
 *	@date	11 July 2012
 *	@version	1.0
 */
-sint8 nm_bus_iface_init(void *pvInitVal)
+int8_t nm_bus_iface_init(void *pvInitVal)
 {
-	sint8 ret = M2M_SUCCESS;
+	int8_t ret = M2M_SUCCESS;
 	ret = nm_bus_init(pvInitVal);
-
 	return ret;
 }
 
@@ -71,10 +70,30 @@ sint8 nm_bus_iface_init(void *pvInitVal)
 *	@date	07 April 2014
 *	@version	1.0
 */
-sint8 nm_bus_iface_deinit(void)
+int8_t nm_bus_iface_deinit(void)
 {
-	sint8 ret = M2M_SUCCESS;
+	int8_t ret = M2M_SUCCESS;
 	ret = nm_bus_deinit();
+
+	return ret;
+}
+
+/**
+*	@fn		nm_bus_reset
+*	@brief	reset bus interface
+*	@return	M2M_SUCCESS in case of success and M2M_ERR_BUS_FAIL in case of failure
+*	@version	1.0
+*/
+int8_t nm_bus_reset(void)
+{
+	int8_t ret = M2M_SUCCESS;
+#ifdef CONF_WINC_USE_UART
+#elif defined (CONF_WINC_USE_SPI)
+	return nm_spi_reset();
+#elif defined (CONF_WINC_USE_I2C)
+#else
+#error "Plesae define bus usage"
+#endif
 
 	return ret;
 }
@@ -87,9 +106,9 @@ sint8 nm_bus_iface_deinit(void)
 *	@date	22 Oct 2014
 *	@version	1.0
 */
-sint8 nm_bus_iface_reconfigure(void *ptr)
+int8_t nm_bus_iface_reconfigure(void *ptr)
 {
-	sint8 ret = M2M_SUCCESS;
+	int8_t ret = M2M_SUCCESS;
 #ifdef CONF_WINC_USE_UART
 	ret = nm_uart_reconfigure(ptr);
 #endif
@@ -105,7 +124,7 @@ sint8 nm_bus_iface_reconfigure(void *ptr)
 *	@date	11 July 2012
 *	@version	1.0
 */
-uint32 nm_read_reg(uint32 u32Addr)
+uint32_t nm_read_reg(uint32_t u32Addr)
 {
 #ifdef CONF_WINC_USE_UART
 	return nm_uart_read_reg(u32Addr);
@@ -131,7 +150,7 @@ uint32 nm_read_reg(uint32 u32Addr)
 *	@date	11 July 2012
 *	@version	1.0
 */
-sint8 nm_read_reg_with_ret(uint32 u32Addr, uint32* pu32RetVal)
+int8_t nm_read_reg_with_ret(uint32_t u32Addr, uint32_t* pu32RetVal)
 {
 #ifdef CONF_WINC_USE_UART
 	return nm_uart_read_reg_with_ret(u32Addr,pu32RetVal);
@@ -156,7 +175,7 @@ sint8 nm_read_reg_with_ret(uint32 u32Addr, uint32* pu32RetVal)
 *	@date	11 July 2012
 *	@version	1.0
 */
-sint8 nm_write_reg(uint32 u32Addr, uint32 u32Val)
+int8_t nm_write_reg(uint32_t u32Addr, uint32_t u32Val)
 {
 #ifdef CONF_WINC_USE_UART
 	return nm_uart_write_reg(u32Addr,u32Val);
@@ -169,7 +188,7 @@ sint8 nm_write_reg(uint32 u32Addr, uint32 u32Val)
 #endif
 }
 
-static sint8 p_nm_read_block(uint32 u32Addr, uint8 *puBuf, uint16 u16Sz)
+static int8_t p_nm_read_block(uint32_t u32Addr, uint8_t *puBuf, uint16_t u16Sz)
 {
 #ifdef CONF_WINC_USE_UART
 	return nm_uart_read_block(u32Addr,puBuf,u16Sz);
@@ -195,18 +214,18 @@ static sint8 p_nm_read_block(uint32 u32Addr, uint8 *puBuf, uint16 u16Sz)
 *	@author	M. Abdelmawla
 *	@date	11 July 2012
 *	@version	1.0
-*/
-sint8 nm_read_block(uint32 u32Addr, uint8 *puBuf, uint32 u32Sz)
+*/ 
+int8_t nm_read_block(uint32_t u32Addr, uint8_t *puBuf, uint32_t u32Sz)
 {
-	uint16 u16MaxTrxSz = egstrNmBusCapabilities.u16MaxTrxSz - MAX_TRX_CFG_SZ;
-	uint32 off = 0;
-	sint8 s8Ret = M2M_SUCCESS;
+	uint16_t u16MaxTrxSz = egstrNmBusCapabilities.u16MaxTrxSz - MAX_TRX_CFG_SZ;
+	uint32_t off = 0;
+	int8_t s8Ret = M2M_SUCCESS;
 
 	for(;;)
 	{
 		if(u32Sz <= u16MaxTrxSz)
 		{
-			s8Ret += p_nm_read_block(u32Addr, &puBuf[off], (uint16)u32Sz);
+			s8Ret += p_nm_read_block(u32Addr, &puBuf[off], (uint16_t)u32Sz);	
 			break;
 		}
 		else
@@ -222,7 +241,7 @@ sint8 nm_read_block(uint32 u32Addr, uint8 *puBuf, uint32 u32Sz)
 	return s8Ret;
 }
 
-static sint8 p_nm_write_block(uint32 u32Addr, uint8 *puBuf, uint16 u16Sz)
+static int8_t p_nm_write_block(uint32_t u32Addr, uint8_t *puBuf, uint16_t u16Sz)
 {
 #ifdef CONF_WINC_USE_UART
 	return nm_uart_write_block(u32Addr,puBuf,u16Sz);
@@ -248,18 +267,18 @@ static sint8 p_nm_write_block(uint32 u32Addr, uint8 *puBuf, uint16 u16Sz)
 *	@author	M. Abdelmawla
 *	@date	11 July 2012
 *	@version	1.0
-*/
-sint8 nm_write_block(uint32 u32Addr, uint8 *puBuf, uint32 u32Sz)
+*/ 
+int8_t nm_write_block(uint32_t u32Addr, uint8_t *puBuf, uint32_t u32Sz)
 {
-	uint16 u16MaxTrxSz = egstrNmBusCapabilities.u16MaxTrxSz - MAX_TRX_CFG_SZ;
-	uint32 off = 0;
-	sint8 s8Ret = M2M_SUCCESS;
+	uint16_t u16MaxTrxSz = egstrNmBusCapabilities.u16MaxTrxSz - MAX_TRX_CFG_SZ;
+	uint32_t off = 0;
+	int8_t s8Ret = M2M_SUCCESS;
 
 	for(;;)
 	{
 		if(u32Sz <= u16MaxTrxSz)
 		{
-			s8Ret += p_nm_write_block(u32Addr, &puBuf[off], (uint16)u32Sz);
+			s8Ret += p_nm_write_block(u32Addr, &puBuf[off], (uint16_t)u32Sz);	
 			break;
 		}
 		else

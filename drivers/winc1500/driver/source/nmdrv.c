@@ -4,7 +4,7 @@
  *
  * \brief This module contains NMC1000 M2M driver APIs implementation.
  *
- * Copyright (c) 2016 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2016-2017 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -58,11 +58,11 @@
 *			    pointer holds address of structure "tstrM2mRev" that contains the firmware version parameters
 *	@version	1.0
 */
-sint8 nm_get_firmware_info(tstrM2mRev* M2mRev)
+int8_t nm_get_firmware_info(tstrM2mRev* M2mRev)
 {
-	uint16  curr_drv_ver, min_req_drv_ver,curr_firm_ver;
-	uint32	reg = 0;
-	sint8	ret = M2M_SUCCESS;
+	uint16_t  curr_drv_ver, min_req_drv_ver,curr_firm_ver;
+	uint32_t	reg = 0;
+	int8_t	ret = M2M_SUCCESS;
 
 	ret = nm_read_reg_with_ret(NMI_REV_REG, &reg);
 	//In case the Firmware running is ATE fw
@@ -78,19 +78,30 @@ sint8 nm_get_firmware_info(tstrM2mRev* M2mRev)
 	M2mRev->u8FirmwareMinor = M2M_GET_FW_MINOR(reg);
 	M2mRev->u8FirmwarePatch = M2M_GET_FW_PATCH(reg);
 	M2mRev->u32Chipid	= nmi_get_chipid();
-	
+	M2mRev->u16FirmwareSvnNum = 0;
+
 	curr_firm_ver   = M2M_MAKE_VERSION(M2mRev->u8FirmwareMajor, M2mRev->u8FirmwareMinor,M2mRev->u8FirmwarePatch);
-	curr_drv_ver    = M2M_MAKE_VERSION(M2M_DRIVER_VERSION_MAJOR_NO, M2M_DRIVER_VERSION_MINOR_NO, M2M_DRIVER_VERSION_PATCH_NO);
+	curr_drv_ver    = M2M_MAKE_VERSION(M2M_RELEASE_VERSION_MAJOR_NO, M2M_RELEASE_VERSION_MINOR_NO, M2M_RELEASE_VERSION_PATCH_NO);
 	min_req_drv_ver = M2M_MAKE_VERSION(M2mRev->u8DriverMajor, M2mRev->u8DriverMinor,M2mRev->u8DriverPatch);
 	if(curr_drv_ver <  min_req_drv_ver) {
 		/*The current driver version should be larger or equal 
 		than the min driver that the current firmware support  */
 		ret = M2M_ERR_FW_VER_MISMATCH;
 	}
+#ifdef RIOT_VERSION
+	// To avoid version mismatch error.
+	// Current driver is 19.5.2
+	uint16_t curr_min_drv_ver = M2M_MAKE_VERSION(19, 4, 4);
+	if(curr_min_drv_ver >  curr_firm_ver) {
+		/*The current driver should be equal or less than the firmware version*/
+		ret = M2M_ERR_FW_VER_MISMATCH;
+	}
+#else
 	if(curr_drv_ver >  curr_firm_ver) {
 		/*The current driver should be equal or less than the firmware version*/
 		ret = M2M_ERR_FW_VER_MISMATCH;
 	}
+#endif
 	return ret;
 }
 /**
@@ -100,32 +111,32 @@ sint8 nm_get_firmware_info(tstrM2mRev* M2mRev)
 *			    pointer holds address of structure "tstrM2mRev" that contains the firmware version parameters
 *	@version	1.0
 */
-sint8 nm_get_firmware_full_info(tstrM2mRev* pstrRev)
+int8_t nm_get_firmware_full_info(tstrM2mRev* pstrRev)
 {
-	uint16  curr_drv_ver, min_req_drv_ver,curr_firm_ver;
-	uint32	reg = 0;
-	sint8	ret = M2M_SUCCESS;
+	uint16_t  curr_drv_ver, min_req_drv_ver,curr_firm_ver;
+	uint32_t	reg = 0;
+	int8_t	ret = M2M_SUCCESS;
 	tstrGpRegs strgp = {0};
 	if (pstrRev != NULL)
 	{
-		m2m_memset((uint8*)pstrRev,0,sizeof(tstrM2mRev));
+		m2m_memset((uint8_t*)pstrRev,0,sizeof(tstrM2mRev));
 		ret = nm_read_reg_with_ret(rNMI_GP_REG_2, &reg);
 		if(ret == M2M_SUCCESS)
 		{
 			if(reg != 0)
 			{
-				ret = nm_read_block(reg|0x30000,(uint8*)&strgp,sizeof(tstrGpRegs));
+				ret = nm_read_block(reg|0x30000,(uint8_t*)&strgp,sizeof(tstrGpRegs));
 				if(ret == M2M_SUCCESS)
 				{
 					reg = strgp.u32Firmware_Ota_rev;
 					reg &= 0x0000ffff;
 					if(reg != 0)
 					{
-						ret = nm_read_block(reg|0x30000,(uint8*)pstrRev,sizeof(tstrM2mRev));
+						ret = nm_read_block(reg|0x30000,(uint8_t*)pstrRev,sizeof(tstrM2mRev));
 						if(ret == M2M_SUCCESS)
 						{
 							curr_firm_ver   = M2M_MAKE_VERSION(pstrRev->u8FirmwareMajor, pstrRev->u8FirmwareMinor,pstrRev->u8FirmwarePatch);
-							curr_drv_ver    = M2M_MAKE_VERSION(M2M_DRIVER_VERSION_MAJOR_NO, M2M_DRIVER_VERSION_MINOR_NO, M2M_DRIVER_VERSION_PATCH_NO);
+							curr_drv_ver    = M2M_MAKE_VERSION(M2M_RELEASE_VERSION_MAJOR_NO, M2M_RELEASE_VERSION_MINOR_NO, M2M_RELEASE_VERSION_PATCH_NO);
 							min_req_drv_ver = M2M_MAKE_VERSION(pstrRev->u8DriverMajor, pstrRev->u8DriverMinor,pstrRev->u8DriverPatch);
 							if((curr_firm_ver == 0)||(min_req_drv_ver == 0)||(min_req_drv_ver == 0)){
 								ret = M2M_ERR_FAIL;
@@ -137,11 +148,20 @@ sint8 nm_get_firmware_full_info(tstrM2mRev* pstrRev)
 								ret = M2M_ERR_FW_VER_MISMATCH;
 								goto EXIT;
 							}
+#ifdef RIOT_VERSION
+							uint16_t curr_min_drv_ver = M2M_MAKE_VERSION(19, 4, 4);
+							if(curr_min_drv_ver >  curr_firm_ver) {
+								/*The current driver should be equal or less than the firmware version*/
+								ret = M2M_ERR_FW_VER_MISMATCH;
+								goto EXIT;
+							}
+#else
 							if(curr_drv_ver >  curr_firm_ver) {
 								/*The current driver should be equal or less than the firmware version*/
 								ret = M2M_ERR_FW_VER_MISMATCH;
 								goto EXIT;
 							}
+#endif
 						}
 					}else {
 						ret = M2M_ERR_FAIL;
@@ -163,33 +183,33 @@ EXIT:
 			
 *	@version	1.0
 */
-sint8 nm_get_ota_firmware_info(tstrM2mRev* pstrRev)
+int8_t nm_get_ota_firmware_info(tstrM2mRev* pstrRev)
 {
-	uint16  curr_drv_ver, min_req_drv_ver,curr_firm_ver;
-	uint32	reg = 0;
-	sint8	ret;
+	uint16_t  curr_drv_ver, min_req_drv_ver,curr_firm_ver;
+	uint32_t	reg = 0;
+	int8_t	ret;
 	tstrGpRegs strgp = {0};
 
 	if (pstrRev != NULL)
 	{
-		m2m_memset((uint8*)pstrRev,0,sizeof(tstrM2mRev));
+		m2m_memset((uint8_t*)pstrRev,0,sizeof(tstrM2mRev));
 		ret = nm_read_reg_with_ret(rNMI_GP_REG_2, &reg);
 		if(ret == M2M_SUCCESS)
 		{
 			if(reg != 0)
 			{
-				ret = nm_read_block(reg|0x30000,(uint8*)&strgp,sizeof(tstrGpRegs));
+				ret = nm_read_block(reg|0x30000,(uint8_t*)&strgp,sizeof(tstrGpRegs));
 				if(ret == M2M_SUCCESS)
 				{
 					reg = strgp.u32Firmware_Ota_rev;
 					reg >>= 16;
 					if(reg != 0)
 					{
-						ret = nm_read_block(reg|0x30000,(uint8*)pstrRev,sizeof(tstrM2mRev));
+						ret = nm_read_block(reg|0x30000,(uint8_t*)pstrRev,sizeof(tstrM2mRev));
 						if(ret == M2M_SUCCESS)
 						{
 							curr_firm_ver   = M2M_MAKE_VERSION(pstrRev->u8FirmwareMajor, pstrRev->u8FirmwareMinor,pstrRev->u8FirmwarePatch);
-							curr_drv_ver    = M2M_MAKE_VERSION(M2M_DRIVER_VERSION_MAJOR_NO, M2M_DRIVER_VERSION_MINOR_NO, M2M_DRIVER_VERSION_PATCH_NO);
+							curr_drv_ver    = M2M_MAKE_VERSION(M2M_RELEASE_VERSION_MAJOR_NO, M2M_RELEASE_VERSION_MINOR_NO, M2M_RELEASE_VERSION_PATCH_NO);
 							min_req_drv_ver = M2M_MAKE_VERSION(pstrRev->u8DriverMajor, pstrRev->u8DriverMinor,pstrRev->u8DriverPatch);
 							if((curr_firm_ver == 0)||(min_req_drv_ver == 0)||(min_req_drv_ver == 0)){
 								ret = M2M_ERR_FAIL;
@@ -206,7 +226,7 @@ sint8 nm_get_ota_firmware_info(tstrM2mRev* pstrRev)
 							}
 						}
 					}else{
-						ret = M2M_ERR_FAIL;
+						ret = M2M_ERR_INVALID;
 					}
 				}
 			}else{
@@ -232,9 +252,9 @@ EXIT:
 *	@date	10 Oct 2014
 *	@version	1.0
 */
-sint8 nm_drv_init_download_mode(void)
+int8_t nm_drv_init_download_mode(void)
 {
-	sint8 ret = M2M_SUCCESS;
+	int8_t ret = M2M_SUCCESS;
 
 	ret = nm_bus_iface_init(NULL);
 	if (M2M_SUCCESS != ret) {
@@ -243,11 +263,13 @@ sint8 nm_drv_init_download_mode(void)
 	}
 
 	/**
-		reset the chip and halt the cpu in case of no wait efuse is set.
+		TODO:reset the chip and halt the cpu in case of no wait efuse is set (add the no wait effuse check)
 	*/
-	chip_reset_and_cpu_halt();
-
-
+	if(!ISNMC3000(GET_CHIPID()))
+	{
+		/*Execuate that function only for 1500A/B, no room in 3000, but it may be needed in 3400 no wait*/
+		chip_reset_and_cpu_halt();
+	}
 
 #ifdef CONF_WINC_USE_SPI
 	/* Must do this after global reset to set SPI data packet size. */
@@ -273,13 +295,13 @@ ERR1:
 *	@date	15 July 2012
 *	@version	1.0
 */
-sint8 nm_drv_init(void * arg)
+int8_t nm_drv_init(void * arg)
 {
-	sint8 ret = M2M_SUCCESS;
-	uint8 u8Mode;
+	int8_t ret = M2M_SUCCESS;
+	uint8_t u8Mode;
 	
 	if(NULL != arg) {
-		u8Mode = *((uint8 *)arg);
+		u8Mode = *((uint8_t *)arg);
 		if((u8Mode < M2M_WIFI_MODE_NORMAL)||(u8Mode >= M2M_WIFI_MODE_MAX)) {
 			u8Mode = M2M_WIFI_MODE_NORMAL;
 		}
@@ -300,7 +322,6 @@ sint8 nm_drv_init(void * arg)
 	
 #ifdef NO_HW_CHIP_EN
 	ret = chip_wake();
-	nm_bsp_sleep(10);
 	if (M2M_SUCCESS != ret) {
 		M2M_ERR("[nmi start]: fail chip_wakeup\n");
 		goto ERR2;
@@ -317,15 +338,6 @@ sint8 nm_drv_init(void * arg)
 #ifdef CONF_WINC_USE_SPI
 	/* Must do this after global reset to set SPI data packet size. */
 	nm_spi_init();
-#endif
-#ifdef NO_HW_CHIP_EN
-	/*return power save to default value*/
-	chip_idle();
-
-	ret = cpu_start();
-	if (M2M_SUCCESS != ret) {
-		goto ERR2;
-	}
 #endif
 	ret = wait_for_bootrom(u8Mode);
 	if (M2M_SUCCESS != ret) {
@@ -348,7 +360,6 @@ sint8 nm_drv_init(void * arg)
 		M2M_ERR("failed to enable interrupts..\n");
 		goto ERR2;
 	}
-	
 	return ret;
 ERR2:
 	nm_bus_iface_deinit();
@@ -363,9 +374,9 @@ ERR1:
 *	@date	17 July 2012
 *	@version	1.0
 */
-sint8 nm_drv_deinit(void * arg)
+int8_t nm_drv_deinit(void * arg)
 {
-	sint8 ret;
+	int8_t ret;
 
 	ret = chip_deinit();
 	if (M2M_SUCCESS != ret) {

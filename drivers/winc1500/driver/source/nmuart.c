@@ -48,9 +48,9 @@
 
 #define HDR_SZ  12
 
-static uint8 get_cs(uint8* b, uint8 sz){
+static uint8_t get_cs(uint8_t* b, uint8_t sz){
 	int i;
-	uint8 cs = 0;
+	uint8_t cs = 0;
 	for(i = 0; i < sz; i++)
 		cs ^= b[i];
 	return cs;
@@ -64,13 +64,13 @@ static uint8 get_cs(uint8* b, uint8 sz){
 *	@date		13 AUG 2012
 *	@version	1.0
 */
-sint8 nm_uart_sync_cmd(void)
+int8_t nm_uart_sync_cmd(void)
 {
 	tstrNmUartDefault strUart;
-	sint8 s8Ret = -1;
-	uint8 b [HDR_SZ+1];
-	uint8 rsz;
-	uint8 onchip = 0;
+	int8_t s8Ret = -1;
+	uint8_t b [HDR_SZ+1];
+	uint8_t rsz;
+	uint8_t onchip = 0;
 
 	/*read reg*/
 	b[0] = 0x12;
@@ -105,17 +105,17 @@ sint8 nm_uart_sync_cmd(void)
 		M2M_INFO("WINC1500 Serial Bridge Found\n");
 	}
 	/*TODO: this should be the way we read the register since the cortus is little endian*/
-	/**pu32RetVal = b[0] | ((uint32)b[1] << 8) | ((uint32)b[2] << 16) | ((uint32)b[3] << 24);*/
+	/**pu32RetVal = b[0] | ((uint32_t)b[1] << 8) | ((uint32_t)b[2] << 16) | ((uint32_t)b[3] << 24);*/
 	if(s8Ret == M2M_SUCCESS)
-		s8Ret = (sint8)onchip;
+		s8Ret = (int8_t)onchip;
 	return s8Ret;
 }
- sint8 nm_uart_read_reg_with_ret(uint32 u32Addr, uint32* pu32RetVal)
+ int8_t nm_uart_read_reg_with_ret(uint32_t u32Addr, uint32_t* pu32RetVal)
 {
 	tstrNmUartDefault strUart;
-	sint8 s8Ret = M2M_SUCCESS;
-	uint8 b [HDR_SZ+1];
-	uint8 rsz;
+	int8_t s8Ret = M2M_SUCCESS;
+	uint8_t b [HDR_SZ+1];
+	uint8_t rsz;
 
 	/*read reg*/
 	b[0] = 0xa5;
@@ -123,10 +123,10 @@ sint8 nm_uart_sync_cmd(void)
 	b[2] = 0;
 	b[3] = 0;
 	b[4] = 0;
-	b[5] = (uint8)(u32Addr & 0x000000ff);
-	b[6] = (uint8)((u32Addr & 0x0000ff00)>>8);
-	b[7] = (uint8)((u32Addr & 0x00ff0000)>>16);
-	b[8] = (uint8)((u32Addr & 0xff000000)>>24);
+	b[5] = (uint8_t)(u32Addr & 0x000000ff);
+	b[6] = (uint8_t)((u32Addr & 0x0000ff00)>>8);
+	b[7] = (uint8_t)((u32Addr & 0x00ff0000)>>16);
+	b[8] = (uint8_t)((u32Addr & 0xff000000)>>24);
 	b[9] = 0;
 	b[10] = 0;
 	b[11] = 0;
@@ -176,9 +176,9 @@ sint8 nm_uart_sync_cmd(void)
 		s8Ret = M2M_ERR_BUS_FAIL;
 	}
 	/*TODO: this should be the way we read the register since the cortus is little endian*/
-	/**pu32RetVal = b[0] | ((uint32)b[1] << 8) | ((uint32)b[2] << 16) | ((uint32)b[3] << 24);*/
+	/**pu32RetVal = b[0] | ((uint32_t)b[1] << 8) | ((uint32_t)b[2] << 16) | ((uint32_t)b[3] << 24);*/
 
-	*pu32RetVal = ((uint32)b[0] << 24) | ((uint32)b[1] << 16) | ((uint32)b[2] << 8) | b[3];
+	*pu32RetVal = ((uint32_t)b[0] << 24) | ((uint32_t)b[1] << 16) | ((uint32_t)b[2] << 8) | b[3];
 
 	return s8Ret;
 }
@@ -193,9 +193,9 @@ sint8 nm_uart_sync_cmd(void)
 *	@date		13 AUG 2012
 *	@version	1.0
 */
-uint32 nm_uart_read_reg(uint32 u32Addr)
+uint32_t nm_uart_read_reg(uint32_t u32Addr)
 {
-	uint32 val;
+	uint32_t val;
 	nm_uart_read_reg_with_ret(u32Addr , &val);
 	return val;
 }
@@ -212,11 +212,11 @@ uint32 nm_uart_read_reg(uint32 u32Addr)
 *	@date		13 AUG 2012
 *	@version	1.0
 */
-sint8 nm_uart_write_reg(uint32 u32Addr, uint32 u32Val)
+int8_t nm_uart_write_reg(uint32_t u32Addr, uint32_t u32Val)
 {
 	tstrNmUartDefault strUart;
-	sint8 s8Ret = M2M_SUCCESS;
-	uint8 b[HDR_SZ+1];
+	int8_t s8Ret = M2M_SUCCESS;
+	uint8_t b[HDR_SZ+1];
 
 	/*write reg*/
 	b[0] = 0xa5;
@@ -224,14 +224,14 @@ sint8 nm_uart_write_reg(uint32 u32Addr, uint32 u32Val)
 	b[2] = 0;
 	b[3] = 0;
 	b[4] = 0;
-	b[5] = (uint8)(u32Addr & 0x000000ff);
-	b[6] = (uint8)((u32Addr & 0x0000ff00)>>8);
-	b[7] = (uint8)((u32Addr & 0x00ff0000)>>16);
-	b[8] = (uint8)((u32Addr & 0xff000000)>>24);
-	b[9] = (uint8)(u32Val & 0x000000ff);
-	b[10] = (uint8)((u32Val & 0x0000ff00)>>8);
-	b[11] = (uint8)((u32Val & 0x00ff0000)>>16);
-	b[12] = (uint8)((u32Val & 0xff000000)>>24);
+	b[5] = (uint8_t)(u32Addr & 0x000000ff);
+	b[6] = (uint8_t)((u32Addr & 0x0000ff00)>>8);
+	b[7] = (uint8_t)((u32Addr & 0x00ff0000)>>16);
+	b[8] = (uint8_t)((u32Addr & 0xff000000)>>24);
+	b[9] = (uint8_t)(u32Val & 0x000000ff);
+	b[10] = (uint8_t)((u32Val & 0x0000ff00)>>8);
+	b[11] = (uint8_t)((u32Val & 0x00ff0000)>>16);
+	b[12] = (uint8_t)((u32Val & 0xff000000)>>24);
 
 	b[2] = get_cs(&b[1],HDR_SZ);
 
@@ -285,21 +285,21 @@ sint8 nm_uart_write_reg(uint32 u32Addr, uint32 u32Val)
 *	@date		13 AUG 2012
 *	@version	1.0
 */
-sint8 nm_uart_read_block(uint32 u32Addr, uint8 *pu8Buf, uint16 u16Sz)
+int8_t nm_uart_read_block(uint32_t u32Addr, uint8_t *pu8Buf, uint16_t u16Sz)
 {
 	tstrNmUartDefault strUart;
-	sint8 s8Ret = M2M_SUCCESS;
-	uint8 au8Buf[HDR_SZ+1];
+	int8_t s8Ret = M2M_SUCCESS;
+	uint8_t au8Buf[HDR_SZ+1];
 
 	au8Buf[0] = 0xa5;
 	au8Buf[1] = 2;
 	au8Buf[2] = 0;
-	au8Buf[3] = (uint8)(u16Sz & 0x00ff);
-	au8Buf[4] = (uint8)((u16Sz & 0xff00)>>8);
-	au8Buf[5] = (uint8)(u32Addr & 0x000000ff);
-	au8Buf[6] = (uint8)((u32Addr & 0x0000ff00)>>8);
-	au8Buf[7] = (uint8)((u32Addr & 0x00ff0000)>>16);
-	au8Buf[8] = (uint8)((u32Addr & 0xff000000)>>24);
+	au8Buf[3] = (uint8_t)(u16Sz & 0x00ff);
+	au8Buf[4] = (uint8_t)((u16Sz & 0xff00)>>8);
+	au8Buf[5] = (uint8_t)(u32Addr & 0x000000ff);
+	au8Buf[6] = (uint8_t)((u32Addr & 0x0000ff00)>>8);
+	au8Buf[7] = (uint8_t)((u32Addr & 0x00ff0000)>>16);
+	au8Buf[8] = (uint8_t)((u32Addr & 0xff000000)>>24);
 	au8Buf[9] = 0;
 	au8Buf[10] = 0;
 	au8Buf[11] = 0;
@@ -373,21 +373,21 @@ sint8 nm_uart_read_block(uint32 u32Addr, uint8 *pu8Buf, uint16 u16Sz)
 *	@date		13 AUG 2012
 *	@version	1.0
 */
-sint8 nm_uart_write_block(uint32 u32Addr, uint8 *puBuf, uint16 u16Sz)
+int8_t nm_uart_write_block(uint32_t u32Addr, uint8_t *puBuf, uint16_t u16Sz)
 {
 	tstrNmUartDefault strUart;
-	sint8 s8Ret = M2M_SUCCESS;
-	static uint8 au8Buf[HDR_SZ+1];
+	int8_t s8Ret = M2M_SUCCESS;
+	static uint8_t au8Buf[HDR_SZ+1];
 
 	au8Buf[0] = 0xa5;
 	au8Buf[1] = 3;
 	au8Buf[2] = 0;
-	au8Buf[3] = (uint8)(u16Sz & 0x00ff);
-	au8Buf[4] = (uint8)((u16Sz & 0xff00)>>8);
-	au8Buf[5] = (uint8)(u32Addr & 0x000000ff);
-	au8Buf[6] = (uint8)((u32Addr & 0x0000ff00)>>8);
-	au8Buf[7] = (uint8)((u32Addr & 0x00ff0000)>>16);
-	au8Buf[8] = (uint8)((u32Addr & 0xff000000)>>24);
+	au8Buf[3] = (uint8_t)(u16Sz & 0x00ff);
+	au8Buf[4] = (uint8_t)((u16Sz & 0xff00)>>8);
+	au8Buf[5] = (uint8_t)(u32Addr & 0x000000ff);
+	au8Buf[6] = (uint8_t)((u32Addr & 0x0000ff00)>>8);
+	au8Buf[7] = (uint8_t)((u32Addr & 0x00ff0000)>>16);
+	au8Buf[8] = (uint8_t)((u32Addr & 0xff000000)>>24);
 	au8Buf[9] = 0;
 	au8Buf[10] = 0;
 	au8Buf[11] = 0;
@@ -475,11 +475,11 @@ sint8 nm_uart_write_block(uint32 u32Addr, uint8 *puBuf, uint16 u16Sz)
 *	@date		22 OCT 2014
 *	@version	1.0
 */
-sint8 nm_uart_reconfigure(void *ptr)
+int8_t nm_uart_reconfigure(void *ptr)
 {
 	tstrNmUartDefault strUart;
-	sint8 s8Ret = M2M_SUCCESS;
-	uint8 b[HDR_SZ+1];
+	int8_t s8Ret = M2M_SUCCESS;
+	uint8_t b[HDR_SZ+1];
 
 	/*write reg*/
 	b[0] = 0xa5;
@@ -491,10 +491,10 @@ sint8 nm_uart_reconfigure(void *ptr)
 	b[6] = 0;
 	b[7] = 0;
 	b[8] = 0;
-	b[9] = (uint8)((*(unsigned long *)ptr) & 0x000000ff);
-	b[10] = (uint8)(((*(unsigned long *)ptr) & 0x0000ff00)>>8);
-	b[11] = (uint8)(((*(unsigned long *)ptr) & 0x00ff0000)>>16);
-	b[12] = (uint8)(((*(unsigned long *)ptr) & 0xff000000)>>24);
+	b[9] = (uint8_t)((*(unsigned long *)ptr) & 0x000000ff);
+	b[10] = (uint8_t)(((*(unsigned long *)ptr) & 0x0000ff00)>>8);
+	b[11] = (uint8_t)(((*(unsigned long *)ptr) & 0x00ff0000)>>16);
+	b[12] = (uint8_t)(((*(unsigned long *)ptr) & 0xff000000)>>24);
 
 	b[2] = get_cs(&b[1],HDR_SZ);
 
