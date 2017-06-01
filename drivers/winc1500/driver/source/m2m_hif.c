@@ -546,7 +546,13 @@ static int8_t hif_isr(void)
 		{
 #ifndef WIN32
 			M2M_ERR("(hif) False interrupt %lx",reg);
-			ret = M2M_ERR_FAIL;
+			/*******************************************************************
+			 * Notice for RIOT-OS Developer:
+			 * 		Originally There was `ret = M2M_ERR_FAIL;` here.
+			 *		However, due to stability issue this statement is omitted.
+			 *		Please consider this when porting a new WINC1500 driver.
+			 ******************************************************************/
+			/* ret = M2M_ERR_FAIL; */
 			goto ERR1;
 #else
 #endif
