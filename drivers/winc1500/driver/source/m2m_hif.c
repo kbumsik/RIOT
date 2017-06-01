@@ -395,7 +395,7 @@ int8_t hif_send(uint8_t u8Gid,uint8_t u8Opcode,uint8_t *pu8CtrlBuf,uint16_t u16C
 		else
 		{
 			ret = hif_chip_sleep();
-			M2M_DBG("Failed to alloc rx size %d\r",ret);
+			M2M_DBG("Failed to alloc rx size %d",ret);
 			ret = M2M_ERR_MEM_ALLOC;
 			goto ERR2;
 		}

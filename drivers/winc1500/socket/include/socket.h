@@ -1027,7 +1027,7 @@ NMI_API void socketDeinit(void);
 	param.pfAppWifiCb = wifi_cb;
 	ret = m2m_wifi_init(&param);
 	if (M2M_SUCCESS != ret) {
-		printf("main: m2m_wifi_init call error!(%d)\r\n", ret);
+		printf("main: m2m_wifi_init call error!(%d)\n", ret);
 		while (1) {
 		}
 	}

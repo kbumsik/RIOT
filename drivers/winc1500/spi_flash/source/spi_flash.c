@@ -629,7 +629,7 @@ int8_t spi_flash_write(uint8_t* pu8Buf, uint32_t u32Offset, uint32_t u32Sz)
 #ifdef PROFILING
 	tpercent = (u32Sz/u32Blksz)+((u32Sz%u32Blksz)>0);
 	t1 = GetTickCount();
-	M2M_PRINT(">Start programming...\r\n");
+	M2M_PRINT(">Start programming...\n");
 #endif
 	if(u32Sz<=0)
 	{
@@ -666,13 +666,13 @@ int8_t spi_flash_write(uint8_t* pu8Buf, uint32_t u32Offset, uint32_t u32Sz)
 		u32Sz -= u32wsz;
 #ifdef PROFILING
 		percent++;
-		printf("\r>Complete Percentage = %d%%.\r",((percent*100)/tpercent));
+		printf("\n>Complete Percentage = %d%%.",((percent*100)/tpercent));
 #endif
 	}
 EXIT:
 #ifdef PROFILING
-	M2M_PRINT("\rDone\t\t\t\t\t\t");
-	M2M_PRINT("\n#Programming time = %f sec\n\r",(GetTickCount() - t1)/1000.0);
+	M2M_PRINT("\nDone\t\t\t\t\t\t");
+	M2M_PRINT("\n#Programming time = %f sec\n",(GetTickCount() - t1)/1000.0);
 #endif
 ERR:
 	return ret;
@@ -699,7 +699,7 @@ int8_t spi_flash_erase(uint32_t u32Offset, uint32_t u32Sz)
 	uint32_t t;
 	t = GetTickCount();
 #endif
-	M2M_PRINT("\r\n>Start erasing...\r\n");
+	M2M_PRINT("\n>Start erasing...\n");
 	for(i = u32Offset; i < (u32Sz +u32Offset); i += (16*FLASH_PAGE_SZ))
 	{
 		ret += spi_flash_write_enable();
@@ -713,7 +713,7 @@ int8_t spi_flash_erase(uint32_t u32Offset, uint32_t u32Sz)
 		}while(tmp & 0x01);
 		
 	}
-	M2M_PRINT("Done\r\n");
+	M2M_PRINT("Done\n");
 #ifdef PROFILING
 	M2M_PRINT("#Erase time = %f sec\n", (GetTickCount()-t)/1000.0);
 #endif

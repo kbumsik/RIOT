@@ -1379,7 +1379,7 @@ NMI_API int8_t m2m_wifi_enable_mac_mcast(uint8_t* pu8MulticastMacAddress, uint8_
 	{
 		strMulticastMac.u8AddRemove = u8AddRemove;
 		m2m_memcpy(strMulticastMac.au8macaddress,pu8MulticastMacAddress,M2M_MAC_ADDRES_LEN);
-		M2M_DBG("mac multicast: %x:%x:%x:%x:%x:%x\r\n",strMulticastMac.au8macaddress[0],strMulticastMac.au8macaddress[1],strMulticastMac.au8macaddress[2],strMulticastMac.au8macaddress[3],strMulticastMac.au8macaddress[4],strMulticastMac.au8macaddress[5]);
+		M2M_DBG("mac multicast: %x:%x:%x:%x:%x:%x\n",strMulticastMac.au8macaddress[0],strMulticastMac.au8macaddress[1],strMulticastMac.au8macaddress[2],strMulticastMac.au8macaddress[3],strMulticastMac.au8macaddress[4],strMulticastMac.au8macaddress[5]);
 		s8ret = hif_send(M2M_REQ_GROUP_WIFI, M2M_WIFI_REQ_SET_MAC_MCAST, (uint8_t *)&strMulticastMac,sizeof(tstrM2MMulticastMac),NULL,0,0);
 	}
 
@@ -1413,7 +1413,7 @@ NMI_API int8_t  m2m_wifi_set_receive_buffer(void* pvBuffer,uint16_t u16BufferLen
 	else
 	{
 		s8ret = M2M_ERR_FAIL;
-		M2M_ERR("Buffer NULL pointer\r\n");
+		M2M_ERR("Buffer NULL pointer\n");
 	}
 	return s8ret;
 }
