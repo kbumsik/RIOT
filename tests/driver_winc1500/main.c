@@ -96,7 +96,8 @@ static int _disconnect(int argc, char **argv);
 static int _rssi(int argc, char **argv);
 static int _tcpmsg(int argc, char **argv);
 static int _udpmsg(int argc, char **argv);
-
+static int _tcplisten(int argc, char **argv);
+static int _udplisten(int argc, char **argv);
 
 /* WINC1500 Thread */
 char winc1500_thread_stack[THREAD_STACKSIZE_MINIMUM + 512 + 128];
@@ -104,7 +105,7 @@ void *winc1500_thread(void *arg);
 
 /* Functions used for WINC1500 internal */
 static void wifi_cb(uint8_t u8MsgType, void *pvMsg);
-extern void winc1500_socket_cb(SOCKET sock, uint8 msg_type, void *payload);
+extern void winc1500_socket_cb(SOCKET sock, uint8_t msg_type, void *payload);
 extern void winc1500_dns_resolve_cb(uint8_t* domain_name, uint32_t server_ip_addr);
 
 static const shell_command_t shell_commands[] = {
@@ -116,6 +117,8 @@ static const shell_command_t shell_commands[] = {
     { "rssi", "Display RSSI for the connected AP", _rssi },
     { "tcpmsg", "Send a TCP message", _tcpmsg },
     { "udpmsg", "Send a UDP message", _udpmsg },
+    { "tcplisten", "Listen TCP messages", _tcplisten },
+    { "udplisten", "Listen UDP messages", _udplisten },
     { NULL, NULL, NULL }
 };
 
@@ -166,6 +169,42 @@ static void wifi_cb(uint8_t msg_type, void *payload)
     static uint8_t scan_request_index = 0; /* Index of scan list 
                                             to request scan result. */
     switch (msg_type) {
+        case M2M_WIFI_RESP_CON_STATE_CHANGED: {
+            tstrM2mWifiStateChanged *wifi_state = (tstrM2mWifiStateChanged *)payload;
+            switch (wifi_state->u8CurrState) {
+                case M2M_WIFI_DISCONNECTED:		/*!< WiFi is disconnected from AP */
+                    state_wifi = STATE_DISCONNECTED;
+                    state_scanning = SCAN_STOPPED;
+                    printf("Wi-Fi disconnected\n");
+                    break;
+                case M2M_WIFI_CONNECTED: 		/*!< WiFi is to connected to AP */
+                    state_scanning = SCAN_STOPPED;
+                    break;
+                case M2M_WIFI_UNDEF:			/*!< Undefined status */
+                default:
+                    /* TODO */
+                    break;
+            }
+        }
+            break;
+        case M2M_WIFI_RESP_CONN_INFO: {
+        }
+            break;
+        case M2M_WIFI_REQ_DHCP_CONF: { /* Called by m2m_wifi_connect() */
+            uint8_t *ip_addr = (uint8_t *)payload;
+            state_scanning = SCAN_STOPPED;
+            state_wifi = STATE_CONNECTED;
+            printf("Wi-Fi connected\n");
+            printf("Wi-Fi IP is %u.%u.%u.%u\n",
+                    ip_addr[0], ip_addr[1], ip_addr[2], ip_addr[3]);
+            break;
+        }
+        case M2M_WIFI_REQ_WPS: {
+        }
+            break;
+        case M2M_WIFI_RESP_IP_CONFLICT: {
+        }
+            break;
         case M2M_WIFI_RESP_SCAN_DONE: {
             tstrM2mScanDone *scaninfo = (tstrM2mScanDone *)payload;
             scan_request_index = 0;
@@ -192,36 +231,23 @@ static void wifi_cb(uint8_t msg_type, void *payload)
             }
         }
             break;
-        case M2M_WIFI_RESP_CON_STATE_CHANGED: {
-            tstrM2mWifiStateChanged *wifi_state = (tstrM2mWifiStateChanged *)payload;
-            switch (wifi_state->u8CurrState) {
-                case M2M_WIFI_DISCONNECTED:		/*!< WiFi is disconnected from AP */
-                    state_wifi = STATE_DISCONNECTED;
-                    state_scanning = SCAN_STOPPED;
-                    printf("Wi-Fi disconnected\n");
-                    break;
-                case M2M_WIFI_CONNECTED: 		/*!< WiFi is to connected to AP */
-                    state_scanning = SCAN_STOPPED;
-                    break;
-                case M2M_WIFI_UNDEF:			/*!< Undefined status */
-                default:
-                    /* TODO */
-                    break;
-            }
-        }
-            break;
-        case M2M_WIFI_REQ_DHCP_CONF: { /* Called by m2m_wifi_connect() */
-            uint8_t *ip_addr = (uint8_t *)payload;
-            state_scanning = SCAN_STOPPED;
-            state_wifi = STATE_CONNECTED;
-            printf("Wi-Fi connected\n");
-            printf("Wi-Fi IP is %u.%u.%u.%u\n",
-                    ip_addr[0], ip_addr[1], ip_addr[2], ip_addr[3]);
-            break;
-        }
         case M2M_WIFI_RESP_CURRENT_RSSI: {  /* Called by m2m_wifi_req_curr_rssi() */
             rssi = (int8_t *)payload;
             state_rssi_updated = 1;
+        }
+            break;
+        case M2M_WIFI_RESP_CLIENT_INFO: {
+        }
+            break;
+        case M2M_WIFI_RESP_PROVISION_INFO: {
+        }
+            break;
+        case M2M_WIFI_RESP_DEFAULT_CONNECT: {
+        }
+            break;
+        case M2M_WIFI_RESP_GET_SYS_TIME: {
+            /* This event should be disabled */
+            puts("SNTP time event called");
         }
             break;
         default: {
@@ -247,7 +273,7 @@ static int _init(int argc, char **argv)
     param.pfAppWifiCb = wifi_cb;
     /* Initialize Wi-Fi driver with data and status callbacks. */
     ret = m2m_wifi_init(&param);
-    if (M2M_SUCCESS != ret) {
+    if (M2M_SUCCESS != ret && M2M_ERR_FW_VER_MISMATCH != ret) {
         printf("m2m_wifi_init call error!(%d)\n", ret);
         return -1;
     }
@@ -445,6 +471,7 @@ static int _rssi(int argc, char **argv)
 
 static int _tcpmsg(int argc, char **argv)
 {
+    char buffer[128];
     if (state_wifi == STATE_ERROR) {
         puts("Initialize the WINC1500 first");
         return -1;
@@ -465,14 +492,20 @@ static int _tcpmsg(int argc, char **argv)
     if (s < 0) {
         return -1;
     }
+    printf("Socket %d created\n", s);
     /** setting up the host address */
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_port = htons(5555); /* Port number */
     
     if ( 0 == (addr.sin_addr.s_addr = nmi_inet_addr(host))) {
+        state_socket = 0;
         if (SOCK_ERR_NO_ERROR != gethostbyname((uint8_t *)host)) {
             goto failed;
+        }
+        while (state_socket == 0) {
+            /* Wait until it's connected */
+            xtimer_usleep(1000);
         }
     }
     
@@ -492,12 +525,25 @@ static int _tcpmsg(int argc, char **argv)
         xtimer_usleep(1000);
     }
 
+    printf("Empty the buffer by calling recv\n");
+    state_socket = 0;
+    recv(s, buffer, 128, 100);
+    while (0 == state_socket){
+        xtimer_usleep(1000);
+    }
+
     printf("Now sending message: %s\n", msg);
+    state_socket = 0;
     int n = send(s, msg, strlen(msg), 0);
     if (n < 0) {
         printf("socket sending packet unsuccessful: %d\n", n);
         goto failed;
     }
+    while (state_socket == 0) {
+        /* Wait until it's being sent */
+        xtimer_usleep(1000);
+    }
+
     puts("[OK]");
     close(s);
     return 0;
@@ -530,14 +576,20 @@ static int _udpmsg(int argc, char **argv)
     if (s < 0) {
         return -1;
     }
+    printf("Socket %d created\n", s);
     /** setting up the host address */
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_port = htons(5555); /* Port number */
     
     if ( 0 == (addr.sin_addr.s_addr = nmi_inet_addr(host))) {
+        state_socket = 0;
         if (SOCK_ERR_NO_ERROR != gethostbyname((uint8_t *)host)) {
             goto failed;
+        }
+        while (state_socket == 0) {
+            /* Wait until it's connected */
+            xtimer_usleep(1000);
         }
     }
     
@@ -553,6 +605,10 @@ static int _udpmsg(int argc, char **argv)
         printf("socket sending packet unsuccessful: %d\n", n);
         goto failed;
     }
+    while (state_socket == 0) {
+        /* Wait until it's being sent */
+        xtimer_usleep(1000);
+    }
     puts("[OK]");
     close(s);
     return 0;
@@ -560,6 +616,98 @@ failed:
     puts("[Failed]");
     close(s);
     return -1;
+}
+
+static int _tcplisten(int argc, char **argv)
+{
+    char buffer[256];
+
+    if (state_wifi == STATE_ERROR) {
+        puts("Initialize the WINC1500 first");
+        return -1;
+    }
+    /** create socket file descriptor */
+    SOCKET s = socket(AF_INET, SOCK_STREAM, 0);
+    if (s < 0) {
+        return -1;
+    }
+    printf("Socket %d created\n", s);
+    /** setting up the host address */
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(5555); /* Port number */
+    addr.sin_addr.s_addr = 0; /* From anywhere */
+    
+    /* bind */
+    state_socket = 0;
+    bind(s, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
+    while (0 == state_socket){
+        xtimer_usleep(1000);
+    }
+    /* listen */
+    state_socket = 0;
+    listen(s, 0);
+    while (0 == state_socket){
+        xtimer_usleep(1000);
+    }
+
+    /* Wait for accept first?? */
+    state_socket = 0;
+    while (0 == state_socket){
+        xtimer_usleep(1000);
+    }
+    /* recv */
+    // TODO: Implement accept function
+    state_socket = 0;
+    recv(1, buffer, M2M_BUFFER_MAX_SIZE, 0);
+    while (0 == state_socket){
+        xtimer_usleep(1000);
+    }
+    printf("Received: %s\n", buffer);
+    
+    puts("[OK]");
+    close(s);
+    return 0;
+}
+
+static int _udplisten(int argc, char **argv)
+{
+    char buffer[256];
+
+    if (state_wifi == STATE_ERROR) {
+        puts("Initialize the WINC1500 first");
+        return -1;
+    }
+    /** create socket file descriptor */
+    SOCKET s = socket(AF_INET, SOCK_DGRAM, 0);
+    if (s < 0) {
+        return -1;
+    }
+    printf("Socket %d created\n", s);
+    /** setting up the host address */
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(5555); /* Port number */
+    addr.sin_addr.s_addr = 0; /* From anywhere */
+    
+    /* bind */
+    state_socket = 0;
+    bind(s, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
+    while (0 == state_socket){
+        xtimer_usleep(1000);
+    }
+
+    /* recv */
+    state_socket = 0;
+    recvfrom(s, buffer, 256, 0);
+    while (0 == state_socket){
+        xtimer_usleep(1000);
+    }
+    printf("Received: %s\n", buffer);
+    
+    puts("[OK]");
+    close(s);
+    return 0;
 }
 
 void *winc1500_thread(void *arg)
