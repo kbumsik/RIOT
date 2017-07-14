@@ -40,4 +40,21 @@
     }
     ```
     in m2m_hif.c
-- moving m2m_wifi_connect outside
+
+for ping?
+NMI_API sint8 m2m_ping_req(uint32 u32DstIP, uint8 u8TTL, tpfPingCb fpPingCb);?
+
+- Arduino Bootloader
+    - https://github.com/AtmelUniversityFrance/atmel-samd21-xpro-boardmanagermodule/wiki
+
+- Unstable UDP
+
+- Ping callback
+- WPS
+- useful things:
+    - If it's over TCP_SOCK_MAX it's UDP socket 
+- Partial packet calls
+    - http://www.avrfreaks.net/forum/winc1500-partial-socket-receive-calls
+
+- ISR struct:
+    - gstrHifCxt is used for event.
