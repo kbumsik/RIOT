@@ -92,7 +92,7 @@ static int _init(int argc, char **argv)
         return 0;
     }
     puts("[Error]");
-    return 0;
+    return 1;
 }
 
 static int _scan(int argc, char **argv)
@@ -100,7 +100,7 @@ static int _scan(int argc, char **argv)
     int result = winc1500_scan();
     if (result < 0) {
         puts("[Scanning error]");
-        return -1;
+        return 1;
     }
     printf("%d access points found\n", result);
 
@@ -131,6 +131,11 @@ static int _scan(int argc, char **argv)
 
 static int _connect(int argc, char **argv)
 {
+    if (argc < 2) {
+        printf("usage: %s SSID [passphrase]\n", argv[0]);
+        return 1;
+    }
+
     winc1500_ap_t ap = {.ssid = NULL, .password = NULL};
 
     /* Get SSID */
@@ -139,7 +144,7 @@ static int _connect(int argc, char **argv)
         ap.sec = WINC1500_SEC_FLAGS_OPEN;
     } else {
         puts("Please provide SSID to connect");
-        return -1;
+        return 1;
     }
     /* Get password if provided */
     if (argc > 2) {
@@ -152,15 +157,16 @@ static int _connect(int argc, char **argv)
         puts("[OK]");
         return 0;
     } else {
+        puts("Try using another SSID and passphrase, or just try connecting again.");
         puts("[Connecting failed]");
-        return -1;
+        return 1;
     }
 }
 
 static int _disconnect(int argc, char **argv)
 {
     puts("Command in progress. Exiting...");
-    return -1;
+    return 1;
 
     int result = winc1500_disconnect();
     if (result == WINC1500_OK) {
@@ -168,14 +174,14 @@ static int _disconnect(int argc, char **argv)
         return 0;
     } else {
         puts("[Failed]");
-        return -1;
+        return 1;
     }
 }
 
 static int _rssi(int argc, char **argv)
 {
     puts("Command in progress. Exiting...");
-    return -1;
+    return 1;
 
     int rssi;
     int result = winc1500_read_rssi(&rssi);
@@ -185,7 +191,7 @@ static int _rssi(int argc, char **argv)
         return 0;
     } else {
         puts("[Failed]");
-        return -1;
+        return 1;
     }
 }
 

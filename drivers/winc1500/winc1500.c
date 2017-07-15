@@ -15,6 +15,7 @@
 #include "pkg/driver/include/m2m_wifi.h"
 
 #include "xtimer.h"
+#include "log.h"
 
 #define WINC1500_INTERNAL_START_HANDLER (1)
 #define WINC1500_INTERNAL_STOP_HANDLER  (2)
@@ -81,19 +82,19 @@ static void _wifi_callback(uint8_t msg_type, void *payload)
     msg.content.value = 0;
     switch (msg_type) {
         case M2M_WIFI_RESP_CON_STATE_CHANGED: {
-            puts("M2M_WIFI_RESP_CON_STATE_CHANGED");
+            LOG_DEBUG("M2M_WIFI_RESP_CON_STATE_CHANGED");
             tstrM2mWifiStateChanged *wifi_state = (tstrM2mWifiStateChanged *)payload;
             switch (wifi_state->u8CurrState) {
                 case M2M_WIFI_DISCONNECTED:
                     /*!< WiFi is disconnected from AP */
                     msg.type = WINC1500_EVENT_WIFI_CON_STATE_DISCONNECTED;
-                    printf("Wi-Fi disconnected\n");
+                    LOG_DEBUG("Wi-Fi disconnected\n");
                     winc1500_dev.state = WINC1500_STATE_INIT;
                     break;
                 case M2M_WIFI_CONNECTED:
                     /*!< WiFi is to connected to AP */
                     msg.type = WINC1500_EVENT_WIFI_CON_STATE_CONNECTED;
-                    printf("Wi-Fi connected\n");
+                    LOG_DEBUG("Wi-Fi connected\n");
                     winc1500_dev.state &= ~WINC1500_STATE_INIT;
                     winc1500_dev.state |= WINC1500_STATE_STA;
                     winc1500_dev.state |= WINC1500_STATE_CONNECTED;
@@ -106,37 +107,37 @@ static void _wifi_callback(uint8_t msg_type, void *payload)
         }
             break;
         case M2M_WIFI_RESP_CONN_INFO: {
-            puts("M2M_WIFI_RESP_CONN_INFO");
+            LOG_DEBUG("M2M_WIFI_RESP_CONN_INFO");
         }
             break;
         case M2M_WIFI_REQ_DHCP_CONF: {
-            puts("M2M_WIFI_REQ_DHCP_CONF");
+            LOG_DEBUG("M2M_WIFI_REQ_DHCP_CONF");
             /* Called by m2m_wifi_connect() */
             uint8_t *ip_addr = (uint8_t *)payload;
-            printf("IP obtained from DHCP server\n");
-            printf("IP is %u.%u.%u.%u\n",
+            LOG_DEBUG("IP obtained from DHCP server\n");
+            LOG_DEBUG("IP is %u.%u.%u.%u\n",
                     ip_addr[0], ip_addr[1], ip_addr[2], ip_addr[3]);
             winc1500_dev.ip_addr = *(uint32_t *)payload;
             winc1500_dev.state |= WINC1500_STATE_IP_OBTAINED;
             break;
         }
         case M2M_WIFI_REQ_WPS: {
-            puts("M2M_WIFI_REQ_WPS");
+            LOG_DEBUG("M2M_WIFI_REQ_WPS");
         }
             break;
         case M2M_WIFI_RESP_IP_CONFLICT: {
-            puts("M2M_WIFI_RESP_IP_CONFLICT");
+            LOG_DEBUG("M2M_WIFI_RESP_IP_CONFLICT");
         }
             break;
         case M2M_WIFI_RESP_SCAN_DONE: {
-            puts("M2M_WIFI_RESP_SCAN_DONE");
+            LOG_DEBUG("M2M_WIFI_RESP_SCAN_DONE");
             tstrM2mScanDone *scaninfo = (tstrM2mScanDone *)payload;
             msg.type = WINC1500_EVENT_WIFI_SCAN_DONE;
             msg.content.value = scaninfo->u8NumofCh;
         }
             break;
         case M2M_WIFI_RESP_SCAN_RESULT: {
-            puts("M2M_WIFI_RESP_SCAN_RESULT");
+            LOG_DEBUG("M2M_WIFI_RESP_SCAN_RESULT");
             /* Called by m2m_wifi_req_scan_result() */
             tstrM2mWifiscanResult *scan_result = (tstrM2mWifiscanResult *)payload;
             /* Copy result */
@@ -149,40 +150,40 @@ static void _wifi_callback(uint8_t msg_type, void *payload)
             msg.content.ptr = &_ap;
             
             /* display founded AP. */
-            printf("SSID:%s\n", scan_result->au8SSID);
+            LOG_DEBUG("SSID:%s\n", scan_result->au8SSID);
         }
             break;
         case M2M_WIFI_RESP_CURRENT_RSSI: {
-            puts("M2M_WIFI_RESP_CURRENT_RSSI");
+            LOG_DEBUG("M2M_WIFI_RESP_CURRENT_RSSI");
             /* Called by m2m_wifi_req_curr_rssi() */
             int8_t rssi = *(int8_t *)payload;
             msg.type = WINC1500_EVENT_WIFI_CURRENT_RSSI;
-            printf("RSSI Read: %d\n", rssi);
+            LOG_DEBUG("RSSI Read: %d\n", rssi);
             msg.content.value = rssi * -1;
         }
             break;
         case M2M_WIFI_RESP_CLIENT_INFO: {
-            puts("M2M_WIFI_RESP_CLIENT_INFO");
+            LOG_DEBUG("M2M_WIFI_RESP_CLIENT_INFO");
         }
             break;
         case M2M_WIFI_RESP_PROVISION_INFO: {
-            puts("M2M_WIFI_RESP_PROVISION_INFO");
+            LOG_DEBUG("M2M_WIFI_RESP_PROVISION_INFO");
         }
             break;
         case M2M_WIFI_RESP_DEFAULT_CONNECT: {
-            puts("M2M_WIFI_RESP_DEFAULT_CONNECT");
+            LOG_DEBUG("M2M_WIFI_RESP_DEFAULT_CONNECT");
         }
             break;
         case M2M_WIFI_RESP_GET_SYS_TIME: {
-            puts("M2M_WIFI_RESP_GET_SYS_TIME");
+            LOG_DEBUG("M2M_WIFI_RESP_GET_SYS_TIME");
             /* This event is internally used by module firmware 
              * on this event the module will sync time using SNTP */
             msg.type = WINC1500_EVENT_WIFI_OTHERS;
-            puts("SNTP time event called");
+            LOG_DEBUG("SNTP time event called");
         }
             break;
         default: {
-            printf("Unknown WiFi message: %d\n", msg_type);
+            LOG_DEBUG("Unknown WiFi message: %d\n", msg_type);
         }
             break;
     }
@@ -324,8 +325,8 @@ int winc1500_init(const winc1500_params_t *params)
 
     /* Get MAC Address. */
     m2m_wifi_get_mac_address(winc1500_dev.mac_addr);
-    printf("MAC Address : ");
-    printf("%02X:%02X:%02X:%02X:%02X:%02X\n",
+    LOG_DEBUG("MAC Address : ");
+    LOG_DEBUG("%02X:%02X:%02X:%02X:%02X:%02X\n",
             winc1500_dev.mac_addr[0], winc1500_dev.mac_addr[1],
             winc1500_dev.mac_addr[2], winc1500_dev.mac_addr[3], 
             winc1500_dev.mac_addr[4], winc1500_dev.mac_addr[5]);

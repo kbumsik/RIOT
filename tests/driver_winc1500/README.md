@@ -1,5 +1,13 @@
 # ATWINC1500 Wifi Module Driver
 
+## How to use the test program
+
+### Debugging support
+
+To get more debugging messages while developing you can enable debugging mode
+by adding `CFLAGS += -DLOG_LEVEL=LOG_DEBUG` in `Makefile`. THis line is commented
+out by default.
+
 ## WINC1500 Xplained Pro Pinmap
 
 ### ATWINC1500 Connection

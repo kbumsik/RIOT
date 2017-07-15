@@ -101,10 +101,10 @@ extern "C" {
    --------- Debug Options ---------
    ---------------------------------
 */
-#include <stdio.h>
+#include "log.h"
 
 #define CONF_WINC_DEBUG					(1)
-#define CONF_WINC_PRINTF				printf
+#define CONF_WINC_PRINTF				LOG_DEBUG
 
 #ifdef __cplusplus
 }
