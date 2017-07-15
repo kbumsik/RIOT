@@ -121,3 +121,7 @@ endif
 ifneq (,$(filter lsm6dsl,$(USEMODULE)))
     USEMODULE_INCLUDES += $(RIOTBASE)/drivers/lsm6dsl/include
 endif
+ifneq (,$(filter winc1500,$(USEMODULE)))
+    USEMODULE_INCLUDES += $(RIOTBASE)/drivers/winc1500/include
+    USEMODULE_INCLUDES += $(RIOTBASE)/drivers/winc1500/pkg
+endif

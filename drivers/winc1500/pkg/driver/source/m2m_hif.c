@@ -87,6 +87,7 @@ volatile tstrHifContext gstrHifCxt;
 static void isr(void)
 {
 	gstrHifCxt.u8Interrupt++;
+	M2M_DBG("Interrupt triggered: %d",gstrHifCxt.u8Interrupt);
 #ifdef NM_LEVEL_INTERRUPT
 	nm_bsp_interrupt_ctrl(0);
 #endif
@@ -478,6 +479,7 @@ static int8_t hif_isr(void)
 					}
 				}
 
+				M2M_DBG("Message request group: %u, Opcode: %u", strHif.u8Gid, strHif.u8Opcode);
 				if(M2M_REQ_GROUP_WIFI == strHif.u8Gid)
 				{
 					if(gstrHifCxt.pfWifiCb)

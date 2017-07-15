@@ -214,7 +214,8 @@ Date
 		17 July 2012
 *********************************************************************/
 static void m2m_ip_cb(uint8_t u8OpCode, uint16_t u16BufferSize,uint32_t u32Address)
-{	
+{
+	M2M_DBG("m2m_ip_cb called: %u\n", u8OpCode);
 	if((u8OpCode == SOCKET_CMD_BIND) || (u8OpCode == SOCKET_CMD_SSL_BIND))
 	{
 		tstrBindReply		strBindReply;
@@ -257,7 +258,7 @@ static void m2m_ip_cb(uint8_t u8OpCode, uint16_t u16BufferSize,uint32_t u32Addre
 					++gu16SessionID;
 
 				gastrSockets[strAcceptReply.sConnectedSock].u16SessionID = gu16SessionID;
-				M2M_DBG("Socket %d session ID = %d\r\n",strAcceptReply.sConnectedSock , gu16SessionID );		
+				M2M_DBG("Socket %d session ID = %d\n",strAcceptReply.sConnectedSock , gu16SessionID );		
 			}
 			strAccept.sock = strAcceptReply.sConnectedSock;
 			strAccept.strAddr.sin_family		= AF_INET;
@@ -314,7 +315,7 @@ static void m2m_ip_cb(uint8_t u8OpCode, uint16_t u16BufferSize,uint32_t u32Addre
 
 			sock			= strRecvReply.sock;
 			u16SessionID = strRecvReply.u16SessionID;
-			M2M_DBG("recv callback session ID = %d\r\n",u16SessionID);
+			M2M_DBG("recv callback session ID = %d\n",u16SessionID);
 			
 			/* Reset the Socket RX Pending Flag.
 			*/
@@ -350,7 +351,7 @@ static void m2m_ip_cb(uint8_t u8OpCode, uint16_t u16BufferSize,uint32_t u32Addre
 			}
 			else
 			{
-				M2M_DBG("Discard recv callback %d %d \r\n",u16SessionID , gastrSockets[sock].u16SessionID);
+				M2M_DBG("Discard recv callback %d %d \n",u16SessionID , gastrSockets[sock].u16SessionID);
 				if(u16ReadSize < u16BufferSize)
 				{
 					if(hif_receive(0, NULL, 0, 1) == M2M_SUCCESS)
@@ -370,14 +371,14 @@ static void m2m_ip_cb(uint8_t u8OpCode, uint16_t u16BufferSize,uint32_t u32Addre
 
 		if(u8OpCode == SOCKET_CMD_SENDTO)
 			u8CallbackMsgID = SOCKET_MSG_SENDTO;
-
-		if(hif_receive(u32Address, (uint8_t*)&strReply, sizeof(tstrSendReply), 0) == M2M_SUCCESS)
+		int8_t ret = hif_receive(u32Address, (uint8_t*)&strReply, sizeof(tstrSendReply), 0);
+		if(ret == M2M_SUCCESS)
 		{
 			uint16_t u16SessionID = 0;
 			
 			sock = strReply.sock;
 			u16SessionID = strReply.u16SessionID;
-			M2M_DBG("send callback session ID = %d\r\n",u16SessionID);
+			M2M_DBG("send callback session ID = %d\n",u16SessionID);
 			
 			s16Rcvd = NM_BSP_B_L_16(strReply.s16SentBytes);
 
@@ -388,8 +389,11 @@ static void m2m_ip_cb(uint8_t u8OpCode, uint16_t u16BufferSize,uint32_t u32Addre
 			}
 			else
 			{
-				M2M_DBG("Discard send callback %d %d \r\n",u16SessionID , gastrSockets[sock].u16SessionID);
+				M2M_DBG("Discard send callback %d %d \n",u16SessionID , gastrSockets[sock].u16SessionID);
 			}
+		}
+		else {
+				M2M_DBG("hif_receive() failed: %d\n",ret);
 		}
 	}
 	else if(u8OpCode == SOCKET_CMD_PING)
@@ -557,7 +561,7 @@ SOCKET socket(uint16_t u16Domain, uint8_t u8Type, uint8_t u8Flags)
 				++gu16SessionID;
 				
 			pstrSock->u16SessionID = gu16SessionID;
-            M2M_INFO("Socket %d session ID = %d\r\n",sock, gu16SessionID );
+            M2M_INFO("Socket %d session ID = %d\n",sock, gu16SessionID );
 
 			if(u8Flags & SOCKET_FLAGS_SSL)
 			{

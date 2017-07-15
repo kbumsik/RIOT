@@ -63,6 +63,8 @@
 #define M2M_LOG_LEVEL									M2M_LOG_REQ
 #endif
 
+#undef M2M_LOG_LEVEL
+#define M2M_LOG_LEVEL   M2M_LOG_DBG
 
 #define M2M_ERR(...)
 #define M2M_INFO(...)
