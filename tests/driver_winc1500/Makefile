@@ -1,12 +1,7 @@
 APPLICATION = driver_winc1500
 include ../Makefile.tests_common
-####################
-#####################
-FEATURES_REQUIRED = periph_uart periph_spi periph_gpio 
 
-USEMODULE += core_mbox
 USEMODULE += shell
-USEMODULE += xtimer
 USEMODULE += winc1500
 
 # Comment this out to disable code in RIOT that does safety checking

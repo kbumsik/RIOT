@@ -62,8 +62,6 @@
 #include "board.h"
 #include "shell.h"
 #include <string.h>
-#include "xtimer.h"
-#include "thread.h"
 
 #include "winc1500.h"
 #include "winc1500_params.h"
@@ -75,14 +73,6 @@ static int _scan(int argc, char **argv);
 static int _connect(int argc, char **argv);
 static int _disconnect(int argc, char **argv);
 static int _rssi(int argc, char **argv);
-// static int _tcpmsg(int argc, char **argv);
-// static int _udpmsg(int argc, char **argv);
-// static int _tcplisten(int argc, char **argv);
-// static int _udplisten(int argc, char **argv);
-
-/* Functions used for WINC1500 internal */
-// extern void winc1500_socket_cb(SOCKET sock, uint8_t msg_type, void *payload);
-// extern void winc1500_dns_resolve_cb(uint8_t* domain_name, uint32_t server_ip_addr);
 
 static const shell_command_t shell_commands[] = {
     { "init", "initializes WINC1500 module", _init },
@@ -90,10 +80,6 @@ static const shell_command_t shell_commands[] = {
     { "connect", "Connect to an Access Point", _connect },
     { "disconnect", "Connect from an Access Point", _disconnect },
     { "rssi", "Display RSSI for the connected AP", _rssi },
-    // { "tcpmsg", "Send a TCP message", _tcpmsg },
-    // { "udpmsg", "Send a UDP message", _udpmsg },
-    // { "tcplisten", "Listen TCP messages", _tcplisten },
-    // { "udplisten", "Listen UDP messages", _udplisten },
     { NULL, NULL, NULL }
 };
 
@@ -123,16 +109,16 @@ static int _scan(int argc, char **argv)
     for (int i = 0; i < result; i++) {
         winc1500_read_ap(&ap, i);
         printf("[%d] %s %d dBm ", i, ssid, ap.rssi);
-        if (ap.sec & WINC1500_WIFI_SEC_FLAGS_ENTERPRISE) {
+        if (ap.sec & WINC1500_SEC_FLAGS_ENTERPRISE) {
             puts("WPA_Enterprise");
         }
-        else if (ap.sec & WINC1500_WIFI_SEC_FLAGS_WPA) {
+        else if (ap.sec & WINC1500_SEC_FLAGS_WPA) {
             puts("WPA_PSK");
         }
-        else if (ap.sec & WINC1500_WIFI_SEC_FLAGS_OPEN) {
+        else if (ap.sec & WINC1500_SEC_FLAGS_OPEN) {
             puts("OPEN");
         }
-        else if (ap.sec & WINC1500_WIFI_SEC_FLAGS_WEP) {
+        else if (ap.sec & WINC1500_SEC_FLAGS_WEP) {
             puts("WEP");
         }
         else {
@@ -150,7 +136,7 @@ static int _connect(int argc, char **argv)
     /* Get SSID */
     if (argc > 1) {
         ap.ssid = (char *)argv[1];
-        ap.sec = WINC1500_WIFI_SEC_FLAGS_OPEN;
+        ap.sec = WINC1500_SEC_FLAGS_OPEN;
     } else {
         puts("Please provide SSID to connect");
         return -1;
@@ -158,7 +144,7 @@ static int _connect(int argc, char **argv)
     /* Get password if provided */
     if (argc > 2) {
         ap.password = (char *)argv[2];
-        ap.sec = WINC1500_WIFI_SEC_FLAGS_WPA2;
+        ap.sec = WINC1500_SEC_FLAGS_WPA2;
     }
 
     int result = winc1500_connect_single(&ap);
@@ -173,6 +159,9 @@ static int _connect(int argc, char **argv)
 
 static int _disconnect(int argc, char **argv)
 {
+    puts("Command in progress. Exiting...");
+    return -1;
+
     int result = winc1500_disconnect();
     if (result == WINC1500_OK) {
         puts("[OK]");
@@ -185,6 +174,9 @@ static int _disconnect(int argc, char **argv)
 
 static int _rssi(int argc, char **argv)
 {
+    puts("Command in progress. Exiting...");
+    return -1;
+
     int rssi;
     int result = winc1500_read_rssi(&rssi);
     if (result == WINC1500_OK) {
@@ -196,247 +188,6 @@ static int _rssi(int argc, char **argv)
         return -1;
     }
 }
-
-// static int _tcpmsg(int argc, char **argv)
-// {
-//     char buffer[128];
-//     if (state_wifi == STATE_ERROR) {
-//         puts("Initialize the WINC1500 first");
-//         return -1;
-//     }
-//     char *host;
-//     char *msg;
-//     /* Get host and message */
-//     if (argc > 2) {
-//         host = (char *)argv[1];
-//         msg = (char *)argv[2];
-//     } else {
-//         puts("Please hostname and message.");
-//         return -1;
-//     }
-
-//     /** create socket file descriptor */
-//     SOCKET s = socket(AF_INET, SOCK_STREAM, 0);
-//     if (s < 0) {
-//         return -1;
-//     }
-//     printf("Socket %d created\n", s);
-//     /** setting up the host address */
-//     memset(&addr, 0, sizeof(addr));
-//     addr.sin_family = AF_INET;
-//     addr.sin_port = htons(5555); /* Port number */
-    
-//     if ( 0 == (addr.sin_addr.s_addr = nmi_inet_addr(host))) {
-//         state_socket = 0;
-//         if (SOCK_ERR_NO_ERROR != gethostbyname((uint8_t *)host)) {
-//             goto failed;
-//         }
-//         while (state_socket == 0) {
-//             /* Wait until it's connected */
-//             xtimer_usleep(1000);
-//         }
-//     }
-    
-//     while (0 == addr.sin_addr.s_addr) {
-//         /* This will be updated in callback function */
-//     }
-//     state_socket = 0;
-//     uint8_t *ip = (uint8_t *)&addr.sin_addr.s_addr;
-//     printf("socket is connecting to: %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
-//     int ret = connect(s, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
-//     if (ret < 0) {
-//         printf("Socket function failed: %d\n", ret);
-//         goto failed;
-//     }
-//     while (state_socket == 0) {
-//         /* Wait until it's connected */
-//         xtimer_usleep(1000);
-//     }
-
-//     printf("Empty the buffer by calling recv\n");
-//     state_socket = 0;
-//     recv(s, buffer, 128, 100);
-//     while (0 == state_socket){
-//         xtimer_usleep(1000);
-//     }
-
-//     printf("Now sending message: %s\n", msg);
-//     state_socket = 0;
-//     int n = send(s, msg, strlen(msg), 0);
-//     if (n < 0) {
-//         printf("socket sending packet unsuccessful: %d\n", n);
-//         goto failed;
-//     }
-//     while (state_socket == 0) {
-//         /* Wait until it's being sent */
-//         xtimer_usleep(1000);
-//     }
-
-//     puts("[OK]");
-//     close(s);
-//     return 0;
-// failed:
-//     puts("[Failed]");
-//     close(s);
-//     return -1;
-// }
-
-
-// static int _udpmsg(int argc, char **argv)
-// {
-//     if (state_wifi == STATE_ERROR) {
-//         puts("Initialize the WINC1500 first");
-//         return -1;
-//     }
-//     char *host;
-//     char *msg;
-//     /* Get host and message */
-//     if (argc > 2) {
-//         host = (char *)argv[1];
-//         msg = (char *)argv[2];
-//     } else {
-//         puts("Please hostname and message.");
-//         return -1;
-//     }
-
-//     /** create socket file descriptor */
-//     SOCKET s = socket(AF_INET, SOCK_DGRAM, 0);
-//     if (s < 0) {
-//         return -1;
-//     }
-//     printf("Socket %d created\n", s);
-//     /** setting up the host address */
-//     memset(&addr, 0, sizeof(addr));
-//     addr.sin_family = AF_INET;
-//     addr.sin_port = htons(5555); /* Port number */
-    
-//     if ( 0 == (addr.sin_addr.s_addr = nmi_inet_addr(host))) {
-//         state_socket = 0;
-//         if (SOCK_ERR_NO_ERROR != gethostbyname((uint8_t *)host)) {
-//             goto failed;
-//         }
-//         while (state_socket == 0) {
-//             /* Wait until it's connected */
-//             xtimer_usleep(1000);
-//         }
-//     }
-    
-//     while (0 == addr.sin_addr.s_addr) {
-//         /* This will be updated in callback function */
-//     }
-//     state_socket = 0;
-//     uint8_t *ip = (uint8_t *)&addr.sin_addr.s_addr;
-//     printf("Now sending message: %s\n", msg);
-//     printf("\tto: %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
-//     int n = sendto(s, msg, strlen(msg), 0, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
-//     if (n < 0) {
-//         printf("socket sending packet unsuccessful: %d\n", n);
-//         goto failed;
-//     }
-//     while (state_socket == 0) {
-//         /* Wait until it's being sent */
-//         xtimer_usleep(1000);
-//     }
-//     puts("[OK]");
-//     close(s);
-//     return 0;
-// failed:
-//     puts("[Failed]");
-//     close(s);
-//     return -1;
-// }
-
-// static int _tcplisten(int argc, char **argv)
-// {
-//     char buffer[256];
-
-//     if (state_wifi == STATE_ERROR) {
-//         puts("Initialize the WINC1500 first");
-//         return -1;
-//     }
-//     /** create socket file descriptor */
-//     SOCKET s = socket(AF_INET, SOCK_STREAM, 0);
-//     if (s < 0) {
-//         return -1;
-//     }
-//     printf("Socket %d created\n", s);
-//     /** setting up the host address */
-//     memset(&addr, 0, sizeof(addr));
-//     addr.sin_family = AF_INET;
-//     addr.sin_port = htons(5555); /* Port number */
-//     addr.sin_addr.s_addr = 0; /* From anywhere */
-    
-//     /* bind */
-//     state_socket = 0;
-//     bind(s, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
-//     while (0 == state_socket){
-//         xtimer_usleep(1000);
-//     }
-//     /* listen */
-//     state_socket = 0;
-//     listen(s, 0);
-//     while (0 == state_socket){
-//         xtimer_usleep(1000);
-//     }
-
-//     /* Wait for accept first?? */
-//     state_socket = 0;
-//     while (0 == state_socket){
-//         xtimer_usleep(1000);
-//     }
-//     /* recv */
-//     // TODO: Implement accept function
-//     state_socket = 0;
-//     recv(1, buffer, M2M_BUFFER_MAX_SIZE, 0);
-//     while (0 == state_socket){
-//         xtimer_usleep(1000);
-//     }
-//     printf("Received: %s\n", buffer);
-    
-//     puts("[OK]");
-//     close(s);
-//     return 0;
-// }
-
-// static int _udplisten(int argc, char **argv)
-// {
-//     char buffer[256];
-
-//     if (state_wifi == STATE_ERROR) {
-//         puts("Initialize the WINC1500 first");
-//         return -1;
-//     }
-//     /** create socket file descriptor */
-//     SOCKET s = socket(AF_INET, SOCK_DGRAM, 0);
-//     if (s < 0) {
-//         return -1;
-//     }
-//     printf("Socket %d created\n", s);
-//     /** setting up the host address */
-//     memset(&addr, 0, sizeof(addr));
-//     addr.sin_family = AF_INET;
-//     addr.sin_port = htons(5555); /* Port number */
-//     addr.sin_addr.s_addr = 0; /* From anywhere */
-    
-//     /* bind */
-//     state_socket = 0;
-//     bind(s, (struct sockaddr *)&addr, sizeof(struct sockaddr_in));
-//     while (0 == state_socket){
-//         xtimer_usleep(1000);
-//     }
-
-//     /* recv */
-//     state_socket = 0;
-//     recvfrom(s, buffer, 256, 0);
-//     while (0 == state_socket){
-//         xtimer_usleep(1000);
-//     }
-//     printf("Received: %s\n", buffer);
-    
-//     puts("[OK]");
-//     close(s);
-//     return 0;
-// }
 
 int main(void)
 {

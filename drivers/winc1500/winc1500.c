@@ -11,7 +11,8 @@
 #include <string.h>
 
 #include "winc1500.h"
-#include "driver/include/m2m_wifi.h"
+#include "winc1500_internal.h"
+#include "pkg/driver/include/m2m_wifi.h"
 
 #include "xtimer.h"
 
@@ -34,8 +35,8 @@ winc1500_ap_t _ap;
 static void *_event_handler(void *arg);
 static void _wifi_callback(uint8_t msg_type, void *payload);
 static int _wait_for_event(msg_t *response, uint16_t event, uint16_t error_event);
-winc1500_wifi_sec_flags_t _convert_sec_from(tenuM2mSecType module_sec);
-tenuM2mSecType _convert_sec_to(winc1500_wifi_sec_flags_t sec);
+winc1500_sec_flags_t _convert_sec_from(tenuM2mSecType module_sec);
+tenuM2mSecType _convert_sec_to(winc1500_sec_flags_t sec);
 
 inline static void _acquire(winc1500_t *dev)
 {
@@ -188,15 +189,6 @@ static void _wifi_callback(uint8_t msg_type, void *payload)
     mbox_put(&winc1500_dev.event_mbox, &msg);
 }
 
-// extern struct sockaddr_in addr;
-// void _dns_resolve_callback(uint8_t* domain_name, uint32_t server_ip_addr)
-// {
-//     addr.sin_addr.s_addr = server_ip_addr;
-//     printf("DNS resolution successful: %s is:\n", domain_name);
-//     uint8_t *ip = (uint8_t *)&addr.sin_addr.s_addr;
-//     printf("\t %u.%u.%u.%u\n", ip[0], ip[1], ip[2], ip[3]);
-//     state_socket = 1;
-// }
 
 static void *_event_handler(void *arg)
 {
@@ -215,26 +207,9 @@ static void *_event_handler(void *arg)
                 }
                 xtimer_usleep(1000);
             }
-            // while (m2m_wifi_handle_events(NULL) != M2M_SUCCESS) {
-            //     xtimer_usleep(1000);
-            // }
         }
     }
     return NULL;
-
-    // while (1) {
-    //     msg_t msg;
-    //     msg_receive(&msg);
-    //     /* Handle pending events from network controller. */
-    //     while (m2m_wifi_handle_events(NULL) != M2M_SUCCESS) {
-    //         xtimer_usleep(1000);
-    //     }
-    //     /* keep calling event handler until a semaphore is posted */
-    //     if (sema_try_wait(&dev->handler_sema) == 0) {
-    //         thread_sleep();
-    //     }
-    // }
-    // return NULL;
 }
 
 
@@ -242,9 +217,10 @@ static int _wait_for_event(msg_t *response, uint16_t event, uint16_t error_event
 {
     int result = WINC1500_ERR;
     msg_t msg_req, msg_resp;
+    /* Wake up handler */
     msg_req.content.value = 0;
     msg_req.type = WINC1500_INTERNAL_START_HANDLER;
-    msg_send(&msg_req, _pid);       /* Make the event handler awake */
+    msg_send(&msg_req, _pid);
     /* wait for event message */
     while (true) {
         // TODO: Timeout condition
@@ -259,63 +235,62 @@ static int _wait_for_event(msg_t *response, uint16_t event, uint16_t error_event
         }
     }
 done:
-// TODO: Should we?
-    // if (NULL != msg_resp) {
-    //     *response = msg_resp;
-    // }
-    // Sleep handler
+    /* Sleep handler */
     msg_req.content.value = 0;
     msg_req.type = WINC1500_INTERNAL_STOP_HANDLER;
     msg_send(&msg_req, _pid);
-    // Pass value
+    /* Pass response */
     *response = msg_resp;
     return result;	
 }
 
-winc1500_wifi_sec_flags_t _convert_sec_from(tenuM2mSecType module_sec)
+
+winc1500_sec_flags_t _convert_sec_from(tenuM2mSecType module_sec)
 {
-    winc1500_wifi_sec_flags_t sec = WINC1500_WIFI_UNKNOWN;
+    winc1500_sec_flags_t sec = WINC1500_SEC_UNKNOWN;
     switch (module_sec) {
 	    case M2M_WIFI_SEC_INVALID:
-            sec = WINC1500_WIFI_UNKNOWN;
+            sec = WINC1500_SEC_UNKNOWN;
             break;
 	    case M2M_WIFI_SEC_OPEN:
-            sec |= WINC1500_WIFI_SEC_FLAGS_OPEN;
+            sec |= WINC1500_SEC_FLAGS_OPEN;
             break;
 	    case M2M_WIFI_SEC_WPA_PSK:
-            sec |= WINC1500_WIFI_SEC_FLAGS_WPA;
-            sec |= WINC1500_WIFI_SEC_FLAGS_WPA2;
+            sec |= WINC1500_SEC_FLAGS_WPA;
+            sec |= WINC1500_SEC_FLAGS_WPA2;
             break;
 	    case M2M_WIFI_SEC_WEP:
-            sec |= WINC1500_WIFI_SEC_FLAGS_WEP;
+            sec |= WINC1500_SEC_FLAGS_WEP;
             break;
 	    case M2M_WIFI_SEC_802_1X:
-            sec |= WINC1500_WIFI_SEC_FLAGS_WPA;
-            sec |= WINC1500_WIFI_SEC_FLAGS_WPA2;
-            sec |= WINC1500_WIFI_SEC_FLAGS_ENTERPRISE;
+            sec |= WINC1500_SEC_FLAGS_WPA;
+            sec |= WINC1500_SEC_FLAGS_WPA2;
+            sec |= WINC1500_SEC_FLAGS_ENTERPRISE;
             break;
     }
     return sec;
 }
 
-tenuM2mSecType _convert_sec_to(winc1500_wifi_sec_flags_t sec)
+
+tenuM2mSecType _convert_sec_to(winc1500_sec_flags_t sec)
 {
     tenuM2mSecType module_sec = M2M_WIFI_SEC_INVALID;
-    if (sec & WINC1500_WIFI_SEC_FLAGS_OPEN) {
+    if (sec & WINC1500_SEC_FLAGS_OPEN) {
         module_sec = M2M_WIFI_SEC_OPEN; 
     }
-    else if ((sec & WINC1500_WIFI_SEC_FLAGS_WPA) || (sec & WINC1500_WIFI_SEC_FLAGS_WPA2)) {
+    else if ((sec & WINC1500_SEC_FLAGS_WPA) || (sec & WINC1500_SEC_FLAGS_WPA2)) {
         module_sec = M2M_WIFI_SEC_WPA_PSK;
     }
-    else if (sec & WINC1500_WIFI_SEC_FLAGS_WEP) {
+    else if (sec & WINC1500_SEC_FLAGS_WEP) {
         module_sec = M2M_WIFI_SEC_WEP;
     }
 
-    if ((module_sec == M2M_WIFI_SEC_WPA_PSK) && (sec & WINC1500_WIFI_SEC_FLAGS_ENTERPRISE)) {
+    if ((module_sec == M2M_WIFI_SEC_WPA_PSK) && (sec & WINC1500_SEC_FLAGS_ENTERPRISE)) {
         module_sec = M2M_WIFI_SEC_802_1X;
     }
     return module_sec;
 }
+
 
 int winc1500_init(const winc1500_params_t *params)
 {
@@ -335,9 +310,6 @@ int winc1500_init(const winc1500_params_t *params)
     if (M2M_SUCCESS != m2m_wifi_init(&wifi_param)) {
         return WINC1500_ERR;
     }
-    /* Init and Register socket callback */
-    //socketInit();
-    //registerSocketCallback(winc1500_socket_callback, _dns_resolve_callback);
 
     /* Initialize winc1500 struct */
     mutex_init(&winc1500_dev.mutex);
@@ -359,6 +331,7 @@ int winc1500_init(const winc1500_params_t *params)
             winc1500_dev.mac_addr[4], winc1500_dev.mac_addr[5]);
     return WINC1500_OK;
 }
+
 
 int winc1500_scan(void)
 {
@@ -387,6 +360,7 @@ done:
     return result;
 }
 
+
 int winc1500_read_ap(winc1500_ap_t *ap_result, uint8_t ap_num)
 {
     int result = WINC1500_OK;
@@ -414,6 +388,7 @@ done:
     }
     return result;
 }
+
 
 int winc1500_connect_single(winc1500_ap_t *ap_info)
 {
@@ -467,10 +442,11 @@ done:
     return result;
 }
 
+
 int winc1500_connect_list(winc1500_ap_t ap_info[])
 {
     // TODO: Implement
-    return 0;
+    return -1;
 }
 
 
@@ -478,5 +454,5 @@ int winc1500_disconnect(void)
 {
     //m2m_wifi_disconnect();
     
-    return 0;
+    return -1;
 }
