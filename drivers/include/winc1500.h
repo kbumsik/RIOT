@@ -137,17 +137,17 @@ void winc1500_setup(winc1500_t *dev, const winc1500_params_t *params);
  */
 int winc1500_init(winc1500_t *dev, const winc1500_params_t *params);
 
+int winc1500_get_mac_addr(winc1500_t *dev, uint8_t *addr);
+
 int winc1500_scan(winc1500_t *dev);
 
 int winc1500_read_ap(winc1500_t *dev, winc1500_ap_t *ap_result, uint8_t ap_num);
 
-int winc1500_read_rssi(winc1500_t *dev, int *output);
-
-int winc1500_get_mac_addr(winc1500_t *dev, uint8_t *addr);
-
 int winc1500_connect(winc1500_t *dev, const winc1500_ap_t *ap_info);
 
 int winc1500_connect_list(winc1500_t *dev, const winc1500_ap_t ap_info[]);
+
+int winc1500_connection_info(winc1500_t *dev, winc1500_ap_t *ap_result, uint8_t *mac_addr);
 
 int winc1500_disconnect(winc1500_t *dev);
 

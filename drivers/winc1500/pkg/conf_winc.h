@@ -67,18 +67,6 @@ extern "C" {
   #define WINC1500_SPI_CS_PIN (GPIO_PIN(PA, 5))
 #endif
 
-/** SPI clock. */ //TODO: Remove?
-#define CONF_WINC_SPI_CLOCK				SPI_CLK_10MHZ
-#define CONF_WINC_SPI_MODE				SPI_MODE_0
-
-/** SPI clock. */ //TODO: Remove?
-#ifndef WINC1500_SPI_CLOCK
-  #define WINC1500_SPI_CLOCK  SPI_CLK_10MHZ
-#endif
-#ifndef WINC1500_SPI_MODE
-  #define WINC1500_SPI_MODE  SPI_MODE_0
-#endif
-
 /*
    ---------------------------------
    ---------- PIN settings ---------

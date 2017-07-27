@@ -72,14 +72,14 @@ static int _init(int argc, char **argv);
 static int _scan(int argc, char **argv);
 static int _connect(int argc, char **argv);
 static int _disconnect(int argc, char **argv);
-static int _rssi(int argc, char **argv);
+static int _info(int argc, char **argv);
 
 static const shell_command_t shell_commands[] = {
     { "init", "initializes WINC1500 module", _init },
     { "scan", "Scan for Access Points available", _scan },
     { "connect", "Connect to an Access Point", _connect },
     { "disconnect", "Connect from an Access Point", _disconnect },
-    { "rssi", "Display RSSI for the connected AP", _rssi },
+    { "info", "Connected AP information", _info },
     { NULL, NULL, NULL }
 };
 
@@ -89,6 +89,14 @@ static int _init(int argc, char **argv)
 {
     // PARAMS
     if (WINC1500_OK == winc1500_init(&winc1500, &winc1500_params[0])) {
+        uint8_t mac[6];
+        winc1500_get_mac_addr(&winc1500, mac);
+        printf("MAC Address : ");
+        printf("%02X:%02X:%02X:%02X:%02X:%02X\n",
+            mac[0], mac[1],
+            mac[2], mac[3], 
+            mac[4], mac[5]);
+
         puts("[OK]");
         return 0;
     }
@@ -176,18 +184,40 @@ static int _disconnect(int argc, char **argv)
     }
 }
 
-static int _rssi(int argc, char **argv)
+static int _info(int argc, char **argv)
 {
-    int rssi;
-    int result = winc1500_read_rssi(&winc1500, &rssi);
-    if (result == WINC1500_OK) {
-        printf("RSSI: %d dBm\n", rssi);
-        puts("[OK]");
-        return 0;
-    } else {
+    char ssid[WINC1500_MAX_SSID_LEN];
+    uint8_t mac[6];
+    winc1500_ap_t ap = {.ssid = ssid};
+    
+    int result = winc1500_connection_info(&winc1500, &ap, mac);
+    if (result < 0) {
+        puts("Wi-Fi is not connected yet.");
         puts("[Failed]");
         return 1;
     }
+
+    printf("AP Info: %s %d dBm ", ssid, ap.rssi);
+    printf("%02X:%02X:%02X:%02X:%02X:%02X ",
+            mac[0], mac[1], mac[2],
+            mac[3], mac[4], mac[5]);
+    if (ap.sec & WINC1500_SEC_FLAGS_ENTERPRISE) {
+        puts("WPA_Enterprise");
+    }
+    else if (ap.sec & WINC1500_SEC_FLAGS_WPA) {
+        puts("WPA_PSK");
+    }
+    else if (ap.sec & WINC1500_SEC_FLAGS_OPEN) {
+        puts("OPEN");
+    }
+    else if (ap.sec & WINC1500_SEC_FLAGS_WEP) {
+        puts("WEP");
+    }
+    else {
+        puts("Unknown");
+    }
+    puts("[OK]");
+    return result;
 }
 
 int main(void)

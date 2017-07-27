@@ -30,6 +30,7 @@ winc1500_t *winc1500_dev = NULL;
 
 char _ssid[WINC1500_MAX_SSID_LEN + 1];
 winc1500_ap_t _ap;
+uint8_t *_mac_addr;
 
 static void *_event_handler(void *arg);
 static int _wait_for_event(msg_t *response, uint16_t event, uint16_t error_event);
@@ -230,8 +231,8 @@ int winc1500_scan(winc1500_t *dev)
         goto done;
     }
 
-    result = _wait_for_event(&msg_resp, WINC1500_EVENT_WIFI_SCAN_DONE, 
-                                            WINC1500_EVENT_WIFI_NOTHING);
+    result = _wait_for_event(&msg_resp, WINC1500_EVENT_SCAN_DONE, 
+                                            WINC1500_EVENT_NOTHING);
 
 done:
     _unlock(dev);
@@ -257,8 +258,8 @@ int winc1500_read_ap(winc1500_t *dev, winc1500_ap_t *ap_result, uint8_t ap_num)
         goto done;
     }
 
-    result = _wait_for_event(&msg_resp, WINC1500_EVENT_WIFI_SCAN_RESULT, 
-                                      WINC1500_EVENT_WIFI_NOTHING);
+    result = _wait_for_event(&msg_resp, WINC1500_EVENT_SCAN_RESULT, 
+                                      WINC1500_EVENT_NOTHING);
 done:
     _unlock(dev);
     if (WINC1500_OK == result) {
@@ -269,6 +270,7 @@ done:
     }
     return result;
 }
+
 
 int winc1500_get_mac_addr(winc1500_t *dev, uint8_t *addr)
 {
@@ -286,32 +288,6 @@ int winc1500_get_mac_addr(winc1500_t *dev, uint8_t *addr)
             addr[2], addr[3], 
             addr[4], addr[5]);
     _unlock(dev);
-    return result;
-}
-
-
-int winc1500_read_rssi(winc1500_t *dev, int *output)
-{
-    int result = WINC1500_OK;
-    msg_t msg_resp;
-    if (!(dev->state & WINC1500_STATE_CONNECTED)) {
-        return WINC1500_ERR;
-    }
-    _lock(dev);
-    /* Request scan. */
-    result = m2m_wifi_req_curr_rssi();
-    if (M2M_SUCCESS != result) {
-        result = WINC1500_ERR;
-        goto done;
-    }
-
-    result = _wait_for_event(&msg_resp, WINC1500_EVENT_WIFI_CURRENT_RSSI, 
-                                        WINC1500_EVENT_WIFI_NOTHING);
-done:
-    _unlock(dev);
-    if (WINC1500_OK == result) {
-        *output = msg_resp.content.value * -1; 
-    }
     return result;
 }
 
@@ -336,8 +312,8 @@ int winc1500_connect(winc1500_t *dev, const winc1500_ap_t *ap_info)
     }
 
     // TODO: wait until connected or DHCP?
-    result = _wait_for_event(&msg_resp, WINC1500_EVENT_WIFI_CON_STATE_CONNECTED, 
-                WINC1500_EVENT_WIFI_NOTHING | WINC1500_EVENT_WIFI_CON_STATE_DISCONNECTED);
+    result = _wait_for_event(&msg_resp, WINC1500_EVENT_CON_STATE_CONNECTED, 
+                WINC1500_EVENT_NOTHING | WINC1500_EVENT_CON_STATE_DISCONNECTED);
 done:
     _unlock(dev);
     return result;
@@ -348,6 +324,37 @@ int winc1500_connect_list(winc1500_t *dev, const winc1500_ap_t ap_info[])
 {
     // TODO: Implement
     return -1;
+}
+
+
+int winc1500_connection_info(winc1500_t *dev, winc1500_ap_t *ap_result, uint8_t *mac_addr)
+{
+    int result = WINC1500_OK;
+    msg_t msg_resp;
+    if (!(dev->state & WINC1500_STATE_CONNECTED)) {
+        return WINC1500_ERR;
+    }
+    _lock(dev);
+
+    _mac_addr = mac_addr;
+    /* Request scan. */
+    result = m2m_wifi_get_connection_info();
+    if (M2M_SUCCESS != result) {
+        result = WINC1500_ERR;
+        goto done;
+    }
+
+    result = _wait_for_event(&msg_resp, WINC1500_EVENT_CONN_INFO, 
+                                        WINC1500_EVENT_NOTHING);
+done:
+    _unlock(dev);
+    if (WINC1500_OK == result) {
+        winc1500_ap_t *ap_info = (winc1500_ap_t *)msg_resp.content.ptr;
+        strncpy(ap_result->ssid, ap_info->ssid, WINC1500_MAX_SSID_LEN);
+        ap_result->rssi = ap_info->rssi;
+        ap_result->sec = _sec_module2driver(ap_info->sec);
+    }
+    return result;
 }
 
 
@@ -368,8 +375,8 @@ int winc1500_disconnect(winc1500_t *dev)
     }
 
     // TODO: wait until connected or DHCP?
-    result = _wait_for_event(&msg_resp, WINC1500_EVENT_WIFI_CON_STATE_DISCONNECTED, 
-                WINC1500_EVENT_WIFI_NOTHING);
+    result = _wait_for_event(&msg_resp, WINC1500_EVENT_CON_STATE_DISCONNECTED, 
+                WINC1500_EVENT_NOTHING);
 done:
     _unlock(dev);
     return result;

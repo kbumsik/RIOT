@@ -64,18 +64,20 @@ extern "C" {
  * @{
  */
 typedef enum {
-    WINC1500_EVENT_WIFI_NOTHING =                   (0),
-    WINC1500_EVENT_WIFI_OTHERS =                    (1<<0),
+    WINC1500_EVENT_NOTHING =                   (0),
+    WINC1500_EVENT_OTHERS =                    (1<<0),
     /* From M2M_WIFI_RESP_CON_STATE_CHANGED */
-    WINC1500_EVENT_WIFI_CON_STATE_CONNECTED =       (1<<1),
-    WINC1500_EVENT_WIFI_CON_STATE_DISCONNECTED =    (1<<2),
+    WINC1500_EVENT_CON_STATE_CONNECTED =       (1<<1),
+    WINC1500_EVENT_CON_STATE_DISCONNECTED =    (1<<2),
     /* From M2M_WIFI_RESP_SCAN_DONE */
-    WINC1500_EVENT_WIFI_SCAN_DONE =                 (1<<3),
+    WINC1500_EVENT_SCAN_DONE =                 (1<<3),
     /* From M2M_WIFI_RESP_SCAN_RESULT */
-    WINC1500_EVENT_WIFI_SCAN_RESULT =               (1<<4),
+    WINC1500_EVENT_SCAN_RESULT =               (1<<4),
     /* From M2M_WIFI_RESP_CURRENT_RSSI */
-    WINC1500_EVENT_WIFI_CURRENT_RSSI =              (1<<5)
-} winc1500_wifi_cb_msg_t;
+    WINC1500_EVENT_CURRENT_RSSI =              (1<<5),
+    /* From M2M_WIFI_RESP_CONN_INFO */
+    WINC1500_EVENT_CONN_INFO =                 (1<<6)
+} winc1500_cb_msg_t;
 /** @} */
 
 /**
@@ -112,6 +114,7 @@ extern winc1500_t *winc1500_dev;
 
 extern char _ssid[WINC1500_MAX_SSID_LEN + 1];
 extern winc1500_ap_t _ap;
+extern uint8_t *_mac_addr;
 
 inline void _lock(winc1500_t *dev) {
     spi_acquire(winc1500_dev->params.spi, SPI_CS_UNDEF,
