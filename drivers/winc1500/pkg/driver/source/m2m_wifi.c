@@ -44,7 +44,12 @@
 #include "driver/source/nmasic.h"
 
 static volatile uint8_t gu8ChNum;
-static volatile uint8_t gu8scanInProgress = 0;
+#ifdef MODULE_WINC1500
+volatile uint8_t gu8scanInProgress = 0;
+#else
+/* This will be used globally in winc1500_callback.c */
+uint8_t gu8scanInProgress = 0;
+#endif
 static tpfAppWifiCb gpfAppWifiCb = NULL;
 
 
@@ -81,6 +86,7 @@ gstrMgmtCtrl = {NULL, 0 , 0};
 *	@date
 *	@version	1.0
 */
+#ifndef MODULE_WINC1500
 static void m2m_wifi_cb(uint8_t u8OpCode, uint16_t u16DataSize, uint32_t u32Addr)
 {
 	uint8_t rx_buf[8];
@@ -226,7 +232,7 @@ static void m2m_wifi_cb(uint8_t u8OpCode, uint16_t u16DataSize, uint32_t u32Addr
 		{
 			uint8_t u8SetRxDone;
 			tstrM2mIpRsvdPkt strM2mRsvd;
-			if(hif_receive(u32Addr, &strM2mRsvd ,sizeof(tstrM2mIpRsvdPkt), 0) == M2M_SUCCESS)
+			if(hif_receive(u32Addr, (uint8_t *)&strM2mRsvd ,sizeof(tstrM2mIpRsvdPkt), 0) == M2M_SUCCESS)
 			{
 				tstrM2mIpCtrlBuf  strM2mIpCtrlBuf;
 				uint16_t u16Offset = strM2mRsvd.u16PktOffset;
@@ -292,6 +298,7 @@ static void m2m_wifi_cb(uint8_t u8OpCode, uint16_t u16DataSize, uint32_t u32Addr
 		M2M_ERR("REQ Not defined %d\n",u8OpCode);
 	}
 }
+#endif
 
 int8_t m2m_wifi_download_mode(void)
 {
@@ -473,8 +480,10 @@ int8_t m2m_wifi_init(tstrWifiInitParam * param)
 	ret = hif_init(NULL);
 	if(ret != M2M_SUCCESS) 	goto _EXIT1;
 
+#ifndef MODULE_WINC1500
+	/* This will be called in RIOT's driver */
 	hif_register_cb(M2M_REQ_GROUP_WIFI,m2m_wifi_cb);
-
+#endif
 	ret = nm_get_firmware_full_info(&strtmp);
 
 	M2M_INFO("Firmware ver   : %u.%u.%u Svnrev %u\n", strtmp.u8FirmwareMajor, strtmp.u8FirmwareMinor, strtmp.u8FirmwarePatch,strtmp.u16FirmwareSvnNum);

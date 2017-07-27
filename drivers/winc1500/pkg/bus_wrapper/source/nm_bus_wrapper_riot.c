@@ -48,6 +48,8 @@
 #include "common/include/nm_common.h"
 #include "bus_wrapper/include/nm_bus_wrapper.h"
 
+#include "winc1500.h"
+#include "winc1500_internal.h"
 #include "conf_winc.h"
 
 #define NM_BUS_MAX_TRX_SZ	256
@@ -77,11 +79,10 @@ static int8_t spi_rw(uint8_t* pu8Mosi, uint8_t* pu8Miso, uint16_t u16Sz)
 		u8SkipMiso = 1;
 	}
 
-	spi_acquire(WINC1500_SPI, SPI_CS_UNDEF, CONF_WINC_SPI_MODE, CONF_WINC_SPI_CLOCK);
-	gpio_clear(WINC1500_SPI_CS_PIN);
+	gpio_clear(winc1500_dev->params.cs_pin);
 
 	while (u16Sz) {
-		*pu8Miso = spi_transfer_byte(WINC1500_SPI, SPI_CS_UNDEF,
+		*pu8Miso = spi_transfer_byte(winc1500_dev->params.spi, SPI_CS_UNDEF,
 										 true, *pu8Mosi);
 		u16Sz--;
 		if (!u8SkipMiso) {
@@ -92,8 +93,7 @@ static int8_t spi_rw(uint8_t* pu8Mosi, uint8_t* pu8Miso, uint16_t u16Sz)
 		}
 	}
 
-	gpio_set(WINC1500_SPI_CS_PIN);
-	spi_release(WINC1500_SPI);
+	gpio_set(winc1500_dev->params.cs_pin);
 
 	return M2M_SUCCESS;
 }
@@ -107,13 +107,14 @@ int8_t nm_bus_init(void *pvinit)
 {
 	int8_t result = M2M_SUCCESS;
 	
-	/* Configure SPI peripheral. */
-	spi_init(WINC1500_SPI);
+	/* Configure SPI peripheral. 
+	 *	This will initialized in the winc1500.c or winc1500_netdev.c */
+	/* spi_init(winc1500_dev->params.spi); */
 	
 	/* Configure CS PIN. */
 	/* This step will set the CS high */
-	gpio_init(WINC1500_SPI_CS_PIN, GPIO_OUT);
-	gpio_set(WINC1500_SPI_CS_PIN);
+	gpio_init(winc1500_dev->params.cs_pin, GPIO_OUT);
+	gpio_set(winc1500_dev->params.cs_pin);
 
 	/* Reset WINC1500. */
 	nm_bsp_reset();

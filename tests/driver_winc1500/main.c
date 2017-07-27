@@ -83,11 +83,12 @@ static const shell_command_t shell_commands[] = {
     { NULL, NULL, NULL }
 };
 
+winc1500_t winc1500;
 
 static int _init(int argc, char **argv)
 {
     // PARAMS
-    if (WINC1500_OK == winc1500_init(&winc1500_params[0])) {
+    if (WINC1500_OK == winc1500_init(&winc1500, &winc1500_params[0])) {
         puts("[OK]");
         return 0;
     }
@@ -97,7 +98,7 @@ static int _init(int argc, char **argv)
 
 static int _scan(int argc, char **argv)
 {
-    int result = winc1500_scan();
+    int result = winc1500_scan(&winc1500);
     if (result < 0) {
         puts("[Scanning error]");
         return 1;
@@ -107,7 +108,7 @@ static int _scan(int argc, char **argv)
     char ssid[WINC1500_MAX_SSID_LEN];
     winc1500_ap_t ap = {.ssid = ssid};
     for (int i = 0; i < result; i++) {
-        winc1500_read_ap(&ap, i);
+        winc1500_read_ap(&winc1500, &ap, i);
         printf("[%d] %s %d dBm ", i, ssid, ap.rssi);
         if (ap.sec & WINC1500_SEC_FLAGS_ENTERPRISE) {
             puts("WPA_Enterprise");
@@ -152,7 +153,7 @@ static int _connect(int argc, char **argv)
         ap.sec = WINC1500_SEC_FLAGS_WPA2;
     }
 
-    int result = winc1500_connect_single(&ap);
+    int result = winc1500_connect(&winc1500, &ap);
     if (result == WINC1500_OK) {
         puts("[OK]");
         return 0;
@@ -165,10 +166,7 @@ static int _connect(int argc, char **argv)
 
 static int _disconnect(int argc, char **argv)
 {
-    puts("Command in progress. Exiting...");
-    return 1;
-
-    int result = winc1500_disconnect();
+    int result = winc1500_disconnect(&winc1500);
     if (result == WINC1500_OK) {
         puts("[OK]");
         return 0;
@@ -180,13 +178,10 @@ static int _disconnect(int argc, char **argv)
 
 static int _rssi(int argc, char **argv)
 {
-    puts("Command in progress. Exiting...");
-    return 1;
-
     int rssi;
-    int result = winc1500_read_rssi(&rssi);
+    int result = winc1500_read_rssi(&winc1500, &rssi);
     if (result == WINC1500_OK) {
-        printf("RSSI: %d", rssi);
+        printf("RSSI: %d dBm\n", rssi);
         puts("[OK]");
         return 0;
     } else {

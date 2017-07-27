@@ -19,6 +19,8 @@
 #ifndef WINC1500_INTERNAL_H
 #define WINC1500_INTERNAL_H
 
+#include "winc1500_params.h"
+#include "pkg/driver/include/m2m_wifi.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -75,6 +77,50 @@ typedef enum {
     WINC1500_EVENT_WIFI_CURRENT_RSSI =              (1<<5)
 } winc1500_wifi_cb_msg_t;
 /** @} */
+
+/**
+ * @brief   Flags for device internal states (see datasheet)
+ * @{
+ */
+typedef union {
+    tstrM2mWifiStateChanged state_change;
+    tstrSystemTime          sys_time;
+    tstrM2MConnInfo         conn_info;
+    tstrM2MIPConfig         ip_config;
+    tstrM2MWPSInfo          wps_info;
+    uint32_t                ip_conflicted;
+    tstrM2mScanDone         scan_done;
+    tstrM2mWifiscanResult   scan_result;
+    tstrM2MProvisionInfo    prov_info;
+    tstrM2MDefaultConnResp  default_conn_resp;
+    tstrPrng                prng_result;
+    uint8_t                 rx_buf[8];
+#ifdef MODULE_GNRC_NETDEV
+    tstrM2mIpRsvdPkt        recv_pkt;
+#endif   
+} winc1500_event_info_t;
+/** @} */
+
+void _wifi_cb(uint8_t opcode, uint16_t size, uint32_t addr);
+
+extern kernel_pid_t _pid;
+extern char _stack[WINC1500_NETDEV_STACKSIZE];
+extern msg_t _queue[WINC1500_NETDEV_QUEUE_LEN];
+extern msg_t _mbox_msgs[WINC1500_NETDEV_MBOX_LEN];
+ 
+extern winc1500_t *winc1500_dev;
+
+extern char _ssid[WINC1500_MAX_SSID_LEN + 1];
+extern winc1500_ap_t _ap;
+
+inline void _lock(winc1500_t *dev) {
+    spi_acquire(winc1500_dev->params.spi, SPI_CS_UNDEF,
+        WINC1500_SPI_MODE, WINC1500_SPI_CLOCK);
+}
+
+inline void _unlock(winc1500_t *dev) {
+    spi_release(winc1500_dev->params.spi);
+}
 
 #ifdef __cplusplus
 }

@@ -46,6 +46,8 @@
 #include "bsp/include/nm_bsp.h"
 #include "common/include/nm_common.h"
 
+#include "winc1500.h"
+#include "winc1500_internal.h"
 #include "conf_winc.h"
 
 static tpfNmBspIsr gpfIsr;
@@ -64,18 +66,18 @@ static void chip_isr(void *args)
 static void init_chip_pins(void)
 {
 	/* Configure INTN pins as input. */ // TODO: Delete?
-	gpio_init(WINC1500_INTN_PIN, GPIO_IN);
+	gpio_init(winc1500_dev->params.int_pin, GPIO_IN);
 
 	/* Configure RESETN pin as output. */
-	gpio_init(WINC1500_RESET_PIN, GPIO_OUT);
-	gpio_clear(WINC1500_RESET_PIN);
+	gpio_init(winc1500_dev->params.reset_pin, GPIO_OUT);
+	gpio_clear(winc1500_dev->params.reset_pin);
 
 	/* Configure CHIP_EN as output */
-	gpio_init(WINC1500_WAKE_PIN, GPIO_OUT);
+	gpio_init(winc1500_dev->params.wake_pin, GPIO_OUT);
 
 	/* Configure CHIP_EN as output */
-	if (WINC1500_CHIP_EN_PIN != GPIO_UNDEF) {
-		gpio_init(WINC1500_CHIP_EN_PIN, GPIO_OUT); // TODO: pulled up input?
+	if (winc1500_dev->params.en_pin != GPIO_UNDEF) {
+		gpio_init(winc1500_dev->params.en_pin, GPIO_OUT); // TODO: pulled up input?
 	}
 }
 
@@ -105,11 +107,11 @@ int8_t nm_bsp_init(void)
 int8_t nm_bsp_deinit(void)
 {
 	/* Configure control pins as input no pull up. */
-	gpio_clear(WINC1500_RESET_PIN);
-	gpio_init(WINC1500_RESET_PIN, GPIO_IN);
-	if (WINC1500_CHIP_EN_PIN != GPIO_UNDEF) {
-		gpio_clear(WINC1500_CHIP_EN_PIN);
-		gpio_init(WINC1500_CHIP_EN_PIN, GPIO_IN);
+	gpio_clear(winc1500_dev->params.reset_pin);
+	gpio_init(winc1500_dev->params.reset_pin, GPIO_IN);
+	if (winc1500_dev->params.en_pin != GPIO_UNDEF) {
+		gpio_clear(winc1500_dev->params.en_pin);
+		gpio_init(winc1500_dev->params.en_pin, GPIO_IN);
 	}
 
 	return M2M_SUCCESS;
@@ -122,16 +124,16 @@ int8_t nm_bsp_deinit(void)
  */
 void nm_bsp_reset(void)
 {
-	if (WINC1500_CHIP_EN_PIN != GPIO_UNDEF) {
-		gpio_clear(WINC1500_CHIP_EN_PIN);
+	if (winc1500_dev->params.en_pin != GPIO_UNDEF) {
+		gpio_clear(winc1500_dev->params.en_pin);
 	}
-	gpio_clear(WINC1500_RESET_PIN);
+	gpio_clear(winc1500_dev->params.reset_pin);
 	nm_bsp_sleep(100);
-	if (WINC1500_CHIP_EN_PIN != GPIO_UNDEF) {
-		gpio_set(WINC1500_CHIP_EN_PIN);
+	if (winc1500_dev->params.en_pin != GPIO_UNDEF) {
+		gpio_set(winc1500_dev->params.en_pin);
 	}
 	nm_bsp_sleep(100);
-	gpio_set(WINC1500_RESET_PIN);
+	gpio_set(winc1500_dev->params.reset_pin);
 	nm_bsp_sleep(100);
 }
 
@@ -157,7 +159,7 @@ void nm_bsp_sleep(uint32_t u32TimeMsec)
 void nm_bsp_register_isr(tpfNmBspIsr pfIsr)
 {
 	gpfIsr = pfIsr;
-	gpio_init_int(WINC1500_INTN_PIN, GPIO_IN, GPIO_FALLING, chip_isr, NULL);
+	gpio_init_int(winc1500_dev->params.int_pin, GPIO_IN, GPIO_FALLING, chip_isr, NULL);
 }
 
 /*
@@ -169,8 +171,8 @@ void nm_bsp_register_isr(tpfNmBspIsr pfIsr)
 void nm_bsp_interrupt_ctrl(uint8_t u8Enable)
 {
 	if (u8Enable) {
-		gpio_init_int(WINC1500_INTN_PIN, GPIO_IN, GPIO_FALLING, chip_isr, NULL);
+		gpio_irq_enable(winc1500_dev->params.int_pin);
 	} else {
-		gpio_irq_disable(WINC1500_INTN_PIN);
+		gpio_irq_disable(winc1500_dev->params.int_pin);
 	}
 }

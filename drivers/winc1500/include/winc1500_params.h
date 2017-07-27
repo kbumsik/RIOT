@@ -28,7 +28,7 @@ extern "C" {
 #endif
 
 /**
- * @brief   Set default configuration parameters for the AT86RF2xx driver
+ * @brief   Set default configuration parameters for the WINC1500 driver
  * @{
  */
 #define WINC1500_PARAMS_DEFAULT    {.spi = WINC1500_SPI, \
@@ -41,7 +41,8 @@ extern "C" {
 /**@}*/
 
 /**
- * @brief   AT86RF231 configuration
+ * @brief   WINC1500 SPI configuration
+ * @{
  */
 static const winc1500_params_t winc1500_params[] =
 {
@@ -51,6 +52,19 @@ static const winc1500_params_t winc1500_params[] =
     WINC1500_PARAMS_DEFAULT,
 #endif
 };
+/**@}*/
+
+/**
+ * @brief   WINC1500 SPI mode and clock configurations
+ * @{
+ */
+#ifndef WINC1500_SPI_MODE
+  #define WINC1500_SPI_MODE  SPI_MODE_0
+#endif
+#ifndef WINC1500_SPI_CLOCK
+  #define WINC1500_SPI_CLOCK  SPI_CLK_10MHZ
+#endif
+/**@}*/
 
 #ifdef __cplusplus
 }
