@@ -1,9 +1,21 @@
 /*
- * Copyright (C) 2017 Bumsik Kim <kbumsik@gmail.com>
+ * Copyright (C) 2017 Bumsik Kim <k.bumsik@gmail.com>
  *
- * This file is subject to the terms and conditions of the GNU Lesser General
- * Public License v2.1. See the file LICENSE in the top level directory for more
- * details.
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+/**
+ * @ingroup     driver_winc1500
+ * @{
+ *
+ * @file
+ * @brief       The WINC1500 driver (Wi-Fi connectivity only)
+ *
+ * @author      Bumsik Kim <k.bumsik@gmail.com>
+ *
+ * @}
  */
 
 /* Required for strnlen in string.h, when building with -std=c99 */
@@ -14,9 +26,13 @@
 #include "pkg/driver/include/m2m_wifi.h"
 #include "pkg/driver/source/m2m_hif.h"
 #include "winc1500_internal.h"
+#include "winc1500_netdev.h"
 
 #include "xtimer.h"
 #include "log.h"
+
+#define ENABLE_DEBUG (0)
+#include "debug.h"
 
 #define WINC1500_INTERNAL_START_HANDLER (1)
 #define WINC1500_INTERNAL_STOP_HANDLER  (2)
@@ -26,18 +42,23 @@ char _stack[WINC1500_NETDEV_STACKSIZE];
 msg_t _queue[WINC1500_NETDEV_QUEUE_LEN];
 msg_t _mbox_msgs[WINC1500_NETDEV_MBOX_LEN];
 
-winc1500_t *winc1500_dev = NULL;
-
 char _ssid[WINC1500_MAX_SSID_LEN + 1];
 winc1500_ap_t _ap;
 uint8_t *_mac_addr;
 
-static void *_event_handler(void *arg);
+#if !defined(MODULE_AUTO_INIT_GNRC_NETIF)
+winc1500_t winc1500;
+#endif
+
 static int _wait_for_event(msg_t *response, uint16_t event, uint16_t error_event);
-winc1500_sec_flags_t _sec_module2driver(tenuM2mSecType module_sec);
-tenuM2mSecType _sec_driver2module(winc1500_sec_flags_t sec);
+static winc1500_sec_flags_t _sec_module2driver(tenuM2mSecType module_sec);
+static tenuM2mSecType _sec_driver2module(winc1500_sec_flags_t sec);
 
-
+/* -------------------------------------------------------------------------- */
+/* Private functions                                                          */
+/* -------------------------------------------------------------------------- */
+#ifdef MODULE_GNRC_NETDEV
+#else
 static void *_event_handler(void *arg)
 {
     (void)arg;
@@ -68,20 +89,22 @@ static void *_event_handler(void *arg)
     /* Shouldn't be reached */
     return NULL;
 }
+#endif
 
 
 static int _wait_for_event(msg_t *response, uint16_t event, uint16_t error_event)
 {
+    winc1500_t *dev = &winc1500;
     int result = WINC1500_ERR;
     msg_t msg_req, msg_resp;
     /* Wake up handler */
     msg_req.content.value = 0;
     msg_req.type = WINC1500_INTERNAL_START_HANDLER;
-    msg_send(&msg_req, _pid);
+    msg_send(&msg_req, dev->pid);
     /* wait for event message */
     while (true) {
-        // TODO: Timeout condition
-        mbox_get(&winc1500_dev->event_mbox, &msg_resp);
+        /* TODO: Timeout condition */
+        mbox_get(&dev->event_mbox, &msg_resp);
         if (msg_resp.type & event) {
             result = WINC1500_OK;
             goto done;
@@ -95,14 +118,14 @@ done:
     /* Sleep handler */
     msg_req.content.value = 0;
     msg_req.type = WINC1500_INTERNAL_STOP_HANDLER;
-    msg_send(&msg_req, _pid);
+    msg_send(&msg_req, dev->pid);
     /* Pass response */
     *response = msg_resp;
     return result;	
 }
 
 
-winc1500_sec_flags_t _sec_module2driver(tenuM2mSecType module_sec)
+static winc1500_sec_flags_t _sec_module2driver(tenuM2mSecType module_sec)
 {
     winc1500_sec_flags_t sec = WINC1500_SEC_UNKNOWN;
     switch (module_sec) {
@@ -129,7 +152,7 @@ winc1500_sec_flags_t _sec_module2driver(tenuM2mSecType module_sec)
 }
 
 
-tenuM2mSecType _sec_driver2module(winc1500_sec_flags_t sec)
+static tenuM2mSecType _sec_driver2module(winc1500_sec_flags_t sec)
 {
     tenuM2mSecType module_sec = M2M_WIFI_SEC_INVALID;
     if (sec & WINC1500_SEC_FLAGS_OPEN) {
@@ -148,6 +171,10 @@ tenuM2mSecType _sec_driver2module(winc1500_sec_flags_t sec)
     return module_sec;
 }
 
+
+/* -------------------------------------------------------------------------- */
+/* Public functions                                                           */
+/* -------------------------------------------------------------------------- */
 void winc1500_setup(winc1500_t *dev, const winc1500_params_t *params)
 {
 #ifdef MODULE_GNRC_NETDEV
@@ -157,15 +184,17 @@ void winc1500_setup(winc1500_t *dev, const winc1500_params_t *params)
 }
 
 
-int winc1500_init(winc1500_t *dev, const winc1500_params_t *params)
+int winc1500_init(const winc1500_params_t *params)
 {
-    /* Copy parameters to the global variable */
-    if (winc1500_dev != NULL) {
+#ifdef MODULE_GNRC_NETDEV
+    return WINC1500_OK;
+#else
+    winc1500_t *dev = &winc1500;
+    if (dev->state & WINC1500_STATE_INIT) {
         /* Currently multiple instances not allowed. */
         return WINC1500_ERR;
     }
-    winc1500_dev = dev;
-    dev->params = *params;
+    winc1500_setup(dev, params);
 
     spi_init(dev->params.spi);
     _lock(dev);
@@ -178,15 +207,7 @@ int winc1500_init(winc1500_t *dev, const winc1500_params_t *params)
 
     /* Register a callback. But replaced by the custom callback.
      *  See process_event() in winc1500_callback.c */
-    wifi_param.pfAppWifiCb = NULL; 
-    /* Setting Ethernet bypass mode. The ethernet buffer and callback will 
-     *  be managed by netdev driver */
-#ifdef MODULE_GNRC_NETDEV
-    wifi_param.strEthInitParam.u8EthernetEnable = M2M_WIFI_MODE_ETHERNET;
-    wifi_param.strEthInitParam.au8ethRcvBuf = NULL;
-    wifi_param.strEthInitParam.u16ethRcvBufSize = 0;
-    wifi_param.strEthInitParam.pfAppEthCb = NULL;
-#endif
+    wifi_param.pfAppWifiCb = NULL;
     if (M2M_SUCCESS != m2m_wifi_init(&wifi_param)) {
         return WINC1500_ERR;
     }
@@ -196,15 +217,13 @@ int winc1500_init(winc1500_t *dev, const winc1500_params_t *params)
 	hif_register_cb(M2M_REQ_GROUP_WIFI, _wifi_cb);
 
     /* Initialize winc1500 struct */
-    mutex_init(&dev->mutex);
     mbox_init(&dev->event_mbox, _mbox_msgs, WINC1500_NETDEV_MBOX_LEN);
-    //dev.ip_addr = 0;
     
     /* Create WINC1500 thread */
-    kernel_pid_t pid = thread_create(_stack, sizeof(_stack),
+    dev->pid = thread_create(_stack, sizeof(_stack),
                   THREAD_PRIORITY_MAIN - 1, THREAD_CREATE_STACKTEST,
                   _event_handler, NULL, "winc1500");
-    if (pid <= 0) {
+    if (dev->pid <= 0) {
         return WINC1500_ERR;
     }
 
@@ -213,11 +232,13 @@ int winc1500_init(winc1500_t *dev, const winc1500_params_t *params)
 
     _unlock(dev);
     return WINC1500_OK;
+#endif
 }
 
 
-int winc1500_scan(winc1500_t *dev)
+int winc1500_scan(void)
 {
+    winc1500_t *dev = &winc1500;
     int result = WINC1500_OK;
     msg_t msg_resp;
     if (!(dev->state & WINC1500_STATE_IDLE)) {
@@ -243,8 +264,9 @@ done:
 }
 
 
-int winc1500_read_ap(winc1500_t *dev, winc1500_ap_t *ap_result, uint8_t ap_num)
+int winc1500_read_ap(winc1500_ap_t *ap_result, uint8_t ap_num)
 {
+    winc1500_t *dev = &winc1500;
     int result = WINC1500_OK;
     msg_t msg_resp;
     if (!(dev->state & WINC1500_STATE_IDLE)) {
@@ -272,8 +294,9 @@ done:
 }
 
 
-int winc1500_get_mac_addr(winc1500_t *dev, uint8_t *addr)
+int winc1500_get_mac_addr(uint8_t *addr)
 {
+    winc1500_t *dev = &winc1500;
     int result = WINC1500_OK;
     if (!(dev->state & WINC1500_STATE_INIT)) {
         return WINC1500_ERR;
@@ -282,8 +305,8 @@ int winc1500_get_mac_addr(winc1500_t *dev, uint8_t *addr)
     
     /* Get MAC Address. */
     m2m_wifi_get_mac_address(addr);
-    LOG_DEBUG("MAC Address : ");
-    LOG_DEBUG("%02X:%02X:%02X:%02X:%02X:%02X\n",
+    DEBUG("MAC Address : ");
+    DEBUG("%02X:%02X:%02X:%02X:%02X:%02X\n",
             addr[0], addr[1],
             addr[2], addr[3], 
             addr[4], addr[5]);
@@ -292,8 +315,9 @@ int winc1500_get_mac_addr(winc1500_t *dev, uint8_t *addr)
 }
 
 
-int winc1500_connect(winc1500_t *dev, const winc1500_ap_t *ap_info)
+int winc1500_connect(const winc1500_ap_t *ap_info)
 {
+    winc1500_t *dev = &winc1500;
     int result = WINC1500_OK;
     msg_t msg_resp;
     if (!(dev->state & WINC1500_STATE_IDLE)) {
@@ -311,7 +335,6 @@ int winc1500_connect(winc1500_t *dev, const winc1500_ap_t *ap_info)
         goto done;
     }
 
-    // TODO: wait until connected or DHCP?
     result = _wait_for_event(&msg_resp, WINC1500_EVENT_CON_STATE_CONNECTED, 
                 WINC1500_EVENT_NOTHING | WINC1500_EVENT_CON_STATE_DISCONNECTED);
 done:
@@ -320,15 +343,16 @@ done:
 }
 
 
-int winc1500_connect_list(winc1500_t *dev, const winc1500_ap_t ap_info[])
+int winc1500_connect_list(const winc1500_ap_t ap_info[])
 {
-    // TODO: Implement
+    /* TODO: Implement later */
     return -1;
 }
 
 
-int winc1500_connection_info(winc1500_t *dev, winc1500_ap_t *ap_result, uint8_t *mac_addr)
+int winc1500_connection_info(winc1500_ap_t *ap_result, uint8_t *mac_addr)
 {
+    winc1500_t *dev = &winc1500;
     int result = WINC1500_OK;
     msg_t msg_resp;
     if (!(dev->state & WINC1500_STATE_CONNECTED)) {
@@ -358,8 +382,9 @@ done:
 }
 
 
-int winc1500_disconnect(winc1500_t *dev)
+int winc1500_disconnect(void)
 {
+    winc1500_t *dev = &winc1500;
     int result = WINC1500_OK;
     msg_t msg_resp;
     if (!(dev->state & WINC1500_STATE_CONNECTED)) {
@@ -374,7 +399,6 @@ int winc1500_disconnect(winc1500_t *dev)
         goto done;
     }
 
-    // TODO: wait until connected or DHCP?
     result = _wait_for_event(&msg_resp, WINC1500_EVENT_CON_STATE_DISCONNECTED, 
                 WINC1500_EVENT_NOTHING);
 done:

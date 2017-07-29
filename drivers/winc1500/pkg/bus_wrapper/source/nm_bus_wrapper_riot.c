@@ -61,6 +61,7 @@ tstrNmBusCapabilities egstrNmBusCapabilities =
 
 static int8_t spi_rw(uint8_t* pu8Mosi, uint8_t* pu8Miso, uint16_t u16Sz)
 {
+    winc1500_t *dev = &winc1500;
 	uint8_t u8Dummy = 0;
 	uint8_t u8SkipMosi = 0, u8SkipMiso = 0;
 
@@ -79,10 +80,10 @@ static int8_t spi_rw(uint8_t* pu8Mosi, uint8_t* pu8Miso, uint16_t u16Sz)
 		u8SkipMiso = 1;
 	}
 
-	gpio_clear(winc1500_dev->params.cs_pin);
+	gpio_clear(dev->params.cs_pin);
 
 	while (u16Sz) {
-		*pu8Miso = spi_transfer_byte(winc1500_dev->params.spi, SPI_CS_UNDEF,
+		*pu8Miso = spi_transfer_byte(dev->params.spi, SPI_CS_UNDEF,
 										 true, *pu8Mosi);
 		u16Sz--;
 		if (!u8SkipMiso) {
@@ -93,7 +94,7 @@ static int8_t spi_rw(uint8_t* pu8Mosi, uint8_t* pu8Miso, uint16_t u16Sz)
 		}
 	}
 
-	gpio_set(winc1500_dev->params.cs_pin);
+	gpio_set(dev->params.cs_pin);
 
 	return M2M_SUCCESS;
 }
@@ -105,16 +106,17 @@ static int8_t spi_rw(uint8_t* pu8Mosi, uint8_t* pu8Miso, uint16_t u16Sz)
 */
 int8_t nm_bus_init(void *pvinit)
 {
+    winc1500_t *dev = &winc1500;
 	int8_t result = M2M_SUCCESS;
 	
 	/* Configure SPI peripheral. 
 	 *	This will initialized in the winc1500.c or winc1500_netdev.c */
-	/* spi_init(winc1500_dev->params.spi); */
+	/* spi_init(dev->params.spi); */
 	
 	/* Configure CS PIN. */
 	/* This step will set the CS high */
-	gpio_init(winc1500_dev->params.cs_pin, GPIO_OUT);
-	gpio_set(winc1500_dev->params.cs_pin);
+	gpio_init(dev->params.cs_pin, GPIO_OUT);
+	gpio_set(dev->params.cs_pin);
 
 	/* Reset WINC1500. */
 	nm_bsp_reset();

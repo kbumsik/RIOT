@@ -88,7 +88,7 @@ int8_t nm_get_firmware_info(tstrM2mRev* M2mRev)
 		than the min driver that the current firmware support  */
 		ret = M2M_ERR_FW_VER_MISMATCH;
 	}
-#ifdef RIOT_VERSION
+#ifdef MODULE_WINC1500
 	// To avoid version mismatch error.
 	// Current driver is 19.5.2
 	uint16_t curr_min_drv_ver = M2M_MAKE_VERSION(19, 4, 4);
@@ -148,7 +148,7 @@ int8_t nm_get_firmware_full_info(tstrM2mRev* pstrRev)
 								ret = M2M_ERR_FW_VER_MISMATCH;
 								goto EXIT;
 							}
-#ifdef RIOT_VERSION
+#ifdef MODULE_WINC1500
 							uint16_t curr_min_drv_ver = M2M_MAKE_VERSION(19, 4, 4);
 							if(curr_min_drv_ver >  curr_firm_ver) {
 								/*The current driver should be equal or less than the firmware version*/

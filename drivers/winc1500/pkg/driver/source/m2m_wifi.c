@@ -480,8 +480,9 @@ int8_t m2m_wifi_init(tstrWifiInitParam * param)
 	ret = hif_init(NULL);
 	if(ret != M2M_SUCCESS) 	goto _EXIT1;
 
-#ifndef MODULE_WINC1500
+#ifdef MODULE_WINC1500
 	/* This will be called in RIOT's driver */
+#else
 	hif_register_cb(M2M_REQ_GROUP_WIFI,m2m_wifi_cb);
 #endif
 	ret = nm_get_firmware_full_info(&strtmp);

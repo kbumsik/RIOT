@@ -28,6 +28,38 @@ extern "C" {
 #endif
 
 /**
+ * @brief   WINC1500 SPI mode and clock configurations
+ * @{
+ */
+#ifndef WINC1500_SPI
+#define WINC1500_SPI            (SPI_DEV(1))
+#endif
+#ifndef WINC1500_INTN_PIN
+#define WINC1500_INTN_PIN       (GPIO_PIN(PB, 9))
+#endif
+#ifndef WINC1500_SPI_CS_PIN
+#define WINC1500_SPI_CS_PIN     (GPIO_PIN(PA, 14))
+#endif
+
+#ifndef WINC1500_RESET_PIN
+#define WINC1500_RESET_PIN      (GPIO_PIN(PA, 27))
+#endif
+#ifndef WINC1500_CHIP_EN_PIN
+#define WINC1500_CHIP_EN_PIN    (GPIO_PIN(PA, 28))
+#endif
+#ifndef WINC1500_WAKE_PIN
+#define WINC1500_WAKE_PIN       (GPIO_PIN(PB, 8))
+#endif
+
+#ifndef WINC1500_SPI_MODE
+#define WINC1500_SPI_MODE  SPI_MODE_0
+#endif
+#ifndef WINC1500_SPI_CLOCK
+#define WINC1500_SPI_CLOCK  SPI_CLK_10MHZ
+#endif
+/**@}*/
+
+/**
  * @brief   Set default configuration parameters for the WINC1500 driver
  * @{
  */
@@ -52,18 +84,6 @@ static const winc1500_params_t winc1500_params[] =
     WINC1500_PARAMS_DEFAULT,
 #endif
 };
-/**@}*/
-
-/**
- * @brief   WINC1500 SPI mode and clock configurations
- * @{
- */
-#ifndef WINC1500_SPI_MODE
-  #define WINC1500_SPI_MODE  SPI_MODE_0
-#endif
-#ifndef WINC1500_SPI_CLOCK
-  #define WINC1500_SPI_CLOCK  SPI_CLK_10MHZ
-#endif
 /**@}*/
 
 #ifdef __cplusplus

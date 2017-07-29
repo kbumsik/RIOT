@@ -84,7 +84,11 @@
  *                     Used as a data type of ISR function registered by \ref nm_bsp_register_isr
  * @return         None
  */
+#if	defined(MODULE_WINC1500) && defined(MODULE_GNRC_NETDEV)
+typedef void (*tpfNmBspIsr)(void *arg);
+#else
 typedef void (*tpfNmBspIsr)(void);
+#endif
 
 #include <stdint.h>
 

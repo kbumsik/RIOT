@@ -27,6 +27,9 @@
 #include "mbox.h"
 #include "periph/spi.h"
 #include "periph/gpio.h"
+#ifdef MODULE_GNRC_NETDEV
+#include "net/netdev.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -108,18 +111,20 @@ typedef struct {
 typedef struct {
 #ifdef MODULE_GNRC_NETDEV
     netdev_t netdev;        /**< extended netdev structure */
+    mutex_t  mutex;        /**< Mutex used for locking concurrent sends */
     uint32_t rx_addr;
+    uint16_t rx_offset;
+    int      rx_size;
+    uint16_t rx_rem_size;
 #endif
     winc1500_params_t params;   /**< Configuration parameters */
-    mutex_t  mutex;             /**< Mutex used for locking concurrent sends */
     //kernel_pid_t   handler_pid; /**< pid of the event handler thread */ 
     mbox_t event_mbox;     /**< Message from the event handler */
     uint32_t ip_addr;           /**< Device's local IPv4 address */     /**< Device's MAC address */
     uint8_t  state;             /**< current state of the radio */
+    kernel_pid_t pid;
 } winc1500_t;
 /** @} */
-
-void winc1500_setup(winc1500_t *dev, const winc1500_params_t *params);
 
 /**
  * @brief Initialize a WINC1500 device
@@ -135,21 +140,23 @@ void winc1500_setup(winc1500_t *dev, const winc1500_params_t *params);
  * @return                  BME280_ERR_NODEV
  * @return                  BME280_ERR_NOCAL
  */
-int winc1500_init(winc1500_t *dev, const winc1500_params_t *params);
+int winc1500_init(const winc1500_params_t *params);
 
-int winc1500_get_mac_addr(winc1500_t *dev, uint8_t *addr);
+void winc1500_setup(winc1500_t *dev, const winc1500_params_t *params);
 
-int winc1500_scan(winc1500_t *dev);
+int winc1500_get_mac_addr(uint8_t *addr);
 
-int winc1500_read_ap(winc1500_t *dev, winc1500_ap_t *ap_result, uint8_t ap_num);
+int winc1500_scan(void);
 
-int winc1500_connect(winc1500_t *dev, const winc1500_ap_t *ap_info);
+int winc1500_read_ap(winc1500_ap_t *ap_result, uint8_t ap_num);
 
-int winc1500_connect_list(winc1500_t *dev, const winc1500_ap_t ap_info[]);
+int winc1500_connect(const winc1500_ap_t *ap_info);
 
-int winc1500_connection_info(winc1500_t *dev, winc1500_ap_t *ap_result, uint8_t *mac_addr);
+int winc1500_connect_list(const winc1500_ap_t ap_info[]);
 
-int winc1500_disconnect(winc1500_t *dev);
+int winc1500_connection_info(winc1500_ap_t *ap_result, uint8_t *mac_addr);
+
+int winc1500_disconnect(void);
 
 #ifdef __cplusplus
 }

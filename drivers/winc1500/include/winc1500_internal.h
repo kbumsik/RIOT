@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Alaeddine Weslati <k.bumsik@gmail.com>
+ * Copyright (C) 2017 Bumsik Kim <k.bumsik@gmail.com>
  *
  * This file is subject to the terms and conditions of the GNU Lesser General
  * Public License v2.1. See the file LICENSE in the top level directory for more
@@ -110,20 +110,45 @@ extern char _stack[WINC1500_NETDEV_STACKSIZE];
 extern msg_t _queue[WINC1500_NETDEV_QUEUE_LEN];
 extern msg_t _mbox_msgs[WINC1500_NETDEV_MBOX_LEN];
  
-extern winc1500_t *winc1500_dev;
+extern winc1500_t winc1500;
 
 extern char _ssid[WINC1500_MAX_SSID_LEN + 1];
 extern winc1500_ap_t _ap;
 extern uint8_t *_mac_addr;
 
-inline void _lock(winc1500_t *dev) {
-    spi_acquire(winc1500_dev->params.spi, SPI_CS_UNDEF,
+#ifdef MODULE_GNRC_NETDEV
+/* This is located in pkg/driver/source/m2m_hif.c */
+extern uint8_t *_winc1500_int_cnt;
+#endif
+
+
+static inline void _lock(winc1500_t *dev) {
+#ifdef MODULE_GNRC_NETDEV
+    mutex_lock(&dev->mutex);
+#else
+    spi_acquire(dev->params.spi, SPI_CS_UNDEF,
         WINC1500_SPI_MODE, WINC1500_SPI_CLOCK);
+#endif
 }
 
-inline void _unlock(winc1500_t *dev) {
-    spi_release(winc1500_dev->params.spi);
+static inline void _unlock(winc1500_t *dev) {
+#ifdef MODULE_GNRC_NETDEV
+    mutex_unlock(&dev->mutex);
+#else
+    spi_release(dev->params.spi);
+#endif
 }
+
+#ifdef MODULE_GNRC_NETDEV
+static inline void _lock_bus(winc1500_t *dev) {
+    spi_acquire(dev->params.spi, SPI_CS_UNDEF,
+        WINC1500_SPI_MODE, WINC1500_SPI_CLOCK);
+}
+static inline void _unlock_bus(winc1500_t *dev) {
+    spi_release(dev->params.spi);
+}
+#endif
+
 
 #ifdef __cplusplus
 }

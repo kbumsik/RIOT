@@ -1,62 +1,21 @@
-/**
+/*
+ * Copyright (C) 2017 Bumsik Kim <k.bumsik@gmail.com>
  *
- * \file
- *
- * \brief WINC1500 Chip Information Example.
- *
- * Copyright (c) 2016 Atmel Corporation. All rights reserved.
- *
- * \asf_license_start
- *
- * \page License
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- *
- * 3. The name of Atmel may not be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
- * EXPRESSLY AND SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- * \asf_license_stop
- *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
  */
 
-/** \mainpage
- * \section intro Introduction
- * This example demonstrates the use of the WINC1500 with the SAMD21 Xplained Pro
- * board to retrieve the chip information of the Wi-Fi module.<br>
- * It uses the following hardware:
- * - the SAMD21 Xplained Pro.
- * - the WINC1500 on EXT1.
+/**
+ * @ingroup     driver_winc1500
+ * @{
  *
- * \section files Main Files
- * - main.c : Initialize the WINC1500 and retrieve information.
+ * @file
+ * @brief       Test application for the WINC1500 driver
  *
- * \section compinfo Compilation Information
- * This software was written for the GNU GCC compiler using Atmel Studio 6.2
- * Other compilers may or may not work.
+ * @author      Bumsik Kim <k.bumsik@gmail.com>
  *
- * \section contactinfo Contact Information
- * For further information, visit
- * <A href="http://www.atmel.com">Atmel</A>.\n
+ * @}
  */
 
 #include "board.h"
@@ -68,11 +27,13 @@
 
 /* Shell functions */
 static int _init(int argc, char **argv);
-// static int _chipinfo(int argc, char **argv);
 static int _scan(int argc, char **argv);
 static int _connect(int argc, char **argv);
 static int _disconnect(int argc, char **argv);
 static int _info(int argc, char **argv);
+
+#define MAIN_QUEUE_SIZE     (8U)
+static msg_t _main_msg_queue[MAIN_QUEUE_SIZE];
 
 static const shell_command_t shell_commands[] = {
     { "init", "initializes WINC1500 module", _init },
@@ -83,14 +44,14 @@ static const shell_command_t shell_commands[] = {
     { NULL, NULL, NULL }
 };
 
-winc1500_t winc1500;
-
 static int _init(int argc, char **argv)
 {
-    // PARAMS
-    if (WINC1500_OK == winc1500_init(&winc1500, &winc1500_params[0])) {
+#ifdef MODULE_GNRC_NETDEV
+    puts("winc1500_init() won't have any effect if GNRC is enabled.");
+#endif
+    if (WINC1500_OK == winc1500_init(&winc1500_params[0])) {
         uint8_t mac[6];
-        winc1500_get_mac_addr(&winc1500, mac);
+        winc1500_get_mac_addr(mac);
         printf("MAC Address : ");
         printf("%02X:%02X:%02X:%02X:%02X:%02X\n",
             mac[0], mac[1],
@@ -106,7 +67,7 @@ static int _init(int argc, char **argv)
 
 static int _scan(int argc, char **argv)
 {
-    int result = winc1500_scan(&winc1500);
+    int result = winc1500_scan();
     if (result < 0) {
         puts("[Scanning error]");
         return 1;
@@ -116,7 +77,7 @@ static int _scan(int argc, char **argv)
     char ssid[WINC1500_MAX_SSID_LEN];
     winc1500_ap_t ap = {.ssid = ssid};
     for (int i = 0; i < result; i++) {
-        winc1500_read_ap(&winc1500, &ap, i);
+        winc1500_read_ap(&ap, i);
         printf("[%d] %s %d dBm ", i, ssid, ap.rssi);
         if (ap.sec & WINC1500_SEC_FLAGS_ENTERPRISE) {
             puts("WPA_Enterprise");
@@ -161,7 +122,7 @@ static int _connect(int argc, char **argv)
         ap.sec = WINC1500_SEC_FLAGS_WPA2;
     }
 
-    int result = winc1500_connect(&winc1500, &ap);
+    int result = winc1500_connect(&ap);
     if (result == WINC1500_OK) {
         puts("[OK]");
         return 0;
@@ -174,7 +135,7 @@ static int _connect(int argc, char **argv)
 
 static int _disconnect(int argc, char **argv)
 {
-    int result = winc1500_disconnect(&winc1500);
+    int result = winc1500_disconnect();
     if (result == WINC1500_OK) {
         puts("[OK]");
         return 0;
@@ -190,7 +151,7 @@ static int _info(int argc, char **argv)
     uint8_t mac[6];
     winc1500_ap_t ap = {.ssid = ssid};
     
-    int result = winc1500_connection_info(&winc1500, &ap, mac);
+    int result = winc1500_connection_info(&ap, mac);
     if (result < 0) {
         puts("Wi-Fi is not connected yet.");
         puts("[Failed]");
@@ -198,9 +159,6 @@ static int _info(int argc, char **argv)
     }
 
     printf("AP Info: %s %d dBm ", ssid, ap.rssi);
-    printf("%02X:%02X:%02X:%02X:%02X:%02X ",
-            mac[0], mac[1], mac[2],
-            mac[3], mac[4], mac[5]);
     if (ap.sec & WINC1500_SEC_FLAGS_ENTERPRISE) {
         puts("WPA_Enterprise");
     }
@@ -216,12 +174,18 @@ static int _info(int argc, char **argv)
     else {
         puts("Unknown");
     }
+    printf("%02X:%02X:%02X:%02X:%02X:%02X\n",
+            mac[0], mac[1], mac[2],
+            mac[3], mac[4], mac[5]);
     puts("[OK]");
     return result;
 }
 
 int main(void)
 {
+    /* we need a message queue for the thread running the shell in order to
+     * receive potentially fast incoming networking packets */
+    msg_init_queue(_main_msg_queue, MAIN_QUEUE_SIZE);
     puts("WINC1500 WiFi module test application");
 
     char line_buf[SHELL_DEFAULT_BUFSIZE];

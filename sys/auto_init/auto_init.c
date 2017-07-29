@@ -228,6 +228,11 @@ void auto_init(void)
     auto_init_w5100();
 #endif
 
+#ifdef MODULE_WINC1500
+    extern void auto_init_winc1500(void);
+    auto_init_winc1500();
+#endif
+
 #endif /* MODULE_AUTO_INIT_GNRC_NETIF */
 
 #ifdef MODULE_GNRC_IPV6_NETIF

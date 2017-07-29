@@ -53,36 +53,7 @@ extern "C" {
    ---------- SPI settings ---------
    ---------------------------------
 */
-
 #define CONF_WINC_USE_SPI				(1)
-
-/** SPI pin and instance settings. */
-#ifndef WINC1500_SPI
-  #define WINC1500_SPI        (SPI_DEV(0))
-#endif
-#ifndef WINC1500_INTN_PIN
-  #define WINC1500_INTN_PIN   (GPIO_PIN(PB, 4))
-#endif
-#ifndef WINC1500_SPI_CS_PIN
-  #define WINC1500_SPI_CS_PIN (GPIO_PIN(PA, 5))
-#endif
-
-/*
-   ---------------------------------
-   ---------- PIN settings ---------
-   ---------------------------------
-*/
-
-#ifndef WINC1500_RESET_PIN
-  #define WINC1500_RESET_PIN  (GPIO_PIN(PB, 6))
-#endif
-#ifndef WINC1500_CHIP_EN_PIN
-  #define WINC1500_CHIP_EN_PIN (GPIO_PIN(PB, 5))
-#endif
-#ifndef WINC1500_WAKE_PIN
-  #define WINC1500_WAKE_PIN (GPIO_PIN(PB, 7))
-#endif
-
 
 /*
    ---------------------------------

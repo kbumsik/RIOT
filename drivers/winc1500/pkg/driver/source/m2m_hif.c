@@ -83,7 +83,12 @@ typedef struct {
 }tstrHifContext;
 
 volatile tstrHifContext gstrHifCxt;
+#if defined(MODULE_WINC1500) && defined(MODULE_GNRC_NETDEV)
+volatile uint8_t *_winc1500_int_cnt = &gstrHifCxt.u8Interrupt;
+#endif
 
+#if	defined(MODULE_WINC1500) && defined(MODULE_GNRC_NETDEV)
+#else
 static void isr(void)
 {
 	gstrHifCxt.u8Interrupt++;
@@ -92,6 +97,8 @@ static void isr(void)
 	nm_bsp_interrupt_ctrl(0);
 #endif
 }
+#endif
+
 static int8_t hif_set_rx_done(void)
 {
 	uint32_t reg;
@@ -252,7 +259,13 @@ ERR1:
 int8_t hif_init(void * arg)
 {
 	m2m_memset((uint8_t*)&gstrHifCxt,0,sizeof(tstrHifContext));
+#if defined(MODULE_WINC1500) && defined(MODULE_GNRC_NETDEV)
+	/* For RIOT user - The isr will be registered in _init() in winc1500_netdev.c
+	 * 	when you use GNRC.
+	 */
+#else
 	nm_bsp_register_isr(isr);
+#endif
 	hif_register_cb(M2M_REQ_GROUP_HIF,m2m_hif_cb);
 	return M2M_SUCCESS;
 }
@@ -554,7 +567,10 @@ static int8_t hif_isr(void)
 			 *		However, due to stability issue this statement is omitted.
 			 *		Please consider this when porting a new WINC1500 driver.
 			 ******************************************************************/
-			/* ret = M2M_ERR_FAIL; */
+#ifdef	MODULE_WINC1500
+#else
+			ret = M2M_ERR_FAIL;
+#endif
 			goto ERR1;
 #else
 #endif
